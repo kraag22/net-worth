@@ -1,0 +1,1033 @@
+{
+  "portfolio": [
+    {
+      "name": "positionrow",
+      "id": "5212042",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "5212042"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "PRODUCT"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 53
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 59
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 3127
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -3074.054821448
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -3127
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "332111",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "332111"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "PRODUCT"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 2
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 106.16
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 4805.108041237113
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -3731.002944143
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -4805.108041237113
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "13200994",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "13200994"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "PRODUCT"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 25
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 6.82
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 3858.661082474227
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -4933.02
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -3858.661082474227
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "14660208",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "14660208"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "PRODUCT"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 40
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 86.5
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 3460
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -2822.8
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -3460
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "4798008",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "4798008"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "PRODUCT"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 4
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 870
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 3480
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -3721.7
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -3480
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "4798013",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "4798013"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "PRODUCT"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 5
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 900
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 4500
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -4495.27
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -4500
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "8565591",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "8565591"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "PRODUCT"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 11
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 292
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 3212
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -4528.79
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -3212
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "4798015",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "4798015"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "PRODUCT"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 7
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 904.8
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 6333.6
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -6424.4
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -6333.6
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "331868",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "331868"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "PRODUCT"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 1
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 207.48
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 4695.571855670103
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -4913.86
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -4695.571855670103
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "4798004",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "4798004"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "PRODUCT"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 10
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 549
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 5490
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -4810.16
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -5490
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "1533610",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "1533610"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "PRODUCT"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 2
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 150.35
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 6805.275
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -7783.23
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -6805.275
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "10306755",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "10306755"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "PRODUCT"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 67
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 78.5
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 5259.5
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -4937.55
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -5259.5
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "890163",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "890163"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "PRODUCT"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 30
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 5.1
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 3943.298969072165
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -3424.294392325
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -3943.298969072165
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "4667924",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "4667924"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "CASH"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 0
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 1.0097
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 0
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": 0.5595865657156557,
+            "USD": 0
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": 0
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "5199326",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "5199326"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "CASH"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 186.0214
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 1.0003
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 186.07720642
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -184.08006314
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -186.07720642
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true,
+          "value": 0
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "USD",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "USD"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "CASH"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 0
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 1
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 0
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": 0.38036967028434426
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": 0
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "GBP",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "GBP"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "CASH"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 0
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 1
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 0
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": -0.105412461
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": 0
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "CZK",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "CZK"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "CASH"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 0
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 1
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 0
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": 0.00006314
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": 0.00006314
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true
+        }
+      ]
+    },
+    {
+      "name": "positionrow",
+      "id": "EUR",
+      "isAdded": true,
+      "value": [
+        {
+          "name": "id",
+          "isAdded": true,
+          "value": "EUR"
+        },
+        {
+          "name": "positionType",
+          "isAdded": true,
+          "value": "CASH"
+        },
+        {
+          "name": "size",
+          "isAdded": true,
+          "value": 0
+        },
+        {
+          "name": "price",
+          "isAdded": true,
+          "value": 1
+        },
+        {
+          "name": "value",
+          "isAdded": true,
+          "value": 0
+        },
+        {
+          "name": "accruedInterest",
+          "isAdded": true
+        },
+        {
+          "name": "plBase",
+          "isAdded": true,
+          "value": {
+            "CZK": 0.159336138
+          }
+        },
+        {
+          "name": "todayPlBase",
+          "isAdded": true,
+          "value": {
+            "CZK": 0
+          }
+        },
+        {
+          "name": "totalCompensation",
+          "isAdded": true
+        }
+      ]
+    }
+  ]
+}
