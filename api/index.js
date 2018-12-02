@@ -8,7 +8,7 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').load()
 }
 
-const port = process.env.PORT || 3333
+const port = process.env.PORT || 4000
 const app = express()
 
 console.log(`Using user: ${process.env.username}`)
