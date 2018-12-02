@@ -18,7 +18,7 @@ const degiro = DeGiro.create({
   password: process.env.password,
 })
 
-storage.connectDb('./data/test.db').then(db => {
+storage.connectDb('./data/stocks.db').then(db => {
   console.log('Connected to the test database.')
 
   app.post('/import', async (req, res, next) => {
