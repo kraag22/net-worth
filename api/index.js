@@ -1,5 +1,7 @@
 const DeGiro = require('degiro')
+
 const main = require('./src/main.js')
+const storage = require('./src/storage.js')
 
 if (process.env.NODE_ENV !== 'production') {
   console.log('Env variables loaded from .env file.')
@@ -13,6 +15,8 @@ const degiro = DeGiro.create({
   password: process.env.password,
 })
 
-main.getPortfolio(degiro)
+storage.connectDb('./data/test.db').then(db => {
+  console.log('Connected to the test database.')
 
-
+  main.importPortfolio(degiro, db)
+})

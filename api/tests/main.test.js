@@ -5,18 +5,8 @@ const sqlite3 = require('sqlite3')
 
 let db = null
 
-beforeAll((done) => {
-  db = new sqlite3.Database(':memory:', (err) => {
-    expect(err).toBeNull()
-
-    storage.createTable(db).then(() => {
-      done()
-    })
-    .catch(err => {
-      expect(err).not.toBeDefined()
-      done()
-    })
-  })
+beforeAll(async () => {
+  db = await storage.connectDb(':memory:')
 })
 
 afterAll((done) => {
@@ -26,12 +16,9 @@ afterAll((done) => {
   })
 })
 
-describe('get data and store it to db', () => {
+describe('importPortfolio()', () => {
   it('should work', async () => {
-    const portfolio = await main.getPortfolio(mockDeGiro)
-    expect(portfolio.length).toEqual(15)
-
-    await storage.insert(db, portfolio)
+    await main.importPortfolio(mockDeGiro, db)
 
     const sql = "select * from stocks"
     const data = await storage.call(db, sql)

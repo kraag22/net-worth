@@ -1,3 +1,5 @@
+const sqlite3 = require('sqlite3')
+
 const columns = ['id', 'price', 'size', 'value', 'name', 'currency']
 const STOCKS_TABLE = 'stocks'
 
@@ -12,8 +14,25 @@ const getInsertQuestionmarks = () => {
   return `(${questionmarks}, DATETIME('now'))`
 }
 
+exports.connectDb = file => {
+  return new Promise((resolve, reject) => {
+    let db = new sqlite3.Database(file, (err) => {
+      if (err) {
+        reject(err.message)
+      }
+      exports.createTable(db).then(() => {
+        resolve(db)
+      })
+      .catch(err => {
+        reject(err)
+      })
+    })
+  })
+}
+
+
 exports.createTable = db => {
-  const sql = `CREATE TABLE ${STOCKS_TABLE} (` +
+  const sql = `CREATE TABLE IF NOT EXISTS ${STOCKS_TABLE} (` +
     'id TEXT, ' +
     'price real, ' +
     'size real, ' +
