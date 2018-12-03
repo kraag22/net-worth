@@ -30,5 +30,14 @@ storage.connectDb('./data/stocks.db').then(db => {
     }
   })
 
+  app.get('/portfolio/:groupBy', async (req, res, next) => {
+    try {
+      const portfolio = await main.groupPortfolio(db, req.params.groupBy)
+      res.json({portfolio: portfolio})
+    } catch (e) {
+      next(e)
+    }
+  })
+
   app.listen(port, () => console.log(`Listening on port ${port}!`))
 })
