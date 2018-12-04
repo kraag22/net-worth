@@ -20,19 +20,24 @@ exports.groupPortfolio = async (db, groupBy) => {
   let dateFormat = ''
   switch(groupBy) {
     case 'monthly':
-      dateFormat = '%Y-%m-00T00:00:00'
+      dateFormat = '%Y-%m-00'
       break
     case 'hourly':
       dateFormat = '%Y-%m-%dT%H:00:00'
       break
     default:
-      dateFormat = '%Y-%m-%dT00:00:00'
+      dateFormat = '%Y-%m-%d'
       break
   }
 
+  let lastSql = `(select value from stocks as s2 where `
+  lastSql += `strftime('${dateFormat}', s2.created_at)=strftime('${dateFormat}', s1.created_at) `
+  lastSql += `and s2.id=s1.id order by s2.created_at desc limit 1)`
+
   let sql = `select id, min(value) as min_value, max(value) as max_value,`
-  sql += `name, strftime('${dateFormat}', created_at) as created `
-  sql += `from stocks group by strftime('${dateFormat}', created_at), id`
+  sql += `name, strftime('${dateFormat}', created_at) as created, `
+  sql += `${lastSql} as last_value `
+  sql += `from stocks as s1 group by strftime('${dateFormat}', created_at), id`
   const result = await storage.call(db, sql)
   return result
 }

@@ -39,7 +39,7 @@ describe('main function', () => {
 
     const ret = await main.groupPortfolio(db, 'daily')
     expect(ret.length).toEqual(15)
-    expect(ret[0].created).toEqual(`${expectedDate}T00:00:00`)
+    expect(ret[0].created).toEqual(`${expectedDate}`)
 
     const hourly = await main.groupPortfolio(db, 'hourly')
     expect(hourly.length).toEqual(15)
@@ -47,6 +47,6 @@ describe('main function', () => {
 
     const monthly = await main.groupPortfolio(db, 'monthly')
     expect(monthly.length).toEqual(15)
-    expect(monthly[0].created).toEqual(`${year}-${month}-00T00:00:00`)
+    expect(monthly[0].created).toEqual(`${year}-${month}-00`)
   })
 })
