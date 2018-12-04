@@ -1,18 +1,18 @@
 const portfolio = require('./portfolio.json')
 const products = require('./products.json')
 
-const mockDeGiro = {}
+const mockDegiro = {}
 
-mockDeGiro.login = () => new Promise((resolve, reject) => {
+mockDegiro.login = () => new Promise((resolve, reject) => {
   resolve({})
 })
 
-mockDeGiro.getPortfolio = () => new Promise((resolve, reject) => {
+mockDegiro.getPortfolio = () => new Promise((resolve, reject) => {
   resolve(portfolio)
 })
 
-mockDeGiro.getProductsByIds = () => new Promise((resolve, reject) => {
+mockDegiro.getProductsByIds = () => new Promise((resolve, reject) => {
   resolve(products)
 })
 
-exports.mockDeGiro = mockDeGiro
+exports.mockDegiro = mockDegiro

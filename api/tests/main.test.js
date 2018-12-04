@@ -1,5 +1,5 @@
 const main = require('../src/main.js')
-const {mockDeGiro} = require('./mockDeGiro.js')
+const {mockDegiro} = require('./mockDegiro.js')
 const storage = require('../src/storage.js')
 const sqlite3 = require('sqlite3')
 
@@ -18,7 +18,7 @@ afterAll((done) => {
 
 describe('main function', () => {
   it('importPortfolio() should work', async () => {
-    await main.importPortfolio(mockDeGiro, db)
+    await main.importPortfolio(mockDegiro, db)
 
     const sql = "select * from stocks"
     const data = await storage.call(db, sql)
@@ -31,16 +31,22 @@ describe('main function', () => {
   })
 
   it('groupPortfolio() should work', async () => {
+    const expectedDate = (new Date()).toISOString().split('T')[0]
+    const expectedHours = (new Date()).getUTCHours()
+    const year = (new Date()).getUTCFullYear()
+    const month = (new Date()).getUTCMonth() + 1
+
+
     const ret = await main.groupPortfolio(db, 'daily')
     expect(ret.length).toEqual(15)
-    expect(ret[0].created).toEqual('2018-12-03T00:00:00')
+    expect(ret[0].created).toEqual(`${expectedDate}T00:00:00`)
 
     const hourly = await main.groupPortfolio(db, 'hourly')
     expect(hourly.length).toEqual(15)
-    expect(hourly[0].created).toEqual('2018-12-03T07:00:00')
+    expect(hourly[0].created).toEqual(`${expectedDate}T${expectedHours}:00:00`)
 
     const monthly = await main.groupPortfolio(db, 'monthly')
     expect(monthly.length).toEqual(15)
-    expect(monthly[0].created).toEqual('2018-12-00T00:00:00')
+    expect(monthly[0].created).toEqual(`${year}-${month}-00T00:00:00`)
   })
 })
