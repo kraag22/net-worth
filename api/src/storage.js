@@ -30,7 +30,6 @@ exports.connectDb = file => {
   })
 }
 
-
 exports.createTable = db => {
   const sql = `CREATE TABLE IF NOT EXISTS ${STOCKS_TABLE} (` +
     'id TEXT, ' +
@@ -42,15 +41,11 @@ exports.createTable = db => {
     'created_at TEXT' +
     ')'
 
-  return new Promise((resolve, reject) => {
-    db.run(sql, (err) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve()
-      }
-    })
-  })
+  return Promise.all([
+    exports.run(db, sql),
+    exports.run(db, exports.getViewSql('hourly')),
+    exports.run(db, exports.getViewSql('daily')),
+    exports.run(db, exports.getViewSql('monthly'))])
 }
 
 exports.insert = (db, values) => {
@@ -63,6 +58,47 @@ exports.insert = (db, values) => {
 
   return new Promise((resolve, reject) => {
     db.run(sql, params, (err) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve()
+      }
+    })
+  })
+}
+
+exports.getViewSql = groupBy => {
+  let dateFormat = ''
+  switch(groupBy) {
+    case 'monthly':
+      dateFormat = '%Y-%m-00'
+      break
+    case 'hourly':
+      dateFormat = '%Y-%m-%dT%H:00:00'
+      break
+    case 'daily':
+      dateFormat = '%Y-%m-%d'
+      break
+    default:
+      throw new Error(`getViewSql called with wrong parameter ${groupBy}`)
+      break
+  }
+
+  let lastSql = `(select value from stocks as s2 where `
+  lastSql += `strftime('${dateFormat}', s2.created_at)=strftime('${dateFormat}', s1.created_at) `
+  lastSql += `and s2.id=s1.id order by s2.created_at desc limit 1)`
+
+  let sql = `create view if not exists stocks_${groupBy} as `
+  sql += `select id, min(value) as min_value, max(value) as max_value,`
+  sql += `name, strftime('${dateFormat}', created_at) as created, `
+  sql += `${lastSql} as last_value `
+  sql += `from stocks as s1 group by strftime('${dateFormat}', created_at), id`
+  return sql
+}
+
+exports.run = (db, sql) => {
+  return new Promise((resolve, reject) => {
+    db.run(sql, (err) => {
       if (err) {
         reject(err)
       } else {
