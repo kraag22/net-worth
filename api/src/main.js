@@ -31,5 +31,15 @@ exports.groupPortfolio = async (db, groupBy) => {
   }
 
   return await storage.call(db, `select * from stocks_${group}`)
+}
 
+exports.getIndexData = async db => {
+  const sql = 'select sum(last_value) as value, created from stocks_daily ' +
+              'group by created order by created desc'
+  const data = await storage.call(db, sql)
+
+  const ret = {}
+  ret.sum = data.length > 0 ? data[0].value : 0
+  ret.daily = data
+  return ret
 }

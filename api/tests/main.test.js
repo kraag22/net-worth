@@ -50,3 +50,11 @@ describe('main function', () => {
     expect(monthly[0].created).toEqual(`${year}-${month}-00`)
   })
 })
+
+describe('view function', () => {
+  it('getIndexData() should work', async () => {
+    const data = await main.getIndexData(db)
+    expect(Math.round(data.sum)).toBe(59156)
+    expect(data.daily.length).toBe(1)
+  })
+})
