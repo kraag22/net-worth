@@ -2,6 +2,7 @@ const DeGiro = require('degiro')
 const express = require('express')
 const main = require('./src/main.js')
 const storage = require('./src/storage.js')
+const mustacheExpress = require('mustache-express')
 
 if (process.env.NODE_ENV !== 'production') {
   console.log('Env variables loaded from .env file.')
@@ -10,6 +11,10 @@ if (process.env.NODE_ENV !== 'production') {
 
 const port = process.env.PORT || 4000
 const app = express()
+
+app.engine('html', mustacheExpress())
+app.set('view engine', 'html')
+app.set('views', __dirname + '/views')
 
 console.log(`Using user: ${process.env.username}`)
 
@@ -34,6 +39,15 @@ storage.connectDb('./data/stocks.db').then(db => {
     try {
       const portfolio = await main.groupPortfolio(db, req.params.groupBy)
       res.json({portfolio: portfolio})
+    } catch (e) {
+      next(e)
+    }
+  })
+
+  app.get('/', async (req, res, next) => {
+    try {
+      const data = await main.getIndexData(db)
+      res.render('index', data)
     } catch (e) {
       next(e)
     }
