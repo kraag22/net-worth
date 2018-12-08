@@ -15,3 +15,23 @@ install:
 script:
   - npm run test-ci
   - npm run coveralls
+
+addons:
+  ssh_known_hosts: 188.226.180.247
+
+before_deploy:
+  - echo "$ssh_key" | base64 -d > /tmp/deploy_key
+  - eval "$(ssh-agent -s)"
+  - chmod 600 /tmp/deploy_key
+  - ssh-add /tmp/deploy_key
+
+deploy:
+  provider: script
+  skip_cleanup: true
+  script:
+    - rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/api root@188.226.180.247:/srv/net-worth
+  on:
+    branch: master
+
+after_deploy:
+  - ssh root@188.226.180.247 "service net-worth restart"

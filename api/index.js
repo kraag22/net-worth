@@ -4,10 +4,8 @@ const main = require('./src/main.js')
 const storage = require('./src/storage.js')
 const mustacheExpress = require('mustache-express')
 
-if (process.env.NODE_ENV !== 'production') {
-  console.log('Env variables loaded from .env file.')
-  require('dotenv').load()
-}
+console.log('Env variables loaded from .env file.')
+require('dotenv').config({ path: __dirname + '/../.env' })
 
 const port = process.env.PORT || 4000
 const app = express()
@@ -23,7 +21,7 @@ const degiro = DeGiro.create({
   password: process.env.password,
 })
 
-storage.connectDb('./data/stocks.db').then(db => {
+storage.connectDb('../data/stocks.db').then(db => {
   console.log('Connected to the test database.')
 
   app.post('/import', async (req, res, next) => {
