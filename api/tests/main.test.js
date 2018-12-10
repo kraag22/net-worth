@@ -32,10 +32,10 @@ describe('main function', () => {
 
   it('groupPortfolio() should work', async () => {
     const expectedDate = (new Date()).toISOString().split('T')[0]
-    const expectedHours = (new Date()).getUTCHours()
+    let expectedHours = (new Date()).getUTCHours()
+    expectedHours = expectedHours < 10 ? `0${expectedHours}` : expectedHours
     const year = (new Date()).getUTCFullYear()
     const month = (new Date()).getUTCMonth() + 1
-
 
     const ret = await main.groupPortfolio(db, 'daily')
     expect(ret.length).toEqual(15)
@@ -56,5 +56,22 @@ describe('view function', () => {
     const data = await main.getIndexData(db)
     expect(Math.round(data.sum)).toBe(59156)
     expect(data.daily.length).toBe(1)
+    expect(data.today.length).toBe(15)
+  })
+
+  it('getTodaysData() should work', async () => {
+    const sql = `INSERT INTO stocks ` +
+      `(id, price, size, value, name, currency, created_at)` +
+      `VALUES ('10306755', 400, 1, 4000, 'mb', 'CZK', DATETIME('now', '-1 hour'))`
+    await storage.run(db, sql)
+
+    const sql2 = `INSERT INTO stocks ` +
+      `(id, price, size, value, name, currency, created_at)` +
+      `VALUES ('10306755', 400, 1, 3800, 'mb', 'CZK', DATETIME('now', '-2 hour'))`
+    await storage.run(db, sql2)
+
+    const data = await main.getTodaysData(db)
+    expect(data[12].name).toBe('mb')
+    expect(data[12].values.length).toBe(3)
   })
 })
