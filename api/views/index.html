@@ -21,6 +21,17 @@
   {{/daily}}
   </ul>
 
+  today
+  <ul>
+  {{#today}}
+    <li>{{name}} ({{id}}):
+      {{#values}}
+        {{value}},
+      {{/values}}
+    </li>
+  {{/today}}
+  </ul>
+
   <!-- <script src="js/scripts.js"></script> -->
 </body>
 </html>
