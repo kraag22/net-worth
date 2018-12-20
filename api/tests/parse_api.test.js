@@ -49,9 +49,9 @@ describe('getIds()', () => {
   })
 })
 
-describe('addMetaToPorfolio()', () => {
+describe('addMetaToPortfolio()', () => {
   it('works with empty', () => {
-    expect(api.addMetaToPorfolio([], products)).toEqual([])
+    expect(api.addMetaToPortfolio([], products)).toEqual([])
   })
 
   it('works', () => {
@@ -59,6 +59,6 @@ describe('addMetaToPorfolio()', () => {
     const expected = [
       {id: 14660208, currency: 'CZK', name: 'AVAST PLC'},
       {id: 331868, currency: 'USD', name: 'Apple Inc'}]
-    expect(api.addMetaToPorfolio(portfolio, products)).toEqual(expected)
+    expect(api.addMetaToPortfolio(portfolio, products)).toEqual(expected)
   })
 })

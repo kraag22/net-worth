@@ -31,7 +31,7 @@ exports.getPortfolio = json => {
   }
 }
 
-exports.addMetaToPorfolio = (portfolio, json) => {
+exports.addMetaToPortfolio = (portfolio, json) => {
   const products = json.data || {}
   return portfolio.map(port => {
     const meta = products[port.id]
