@@ -1,18 +1,21 @@
 const parse = require('./parse_api.js')
 const storage = require('./storage.js')
 
-exports.getPortfolio = async degiro => {
+exports.getPortfolio = async (degiro, fixer) => {
   await degiro.login()
   const data = await degiro.getPortfolio()
   const portfolio = parse.getPortfolio(data)
   const ids = parse.getIds(portfolio)
   const products = await degiro.getProductsByIds(ids)
   parse.addMetaToPortfolio(portfolio, products)
+  const currencies = parse.getCurrencies(portfolio)
+  const rates = await fixer.getRates(currencies)
+  parse.addCurrencyRateToPortfolio(portfolio, rates)
   return portfolio
 }
 
-exports.importPortfolio = async (degiro, db) => {
-  const portfolio = await exports.getPortfolio(degiro)
+exports.importPortfolio = async (degiro, db, fixer) => {
+  const portfolio = await exports.getPortfolio(degiro, fixer)
   await storage.insert(db, portfolio)
 }
 

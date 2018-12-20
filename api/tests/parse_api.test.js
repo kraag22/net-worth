@@ -62,3 +62,18 @@ describe('addMetaToPortfolio()', () => {
     expect(api.addMetaToPortfolio(portfolio, products)).toEqual(expected)
   })
 })
+
+describe('getCurrencies()', () => {
+  it('works with empty', () => {
+    expect(api.getCurrencies([])).toEqual([])
+  })
+
+  it('works', () => {
+    const portfolio = [
+      {id: 14660208, currency: 'CZK'},
+      {id: 331868, currency: 'USD'},
+      {id: 331867, currency: 'USD'},
+      {id: 331866, currency: 'EUR'}]
+    expect(api.getCurrencies(portfolio)).toEqual(['CZK', 'USD', 'EUR'])
+  })
+})

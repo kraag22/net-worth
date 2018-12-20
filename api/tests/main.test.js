@@ -1,9 +1,11 @@
 const main = require('../src/main.js')
 const {mockDegiro} = require('./mockDegiro.js')
+const {MockFixer} = require('./mockFixer.js')
 const storage = require('../src/storage.js')
 const sqlite3 = require('sqlite3')
 
 let db = null
+const mockFixer = new MockFixer('x')
 
 beforeAll(async () => {
   db = await storage.connectDb(':memory:')
@@ -18,7 +20,7 @@ afterAll((done) => {
 
 describe('main function', () => {
   it('importPortfolio() should work', async () => {
-    await main.importPortfolio(mockDegiro, db)
+    await main.importPortfolio(mockDegiro, db, mockFixer)
 
     const sql = "select * from stocks"
     const data = await storage.call(db, sql)
