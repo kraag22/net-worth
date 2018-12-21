@@ -22,9 +22,10 @@ describe('insert()', () => {
       size: 3,
       value: 4,
       name: 'x',
-      currency: '$'
+      currency: '$',
+      ratio: 22.2
     }
-    const sql = 'select id, price, size, value, name, currency from stocks'
+    const sql = 'select id, price, size, value, name, currency, ratio from stocks'
 
     await storage.insert(db, [expected, expected])
 

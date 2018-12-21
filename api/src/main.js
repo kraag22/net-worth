@@ -8,6 +8,7 @@ exports.getPortfolio = async (degiro, fixer) => {
   const ids = parse.getIds(portfolio)
   const products = await degiro.getProductsByIds(ids)
   parse.addMetaToPortfolio(portfolio, products)
+
   const currencies = parse.getCurrencies(portfolio)
   const rates = await fixer.getRates(currencies)
   parse.addCurrencyRateToPortfolio(portfolio, rates)

@@ -1,4 +1,5 @@
-const portfolio = require('./portfolio.json')
+const rates = require('./rates.json')
+const {Fixer} = require('../src/fixer.js')
 
 class MockFixer {
   constructor(apiKey) {
@@ -8,7 +9,8 @@ class MockFixer {
 
   getRates() {
     return new Promise((resolve, reject) => {
-      resolve(portfolio)
+      const fixer = new Fixer()
+      resolve(fixer.changeBase(rates.rates, 'CZK'))
     })
   }
 }

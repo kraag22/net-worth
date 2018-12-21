@@ -1,4 +1,4 @@
-const {Fixer} = require('../src/Fixer.js')
+const {Fixer} = require('../src/fixer.js')
 const rates = require('./rates.json')
 
 let fixer = null

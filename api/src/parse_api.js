@@ -51,6 +51,9 @@ exports.getCurrencies = portfolio => {
   return [...currencies]
 }
 
-exports.addCurrencyRateToPortfolio = portfolio => {
-
+exports.addCurrencyRateToPortfolio = (portfolio, rates) => {
+  return portfolio.map(item => {
+    item.ratio = rates[item.currency]
+    return item
+  })
 }

@@ -1,6 +1,6 @@
 const sqlite3 = require('sqlite3')
 
-const columns = ['id', 'price', 'size', 'value', 'name', 'currency']
+const columns = ['id', 'price', 'size', 'value', 'name', 'currency', 'ratio']
 const STOCKS_TABLE = 'stocks'
 
 const flattenItem = value => {
@@ -38,6 +38,7 @@ exports.createTable = db => {
     'value real, ' +
     'name TEXT, ' +
     'currency TEXT, ' +
+    'ratio real,' +
     'created_at TEXT' +
     ')'
 
@@ -50,7 +51,7 @@ exports.createTable = db => {
 
 exports.insert = (db, values) => {
   let sql = `INSERT INTO ${STOCKS_TABLE} `
-  sql += '(id, price, size, value, name, currency, created_at) VALUES '
+  sql += '(id, price, size, value, name, currency, ratio, created_at) VALUES '
   sql += values.map(value => getInsertQuestionmarks()).join(',')
 
   let params = []
