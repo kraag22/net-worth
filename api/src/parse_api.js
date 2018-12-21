@@ -31,7 +31,7 @@ exports.getPortfolio = json => {
   }
 }
 
-exports.addMetaToPorfolio = (portfolio, json) => {
+exports.addMetaToPortfolio = (portfolio, json) => {
   const products = json.data || {}
   return portfolio.map(port => {
     const meta = products[port.id]
@@ -40,5 +40,20 @@ exports.addMetaToPorfolio = (portfolio, json) => {
       port.name = meta.name
     }
     return port
+  })
+}
+
+exports.getCurrencies = portfolio => {
+  const currencies = new Set()
+  portfolio.forEach(item => {
+    currencies.add(item.currency)
+  })
+  return [...currencies]
+}
+
+exports.addCurrencyRateToPortfolio = (portfolio, rates) => {
+  return portfolio.map(item => {
+    item.ratio = rates[item.currency]
+    return item
   })
 }

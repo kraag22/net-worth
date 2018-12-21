@@ -1,5 +1,6 @@
 const DeGiro = require('degiro')
 const express = require('express')
+const {Fixer} = require('./src/fixer.js')
 const main = require('./src/main.js')
 const storage = require('./src/storage.js')
 const mustacheExpress = require('mustache-express')
@@ -21,12 +22,14 @@ const degiro = DeGiro.create({
   password: process.env.password,
 })
 
+const fixer = new Fixer(process.env.fixerkey)
+
 storage.connectDb('../data/stocks.db').then(db => {
   console.log('Connected to the test database.')
 
   app.post('/import', async (req, res, next) => {
     try {
-      await main.importPortfolio(degiro, db)
+      await main.importPortfolio(degiro, db, fixer)
       res.json({status: 'ok'})
     } catch (e) {
       next(e)
