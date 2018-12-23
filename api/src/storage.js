@@ -97,9 +97,19 @@ exports.getViewSql = groupBy => {
   return sql
 }
 
-exports.run = (db, sql) => {
+exports.updateCurrencies = async (db, rates, date) => {
+  for (const currency of Object.keys(rates)) {
+    const ratio = rates[currency]
+    const sql = `update stocks set ratio=? where currency=? ` +
+      `and strftime('%Y-%m-%d', created_at)=? and ratio is null`
+    await exports.run(db, sql, [ratio, currency, date])
+  }
+}
+
+exports.run = (db, sql, fceParams) => {
+  const params = fceParams ? fceParams : []
   return new Promise((resolve, reject) => {
-    db.run(sql, (err) => {
+    db.run(sql, params, (err) => {
       if (err) {
         reject(err)
       } else {
@@ -109,9 +119,10 @@ exports.run = (db, sql) => {
   })
 }
 
-exports.call = (db, sql) => {
+exports.call = (db, sql, fceParams) => {
+  const params = fceParams ? fceParams : []
   return new Promise((resolve, reject) => {
-    db.all(sql, (err, rows) => {
+    db.all(sql, params, (err, rows) => {
       if (err) {
         reject(err)
       } else {

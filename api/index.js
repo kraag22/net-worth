@@ -36,6 +36,15 @@ storage.connectDb('../data/stocks.db').then(db => {
     }
   })
 
+  app.put('/fill-ratios', async (req, res, next) => {
+    try {
+      const datesNo = await main.fillMissingRates(db, fixer)
+      res.json({updatedDates: datesNo})
+    } catch (e) {
+      next(e)
+    }
+  })
+
   app.get('/portfolio/:groupBy', async (req, res, next) => {
     try {
       const portfolio = await main.groupPortfolio(db, req.params.groupBy)

@@ -1,3 +1,4 @@
+const axios = require('axios')
 const parse = require('./parse_api.js')
 const storage = require('./storage.js')
 
@@ -10,7 +11,7 @@ exports.getPortfolio = async (degiro, fixer) => {
   parse.addMetaToPortfolio(portfolio, products)
 
   const currencies = parse.getCurrencies(portfolio)
-  const rates = await fixer.getRates(currencies)
+  const rates = await fixer.getRates(axios, currencies)
   parse.addCurrencyRateToPortfolio(portfolio, rates)
   return portfolio
 }
@@ -71,4 +72,20 @@ exports.getIndexData = async db => {
   ret.daily = data
   ret.today = await exports.getTodaysData(db)
   return ret
+}
+
+exports.fillMissingRates = async (db, fixer) => {
+  const sql = `select distinct(strftime('%Y-%m-%d', created_at)) as date ` +
+    'from stocks where ratio is null'
+  const dates = await storage.call(db, sql)
+  const sql2 = 'select distinct(currency) from stocks where ratio is null'
+  let currencies = await storage.call(db, sql2)
+  currencies = currencies.map(item => item.currency)
+
+  for (const item of Object.values(dates)) {
+    const rates = await fixer.getRates(axios, currencies, item.date)
+    await storage.updateCurrencies(db, rates, item.date)
+  }
+
+  return dates.length
 }
