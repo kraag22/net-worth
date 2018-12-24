@@ -7,7 +7,7 @@ class MockFixer {
     this.base = 'CZK'
   }
 
-  getRates() {
+  getRates(apiObj, currencies, date) {
     return new Promise((resolve, reject) => {
       const fixer = new Fixer()
       resolve(fixer.changeBase(rates.rates, 'CZK'))

@@ -1,10 +1,8 @@
-const axios = require('axios')
-
 class Fixer {
   constructor(apiKey) {
     this.apiKey = apiKey
     this.base = 'CZK'
-    this.prefix = 'http://data.fixer.io/api/'
+    this.prefix = 'http://data.fixer.io/api'
   }
 
   changeBase(rates, base) {
@@ -17,12 +15,13 @@ class Fixer {
     return newRates
   }
 
-  getRates(currencies) {
+  getRates(apiObj, currencies, date) {
     currencies.push(this.base)
+    const api = date ? date : 'latest'
     const symbols = currencies.join(',')
-    const url = `${this.prefix}/latest?access_key=${this.apiKey}`
+    const url = `${this.prefix}/${api}?access_key=${this.apiKey}`
       + `&base=EUR&symbols=${symbols}&format=1`
-    return axios.get(url)
+    return apiObj.get(url)
       .then(result => this.changeBase(result.data.rates, this.base))
   }
 }

@@ -32,6 +32,26 @@ describe('main function', () => {
     expect(Math.round(sum)).toBe(59156)
   })
 
+  it('fillMissingRates() should work', async () => {
+    const sql = "select * from stocks where ratio is null"
+    const sqlBase = 'update stocks set ratio = null where currency=?'
+    await storage.run(db, sqlBase, ['EUR'])
+
+    const unfilled = await storage.call(db, sql)
+    expect(unfilled.length).toBe(1)
+
+    const datesNo = await main.fillMissingRates(db, mockFixer)
+    expect(datesNo).toBe(1)
+
+    const data = await storage.call(db, sql)
+    expect(data.length).toBe(0)
+
+    const all = await storage.call(db, 'select * from stocks')
+    expect(all[0].ratio).toBe(1)
+    expect(Math.round(all[1].ratio * 100) / 100).toBe(22.48)
+    expect(Math.round(all[12].ratio * 100) / 100).toBe(25.79)
+  })
+
   it('groupPortfolio() should work', async () => {
     const expectedDate = (new Date()).toISOString().split('T')[0]
     let expectedHours = (new Date()).getUTCHours()

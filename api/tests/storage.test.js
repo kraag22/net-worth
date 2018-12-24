@@ -1,10 +1,13 @@
 const storage = require('../src/storage.js')
 const sqlite3 = require('sqlite3')
+const {MockFixer} = require('./mockFixer.js')
 
-let db = null;
+let db = null
+let fixer = null
 
 beforeAll(async() => {
   db = await storage.connectDb(':memory:')
+  fixer = new MockFixer()
 })
 
 afterAll((done) => {
@@ -22,7 +25,7 @@ describe('insert()', () => {
       size: 3,
       value: 4,
       name: 'x',
-      currency: '$',
+      currency: 'USD',
       ratio: 22.2
     }
     const sql = 'select id, price, size, value, name, currency, ratio from stocks'
@@ -40,5 +43,49 @@ describe('insert()', () => {
     expect(dates.length).toBe(2)
     expect(dates[0].date).toEqual(expectedDate)
     expect(dates[1].date).toEqual(expectedDate)
+  })
+})
+
+describe('updateCurrencies()', () => {
+  it('works', async () => {
+    const eur = {
+      id: 'aa',
+      price: 2,
+      size: 3,
+      value: 4,
+      name: 'xd',
+      currency: 'EUR'
+    }
+
+    const czk = {
+      id: 'aab',
+      price: 2,
+      size: 3,
+      value: 4,
+      name: 'xd',
+      currency: 'CZK'
+    }
+
+    const sql = 'select * from stocks where ratio is null'
+    const expectedDate = (new Date()).toISOString().split('T')[0]
+    const rates = await fixer.getRates()
+
+    await storage.insert(db, [eur, czk])
+
+    const rows = await storage.call(db, sql)
+    expect(rows.length).toBe(2)
+
+    await storage.updateCurrencies(db, rates, expectedDate)
+
+    const results = await storage.call(db, sql)
+    expect(results.length).toBe(0)
+
+    const all = await storage.call(db, 'select * from stocks')
+    expect(all.length).toBe(4)
+    expect(all[0].ratio).toBe(22.2)
+    expect(all[1].ratio).toBe(22.2)
+    expect(all[2].ratio).toBe(25.790743)
+    expect(all[3].ratio).toBe(1)
+
   })
 })
