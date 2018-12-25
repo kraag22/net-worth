@@ -1,5 +1,5 @@
 const sqlite3 = require('sqlite3')
-
+const c = require('./constants')
 const columns = ['id', 'price', 'size', 'value', 'name', 'currency', 'ratio']
 const STOCKS_TABLE = 'stocks'
 
@@ -84,16 +84,19 @@ exports.getViewSql = groupBy => {
       throw new Error(`getViewSql called with wrong parameter ${groupBy}`)
       break
   }
+  const baseValue = 'price * size * ratio'
+  const cashFunds = c.CASH_FUNDS.join(',')
 
-  let lastSql = `(select value from stocks as s2 where `
+  let lastSql = `(select ${baseValue} from stocks as s2 where `
   lastSql += `strftime('${dateFormat}', s2.created_at)=strftime('${dateFormat}', s1.created_at) `
   lastSql += `and s2.id=s1.id order by s2.created_at desc limit 1)`
 
   let sql = `create view if not exists stocks_${groupBy} as `
-  sql += `select id, min(value) as min_value, max(value) as max_value,`
+  sql += `select id, min(${baseValue}) as min_value, max(${baseValue}) as max_value,`
   sql += `name, strftime('${dateFormat}', created_at) as created, `
   sql += `${lastSql} as last_value `
-  sql += `from stocks as s1 group by strftime('${dateFormat}', created_at), id`
+  sql += `from stocks as s1 where s1.id not in (${cashFunds}) `
+  sql += `group by strftime('${dateFormat}', created_at), id`
   return sql
 }
 
