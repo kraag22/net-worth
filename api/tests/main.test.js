@@ -60,15 +60,15 @@ describe('main function', () => {
     const month = (new Date()).getUTCMonth() + 1
 
     const ret = await main.groupPortfolio(db, 'daily')
-    expect(ret.length).toEqual(15)
+    expect(ret.length).toEqual(13)
     expect(ret[0].created).toEqual(`${expectedDate}`)
 
     const hourly = await main.groupPortfolio(db, 'hourly')
-    expect(hourly.length).toEqual(15)
+    expect(hourly.length).toEqual(13)
     expect(hourly[0].created).toEqual(`${expectedDate}T${expectedHours}:00:00`)
 
     const monthly = await main.groupPortfolio(db, 'monthly')
-    expect(monthly.length).toEqual(15)
+    expect(monthly.length).toEqual(13)
     expect(monthly[0].created).toEqual(`${year}-${month}-00`)
   })
 })
@@ -76,9 +76,9 @@ describe('main function', () => {
 describe('view function', () => {
   it('getIndexData() should work', async () => {
     const data = await main.getIndexData(db)
-    expect(Math.round(data.sum)).toBe(59156)
+    expect(Math.round(data.sum)).toBe(58841)
     expect(data.daily.length).toBe(1)
-    expect(data.today.length).toBe(15)
+    expect(data.today.length).toBe(13)
   })
 
   it('getTodaysData() should work', async () => {
@@ -93,7 +93,7 @@ describe('view function', () => {
     await storage.run(db, sql2)
 
     const data = await main.getTodaysData(db)
-    expect(data[12].name).toBe('mb')
-    expect(data[12].values.length).toBe(3)
+    expect(data[10].name).toBe('mb')
+    expect(data[10].values.length).toBe(3)
   })
 })
