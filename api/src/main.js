@@ -40,10 +40,11 @@ exports.groupPortfolio = async (db, groupBy) => {
 
 exports.getTodaysData = async db => {
   const now = new Date()
-  const dd = now.getDate()
-  const mm = now.getMonth() + 1
+  const dd = String(now.getDate()).padStart(2, '0')
+  const mm = String(now.getMonth() + 1).padStart(2, '0')
   const yyyy = now.getFullYear()
   const today = `${yyyy}-${mm}-${dd}`
+
   const sql = 'select id, last_value as value, name, created from stocks_hourly ' +
               `where created like '${today}%'` +
                'order by created'
