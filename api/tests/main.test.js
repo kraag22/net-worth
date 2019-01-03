@@ -55,9 +55,10 @@ describe('main function', () => {
   it('groupPortfolio() should work', async () => {
     const expectedDate = (new Date()).toISOString().split('T')[0]
     let expectedHours = (new Date()).getUTCHours()
-    expectedHours = expectedHours < 10 ? `0${expectedHours}` : expectedHours
+    expectedHours = String(expectedHours).padStart(2, '0')
     const year = (new Date()).getUTCFullYear()
-    const month = (new Date()).getUTCMonth() + 1
+    let month = (new Date()).getUTCMonth() + 1
+    month = String(month).padStart(2, '0')
 
     const ret = await main.groupPortfolio(db, 'daily')
     expect(ret.length).toEqual(13)

@@ -44,9 +44,11 @@ exports.createTable = db => {
 
   return Promise.all([
     exports.run(db, sql),
-    exports.run(db, exports.getViewSql('hourly')),
-    exports.run(db, exports.getViewSql('daily')),
-    exports.run(db, exports.getViewSql('monthly'))])
+    exports.run(db, exports.getViewSql('hourly', false)),
+    exports.run(db, exports.getViewSql('daily', false)),
+    exports.run(db, exports.getViewSql('monthly', false),
+    exports.run(db, exports.getViewSql('daily', true)),
+    exports.run(db, exports.getViewSql('monthly', true)))])
 }
 
 exports.insert = (db, values) => {
@@ -68,7 +70,7 @@ exports.insert = (db, values) => {
   })
 }
 
-exports.getViewSql = groupBy => {
+exports.getViewSql = (groupBy, lastValue) => {
   let dateFormat = ''
   switch(groupBy) {
     case 'monthly':
@@ -87,16 +89,22 @@ exports.getViewSql = groupBy => {
   const baseValue = 'price * size * ratio'
   const cashFunds = c.CASH_FUNDS.join(',')
 
-  let lastSql = `(select ${baseValue} from stocks as s2 where `
-  lastSql += `strftime('${dateFormat}', s2.created_at)=strftime('${dateFormat}', s1.created_at) `
-  lastSql += `and s2.id=s1.id order by s2.created_at desc limit 1)`
-
-  let sql = `create view if not exists stocks_${groupBy} as `
-  sql += `select id, min(${baseValue}) as min_value, max(${baseValue}) as max_value,`
-  sql += `name, strftime('${dateFormat}', created_at) as created, `
-  sql += `${lastSql} as last_value `
-  sql += `from stocks as s1 where s1.id not in (${cashFunds}) `
-  sql += `group by strftime('${dateFormat}', created_at), id`
+  let sql = ''
+  if (lastValue) {
+    sql += `create view if not exists stocks_last_${groupBy} as `
+    sql += `select s1.id, s1.price * s1.size * s1.ratio as value, `
+    sql += `s1.name, strftime('${dateFormat}', s1.created_at) as created `
+    sql += `from stocks as s1 `
+    sql += `left join stocks as s2 on s1.id=s2.id and s1.rowid < s2.rowid and `
+    sql += `strftime('${dateFormat}', s1.created_at)=strftime('${dateFormat}', s2.created_at) `
+    sql += `where s2.rowid is null and s1.id not in (${cashFunds}) `
+  } else {
+    sql += `create view if not exists stocks_${groupBy} as `
+    sql += `select id, min(${baseValue}) as min_value, max(${baseValue}) as max_value,`
+    sql += `name, strftime('${dateFormat}', created_at) as created `
+    sql += `from stocks as s1 where s1.id not in (${cashFunds}) `
+    sql += `group by strftime('${dateFormat}', created_at), id`
+  }
   return sql
 }
 
