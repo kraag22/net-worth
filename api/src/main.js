@@ -45,7 +45,7 @@ exports.getTodaysData = async db => {
   const yyyy = now.getFullYear()
   const today = `${yyyy}-${mm}-${dd}`
 
-  const sql = 'select id, last_value as value, name, created from stocks_hourly ' +
+  const sql = 'select id, round(max_value) as value, name, created from stocks_hourly ' +
               `where created like '${today}%'` +
                'order by created'
   const data = await storage.call(db, sql)
@@ -64,8 +64,9 @@ exports.getTodaysData = async db => {
 }
 
 exports.getIndexData = async db => {
-  const sql = 'select sum(last_value) as value, created from stocks_daily ' +
-              'group by created order by created desc'
+  const sql = 'select round(sum(sld.value)) as value, sd.created from stocks_daily as sd ' +
+    'left join stocks_last_daily as sld on sd.id=sld.id and sd.created=sld.created ' +
+    'group by sd.created order by sd.created desc'
   const data = await storage.call(db, sql)
 
   const ret = {}
