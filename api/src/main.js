@@ -63,6 +63,14 @@ exports.getTodaysData = async db => {
   return Object.values(ret)
 }
 
+exports.getFirstData = async db => {
+  const sql = 'select s.id, s.name, round(s.price * s.size * s.ratio) as value from ' +
+    '(select id, name, min(created_at) as first_created_at ' +
+    'from stocks group by id) as sm left join stocks as s ' +
+    'on sm.id=s.id and sm.first_created_at=s.created_at'
+  return await storage.call(db, sql)
+}
+
 exports.getIndexData = async db => {
   const sql = 'select round(sum(sld.value)) as value, sd.created from stocks_daily as sd ' +
     'left join stocks_last_daily as sld on sd.id=sld.id and sd.created=sld.created ' +
@@ -73,6 +81,7 @@ exports.getIndexData = async db => {
   ret.sum = data.length > 0 ? data[0].value : 0
   ret.daily = data
   ret.today = await exports.getTodaysData(db)
+  ret.first = await exports.getFirstData(db)
   return ret
 }
 

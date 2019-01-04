@@ -74,7 +74,7 @@ describe('main function', () => {
   })
 })
 
-describe('view function', () => {
+describe('data function', () => {
   it('getIndexData() should work', async () => {
     const data = await main.getIndexData(db)
     expect(Math.round(data.sum)).toBe(58841)
@@ -96,5 +96,11 @@ describe('view function', () => {
     const data = await main.getTodaysData(db)
     expect(data[10].name).toBe('mb')
     expect(data[10].values.length).toBe(3)
+  })
+
+  it('getFirstData() should work', async () => {
+    const data = await main.getFirstData(db)
+    expect(data.length).toEqual(15)
+    expect(data[8].value).toEqual(3480)
   })
 })
