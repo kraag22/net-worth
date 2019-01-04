@@ -2,6 +2,7 @@ const sqlite3 = require('sqlite3')
 const c = require('./constants')
 const columns = ['id', 'price', 'size', 'value', 'name', 'currency', 'ratio']
 const STOCKS_TABLE = 'stocks'
+const PORTFOLIO_TABLE = 'portfolio'
 
 const flattenItem = value => {
   const ret = []
@@ -31,7 +32,7 @@ exports.connectDb = file => {
 }
 
 exports.createTable = db => {
-  const sql = `CREATE TABLE IF NOT EXISTS ${STOCKS_TABLE} (` +
+  const stocksTable = `CREATE TABLE IF NOT EXISTS ${STOCKS_TABLE} (` +
     'id TEXT, ' +
     'price real, ' +
     'size real, ' +
@@ -43,7 +44,7 @@ exports.createTable = db => {
     ')'
 
   return Promise.all([
-    exports.run(db, sql),
+    exports.run(db, stocksTable),
     exports.run(db, exports.getViewSql('hourly', false)),
     exports.run(db, exports.getViewSql('daily', false)),
     exports.run(db, exports.getViewSql('monthly', false),
