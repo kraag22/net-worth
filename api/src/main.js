@@ -1,6 +1,7 @@
 const axios = require('axios')
 const parse = require('./parse_api.js')
 const storage = require('./storage.js')
+const c = require('./constants')
 
 exports.getPortfolio = async (degiro, fixer) => {
   await degiro.login()
@@ -63,11 +64,15 @@ exports.getTodaysData = async db => {
   return Object.values(ret)
 }
 
-exports.getFirstData = async db => {
-  const sql = 'select s.id, s.name, round(s.price * s.size * s.ratio) as value from ' +
+exports.getOrdersData = async db => {
+  const cashFunds = c.CASH_FUNDS.join(',')
+
+  const sql = 'select s.id, s.name, round(s.price * s.size * s.ratio) as value, ' +
+    `strftime('%Y-%m-%d', s.created_at) as date from ` +
     '(select id, name, min(created_at) as first_created_at ' +
-    'from stocks group by id) as sm left join stocks as s ' +
-    'on sm.id=s.id and sm.first_created_at=s.created_at'
+    'from stocks group by id, size) as sm left join stocks as s ' +
+    'on sm.id=s.id and sm.first_created_at=s.created_at ' +
+    `where s.id not in (${cashFunds}) order by s.created_at`
   return await storage.call(db, sql)
 }
 
@@ -81,7 +86,8 @@ exports.getIndexData = async db => {
   ret.sum = data.length > 0 ? data[0].value : 0
   ret.daily = data
   ret.today = await exports.getTodaysData(db)
-  ret.first = await exports.getFirstData(db)
+  ret.orders = await exports.getOrdersData(db)
+  ret.data = JSON.stringify(ret.daily)
   return ret
 }
 

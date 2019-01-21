@@ -98,9 +98,9 @@ describe('data function', () => {
     expect(data[10].values.length).toBe(3)
   })
 
-  it('getFirstData() should work', async () => {
-    const data = await main.getFirstData(db)
-    expect(data.length).toEqual(15)
+  it('getOrdersData() should work', async () => {
+    const data = await main.getOrdersData(db)
+    expect(data.length).toEqual(14)
     expect(data[8].value).toEqual(3480)
   })
 })
