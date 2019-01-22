@@ -25,7 +25,7 @@ const degiro = DeGiro.create({
 const fixer = new Fixer(process.env.fixerkey)
 
 storage.connectDb('../data/stocks.db').then(db => {
-  console.log('Connected to the test database.')
+  console.log('Connected to the database.')
 
   app.post('/import', async (req, res, next) => {
     try {

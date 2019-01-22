@@ -1,4 +1,5 @@
 const sqlite3 = require('sqlite3')
+const {logger} = require('../logs.js')
 const c = require('./constants')
 const columns = ['id', 'price', 'size', 'value', 'name', 'currency', 'ratio']
 const STOCKS_TABLE = 'stocks'
@@ -120,11 +121,14 @@ exports.updateCurrencies = async (db, rates, date) => {
 
 exports.run = (db, sql, fceParams) => {
   const params = fceParams ? fceParams : []
+  const profiler = logger.startTimer()
   return new Promise((resolve, reject) => {
     db.run(sql, params, (err) => {
       if (err) {
+        profiler.done({ message: 'failed'})
         reject(err)
       } else {
+        profiler.done({ message: sql})
         resolve()
       }
     })
@@ -133,11 +137,14 @@ exports.run = (db, sql, fceParams) => {
 
 exports.call = (db, sql, fceParams) => {
   const params = fceParams ? fceParams : []
+  const profiler = logger.startTimer()
   return new Promise((resolve, reject) => {
     db.all(sql, params, (err, rows) => {
       if (err) {
+        profiler.done({ message: 'failed'})
         reject(err)
       } else {
+        profiler.done({ message: sql})
         resolve(rows)
       }
     })
