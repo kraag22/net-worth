@@ -73,5 +73,13 @@ storage.connectDb('../data/stocks.db').then(db => {
     }
   })
 
+  app.get('/script.js', (req, res, next) => {
+    try {
+      res.render('script')
+    } catch (e) {
+      next(e)
+    }
+  })
+
   app.listen(port, () => console.log(`Listening on port ${port}!`))
 })
