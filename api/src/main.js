@@ -39,12 +39,15 @@ exports.groupPortfolio = async (db, groupBy) => {
   return await storage.call(db, `select * from stocks_${group}`)
 }
 
-exports.getTodaysData = async db => {
-  const now = new Date()
+exports.getDateString = now => {
   const dd = String(now.getDate()).padStart(2, '0')
   const mm = String(now.getMonth() + 1).padStart(2, '0')
   const yyyy = now.getFullYear()
-  const today = `${yyyy}-${mm}-${dd}`
+  return `${yyyy}-${mm}-${dd}`
+}
+
+exports.getTodaysData = async db => {
+  const today = exports.getDateString(new Date())
 
   const sql = 'select id, round(max_value) as value, name, created from stocks_hourly ' +
               `where created like '${today}%'` +
