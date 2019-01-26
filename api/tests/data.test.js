@@ -80,9 +80,9 @@ describe('data function', () => {
     await sd.fillStocksDaily(db, '2000-01-01')
 
     const indexData = await data.getIndexData(db)
-    expect(Math.round(indexData.sum)).toBe(58841)
     expect(indexData.daily.length).toBe(1)
     expect(indexData.today.length).toBe(13)
+    expect(indexData.todaySum.length).toBe(1)
   })
 
   it('getTodaysData() should work', async () => {
@@ -99,6 +99,12 @@ describe('data function', () => {
     const todaysData = await data.getTodaysData(db)
     expect(todaysData[10].name).toBe('mb')
     expect(todaysData[10].values.length).toBe(3)
+  })
+
+  it('sumTodaysData() should work', async () => {
+    const todaysData = await data.getTodaysData(db)
+    let result = data.sumTodaysData(todaysData)
+    expect(result).toEqual([53583])
   })
 
   it('getOrdersData() should work', async () => {
