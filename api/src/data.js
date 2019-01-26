@@ -67,6 +67,27 @@ exports.getTodaysData = async db => {
   return Object.values(ret)
 }
 
+exports.sumTodaysData = todaysData => {
+  let no
+  const result = []
+  if (todaysData[0] && todaysData[0].values) {
+    no = todaysData[0].values.length
+  } else {
+    no = 0
+  }
+  for(let i = 0; i < no; i++) {
+    result.push(0)
+  }
+
+  todaysData.forEach(item => {
+    for(let j = 0; j < no; j++) {
+      result[j] += item.values[j].value
+    }
+  })
+
+  return result
+}
+
 exports.getOrdersData = async db => {
   const cashFunds = c.CASH_FUNDS.join(',')
 
@@ -105,8 +126,8 @@ exports.getIndexData = async db => {
   const ret = {}
 
   ret.daily = await exports.getDailyData(db)
-  ret.sum = ret.daily.length > 0 ? ret.daily[0].value : 0
   ret.today = await exports.getTodaysData(db)
+  ret.todaySum = exports.sumTodaysData(ret.today)
   ret.orders = await exports.getOrdersData(db)
   ret.data = JSON.stringify(ret.daily)
   return ret

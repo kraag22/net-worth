@@ -13,7 +13,12 @@
 </head>
 
 <body>
-  sum: {{sum}}
+  today sum
+  <ul>
+  {{#todaySum}}
+    {{.}},
+  {{/todaySum}}
+  </ul>
 
   <ul>
   {{#daily}}
