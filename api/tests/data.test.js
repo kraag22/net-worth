@@ -4,6 +4,7 @@ const {MockFixer} = require('./mockFixer.js')
 const storage = require('../src/storage.js')
 const sqlite3 = require('sqlite3')
 const sd = require('../src/stocks_daily.js')
+const i = require('./orders.js')
 
 let db = null
 const mockFixer = new MockFixer('x')
@@ -87,13 +88,13 @@ describe('data function', () => {
 
   it('getTodaysData() should work', async () => {
     const sql = `INSERT INTO stocks ` +
-      `(id, price, size, value, name, currency, created_at)` +
-      `VALUES ('10306755', 400, 1, 4000, 'mb', 'CZK', DATETIME('now', '-1 hour'))`
+      `(id, price, size, value, name, currency, ratio, created_at)` +
+      `VALUES ('10306755', 400, 1, 4000, 'mb', 'CZK', 1, DATETIME('now', '-1 hour'))`
     await storage.run(db, sql)
 
     const sql2 = `INSERT INTO stocks ` +
-      `(id, price, size, value, name, currency, created_at)` +
-      `VALUES ('10306755', 400, 1, 3800, 'mb', 'CZK', DATETIME('now', '-2 hour'))`
+      `(id, price, size, value, name, currency, ratio, created_at)` +
+      `VALUES ('10306755', 400, 1, 3800, 'mb', 'CZK', 1, DATETIME('now', '-2 hour'))`
     await storage.run(db, sql2)
 
     const todaysData = await data.getTodaysData(db)
@@ -104,12 +105,20 @@ describe('data function', () => {
   it('sumTodaysData() should work', async () => {
     const todaysData = await data.getTodaysData(db)
     let result = data.sumTodaysData(todaysData)
-    expect(result).toEqual([53583])
+    expect(result).toEqual([53983])
   })
 
-  it('getOrdersData() should work', async () => {
+  it('getOrdersData(), getOrdersTimeline() and getTotalOrder() should work', async () => {
+    const promises = i.inserts.map(insert => {
+      return storage.run(db, insert)
+    })
+    await Promise.all(promises)
+
     const ordersData = await data.getOrdersData(db)
-    expect(ordersData.length).toEqual(14)
-    expect(ordersData[8].value).toEqual(3480)
+    expect(ordersData.length).toEqual(18)
+    expect(ordersData[8].value).toEqual(6398)
+
+    const result = data.getOrdersTimeline(ordersData)
+    expect(data.getTotalOrder(result)).toEqual(65403)
   })
 })

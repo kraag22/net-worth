@@ -36,7 +36,7 @@ exports.groupPortfolio = async (db, groupBy) => {
       break
   }
 
-  return await storage.call(db, `select * from stocks_${group}`)
+  return storage.call(db, `select * from stocks_${group}`)
 }
 
 exports.getDateString = now => {
@@ -92,18 +92,47 @@ exports.getOrdersData = async db => {
   const cashFunds = c.CASH_FUNDS.join(',')
 
   const sql = 'select s.id, s.name, round(s.price * s.size * s.ratio) as value, ' +
+    's.price, s.size, s.ratio, ' +
     `strftime('%Y-%m-%d', s.created_at) as date from ` +
     '(select id, name, min(created_at) as first_created_at ' +
     'from stocks group by id, size) as sm left join stocks as s ' +
     'on sm.id=s.id and sm.first_created_at=s.created_at ' +
     `where s.id not in (${cashFunds}) order by s.created_at`
-  return await storage.call(db, sql)
+  return storage.call(db, sql)
+}
+
+exports.getOrdersTimeline = data => {
+  const orders = {}
+  const timeline = {}
+  let lastOrder = 0
+  data.forEach(item => {
+    let added
+    if (orders[item.name]) {
+      added = item.size - orders[item.name]
+
+    } else {
+      added = item.size
+    }
+    orders[item.name] = item.size
+
+    if (timeline[item.date] === undefined) {
+      timeline[item.date] = lastOrder
+    }
+    timeline[item.date] += added * item.price * item.ratio
+    lastOrder = timeline[item.date]
+  })
+  return timeline
+}
+
+exports.getTotalOrder = orderData => {
+  const lastDate = Object.keys(orderData).pop()
+  return Math.round(orderData[lastDate])
 }
 
 exports.getDailyData = async db => {
   const sql = 'select round(sum(last_value)) as value, date ' +
     `from ${storage.STOCKS_DAILY_TABLE} group by date order by date desc`
-  return await storage.call(db, sql)
+  return storage.call(db, sql)
 }
 
 exports.fillMissingRates = async (db, fixer) => {
@@ -130,5 +159,6 @@ exports.getIndexData = async db => {
   ret.todaySum = exports.sumTodaysData(ret.today)
   ret.orders = await exports.getOrdersData(db)
   ret.data = JSON.stringify(ret.daily)
+  ret.totalOrder = exports.getTotalOrder(exports.getOrdersTimeline(ret.orders))
   return ret
 }
