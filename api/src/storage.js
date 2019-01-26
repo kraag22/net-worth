@@ -3,7 +3,10 @@ const {logger} = require('../logs.js')
 const c = require('./constants')
 const columns = ['id', 'price', 'size', 'value', 'name', 'currency', 'ratio']
 const STOCKS_TABLE = 'stocks'
-const PORTFOLIO_TABLE = 'portfolio'
+const STOCKS_DAILY_TABLE = 'stocks_by_daily'
+
+exports.STOCKS_TABLE = STOCKS_TABLE
+exports.STOCKS_DAILY_TABLE = STOCKS_DAILY_TABLE
 
 const flattenItem = value => {
   const ret = []
@@ -44,8 +47,19 @@ exports.createTable = db => {
     'created_at TEXT' +
     ')'
 
+  const stocksDailyTable = `CREATE TABLE IF NOT EXISTS ${STOCKS_DAILY_TABLE} (` +
+    'id TEXT, ' +
+    'min_value real, ' +
+    'max_value real, ' +
+    'last_value real, ' +
+    'name TEXT, ' +
+    'currency TEXT, ' +
+    'date TEXT' +
+    ')'
+
   return Promise.all([
     exports.run(db, stocksTable),
+    exports.run(db, stocksDailyTable),
     exports.run(db, exports.getViewSql('hourly', false)),
     exports.run(db, exports.getViewSql('daily', false)),
     exports.run(db, exports.getViewSql('monthly', false),

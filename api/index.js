@@ -1,7 +1,8 @@
 const DeGiro = require('degiro')
 const express = require('express')
 const {Fixer} = require('./src/fixer.js')
-const main = require('./src/main.js')
+const data = require('./src/data.js')
+const sd = require('./src/stocks_daily.js')
 const storage = require('./src/storage.js')
 const mustacheExpress = require('mustache-express')
 
@@ -29,7 +30,7 @@ storage.connectDb('../data/stocks.db').then(db => {
 
   app.post('/import', async (req, res, next) => {
     try {
-      await main.importPortfolio(degiro, db, fixer)
+      await data.importPortfolio(degiro, db, fixer)
       res.json({status: 'ok'})
     } catch (e) {
       next(e)
@@ -38,8 +39,17 @@ storage.connectDb('../data/stocks.db').then(db => {
 
   app.put('/fill-ratios', async (req, res, next) => {
     try {
-      const datesNo = await main.fillMissingRates(db, fixer)
+      const datesNo = await data.fillMissingRates(db, fixer)
       res.json({updatedDates: datesNo})
+    } catch (e) {
+      next(e)
+    }
+  })
+
+  app.put('/fill-daily', async (req, res, next) => {
+    try {
+      await sd.updateMissing(db)
+      res.json({finished: 'ok'})
     } catch (e) {
       next(e)
     }
@@ -47,7 +57,7 @@ storage.connectDb('../data/stocks.db').then(db => {
 
   app.get('/portfolio/:groupBy', async (req, res, next) => {
     try {
-      const portfolio = await main.groupPortfolio(db, req.params.groupBy)
+      const portfolio = await data.groupPortfolio(db, req.params.groupBy)
       res.json({portfolio: portfolio})
     } catch (e) {
       next(e)
@@ -56,8 +66,8 @@ storage.connectDb('../data/stocks.db').then(db => {
 
   app.get('/', async (req, res, next) => {
     try {
-      const data = await main.getIndexData(db)
-      res.render('index', data)
+      const indexData = await data.getIndexData(db)
+      res.render('index', indexData)
     } catch (e) {
       next(e)
     }
