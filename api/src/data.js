@@ -51,7 +51,7 @@ exports.getTodaysData = async db => {
 
   const sql = 'select id, round(max_value) as value, name, created from stocks_hourly ' +
               `where created like '${today}%'` +
-               'order by created'
+              'order by created'
   const data = await storage.call(db, sql)
   const ret = {}
   data.forEach(row => {
@@ -79,19 +79,10 @@ exports.getOrdersData = async db => {
   return await storage.call(db, sql)
 }
 
-exports.getIndexData = async db => {
-  const sql = 'select round(sum(sld.value)) as value, sd.created from stocks_daily as sd ' +
-    'left join stocks_last_daily as sld on sd.id=sld.id and sd.created=sld.created ' +
-    'group by sd.created order by sd.created desc'
-  const data = await storage.call(db, sql)
-
-  const ret = {}
-  ret.sum = data.length > 0 ? data[0].value : 0
-  ret.daily = data
-  ret.today = await exports.getTodaysData(db)
-  ret.orders = await exports.getOrdersData(db)
-  ret.data = JSON.stringify(ret.daily)
-  return ret
+exports.getDailyData = async db => {
+  const sql = 'select round(sum(last_value)) as value, date ' +
+    `from ${storage.STOCKS_DAILY_TABLE} group by date order by date desc`
+  return await storage.call(db, sql)
 }
 
 exports.fillMissingRates = async (db, fixer) => {
@@ -108,4 +99,15 @@ exports.fillMissingRates = async (db, fixer) => {
   }
 
   return dates.length
+}
+
+exports.getIndexData = async db => {
+  const ret = {}
+
+  ret.daily = await exports.getDailyData(db)
+  ret.sum = ret.daily.length > 0 ? ret.daily[0].value : 0
+  ret.today = await exports.getTodaysData(db)
+  ret.orders = await exports.getOrdersData(db)
+  ret.data = JSON.stringify(ret.daily)
+  return ret
 }

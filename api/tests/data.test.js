@@ -3,6 +3,7 @@ const {mockDegiro} = require('./mockDegiro.js')
 const {MockFixer} = require('./mockFixer.js')
 const storage = require('../src/storage.js')
 const sqlite3 = require('sqlite3')
+const sd = require('../src/stocks_daily.js')
 
 let db = null
 const mockFixer = new MockFixer('x')
@@ -76,6 +77,8 @@ describe('data function', () => {
 
 describe('data function', () => {
   it('getIndexData() should work', async () => {
+    await sd.fillStocksDaily(db, '2000-01-01')
+
     const indexData = await data.getIndexData(db)
     expect(Math.round(indexData.sum)).toBe(58841)
     expect(indexData.daily.length).toBe(1)

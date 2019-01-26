@@ -2,6 +2,7 @@ const DeGiro = require('degiro')
 const express = require('express')
 const {Fixer} = require('./src/fixer.js')
 const data = require('./src/data.js')
+const sd = require('./src/stocks_daily.js')
 const storage = require('./src/storage.js')
 const mustacheExpress = require('mustache-express')
 
@@ -40,6 +41,15 @@ storage.connectDb('../data/stocks.db').then(db => {
     try {
       const datesNo = await data.fillMissingRates(db, fixer)
       res.json({updatedDates: datesNo})
+    } catch (e) {
+      next(e)
+    }
+  })
+
+  app.put('/fill-daily', async (req, res, next) => {
+    try {
+      await sd.updateMissing(db)
+      res.json({finished: 'ok'})
     } catch (e) {
       next(e)
     }
