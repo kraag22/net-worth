@@ -16,6 +16,8 @@ app.engine('html', mustacheExpress())
 app.set('view engine', 'html')
 app.set('views', __dirname + '/views')
 
+app.use('/static', express.static('public'))
+
 console.log(`Using user: ${process.env.username}`)
 
 const degiro = DeGiro.create({
@@ -66,8 +68,16 @@ storage.connectDb('../data/stocks.db').then(db => {
 
   app.get('/', async (req, res, next) => {
     try {
-      const indexData = await data.getIndexData(db)
+      const indexData = await data.getGraphData(db)
       res.render('index', indexData)
+    } catch (e) {
+      next(e)
+    }
+  })
+
+  app.get('/script.js', (req, res, next) => {
+    try {
+      res.render('script')
     } catch (e) {
       next(e)
     }
