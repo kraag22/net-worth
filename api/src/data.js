@@ -118,7 +118,7 @@ exports.getOrdersTimeline = data => {
     if (timeline[item.date] === undefined) {
       timeline[item.date] = lastOrder
     }
-    timeline[item.date] += added * item.price * item.ratio
+    timeline[item.date] += Math.round(added * item.price * item.ratio)
     lastOrder = timeline[item.date]
   })
   return timeline
@@ -131,7 +131,7 @@ exports.getTotalOrder = orderData => {
 
 exports.getDailyData = async db => {
   const sql = 'select round(sum(last_value)) as value, date ' +
-    `from ${storage.STOCKS_DAILY_TABLE} group by date order by date desc`
+    `from ${storage.STOCKS_DAILY_TABLE} group by date order by date`
   return storage.call(db, sql)
 }
 
@@ -151,14 +151,42 @@ exports.fillMissingRates = async (db, fixer) => {
   return dates.length
 }
 
-exports.getIndexData = async db => {
+exports.getAllData = async db => {
   const ret = {}
 
   ret.daily = await exports.getDailyData(db)
   ret.today = await exports.getTodaysData(db)
   ret.todaySum = exports.sumTodaysData(ret.today)
   ret.orders = await exports.getOrdersData(db)
-  ret.data = JSON.stringify(ret.daily)
-  ret.totalOrder = exports.getTotalOrder(exports.getOrdersTimeline(ret.orders))
+  ret.timeline = exports.getOrdersTimeline(ret.orders)
+  ret.totalOrder = exports.getTotalOrder(ret.timeline)
   return ret
+}
+
+exports.parseDate = str => {
+  return new Date(Date.parse(str))
+}
+
+exports.getGraphData = async db => {
+  const ret = {}
+  const data = await exports.getAllData(db)
+
+  const xyChart = []
+  let invested = 65000
+
+  data.daily.forEach(item => {
+    if (data.timeline[item.date]) {
+      invested = data.timeline[item.date]
+    }
+
+    xyChart.push({
+      date: exports.parseDate(item.date),
+      current: item.value,
+      invested: invested
+    })
+  })
+
+  data.xyChart = JSON.stringify(xyChart)
+  // TODO - return only stringified data
+  return data
 }

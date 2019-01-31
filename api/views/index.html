@@ -9,14 +9,23 @@
   <meta name="author" content="kraag22">
 
   <!-- <link rel="stylesheet" href="css/styles.css?v=1.0"> -->
-
+  <style type="text/css">
+    #chartdiv {
+      width: 100%;
+      height: 500px;
+    }
+  </style>
 </head>
 
 <body>
   <script>
-    var data = {{{data}}}
-    console.log(data)
+    var xyChart = {{{xyChart}}};
   </script>
+
+  <script src="static/amcharts/core.js"></script>
+  <script src="static/amcharts/charts.js"></script>
+  <script src="static/amcharts/animated.js"></script>
+  <div id="chartdiv"></div>
 
   total order {{totalOrder}} <br />
   today sum
@@ -24,12 +33,6 @@
   {{#todaySum}}
     {{.}},
   {{/todaySum}}
-  </ul>
-
-  <ul>
-  {{#daily}}
-    <li>{{date}} : {{value}}</li>
-  {{/daily}}
   </ul>
 
   today
@@ -50,6 +53,6 @@
   {{/orders}}
   </ul>
 
-  <script src="script.js"></script>
+  <script src="static/graphs.js"></script>
 </body>
 </html>

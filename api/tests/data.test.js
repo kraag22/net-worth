@@ -77,10 +77,10 @@ describe('data function', () => {
 })
 
 describe('data function', () => {
-  it('getIndexData() should work', async () => {
+  it('getAllData() should work', async () => {
     await sd.fillStocksDaily(db, '2000-01-01')
 
-    const indexData = await data.getIndexData(db)
+    const indexData = await data.getAllData(db)
     expect(indexData.daily.length).toBe(1)
     expect(indexData.today.length).toBe(13)
     expect(indexData.todaySum.length).toBe(1)
@@ -121,4 +121,22 @@ describe('data function', () => {
     const result = data.getOrdersTimeline(ordersData)
     expect(data.getTotalOrder(result)).toEqual(65403)
   })
+})
+
+describe('graphData function', () => {
+  it('parseDate() should work', async () => {
+    const ret = data.parseDate('2000-02-11')
+    expect(ret.getFullYear()).toBe(2000)
+    expect(ret.getMonth()).toBe(1)
+  })
+
+  it('getGraphData() should work', async () => {
+    const graphData = await data.getGraphData(db)
+    const xyChart = JSON.parse(graphData.xyChart)
+
+    expect(xyChart.length).toBe(1)
+    expect(xyChart[0].invested).toBe(65403)
+    expect(xyChart[0].current).toBe(58841)
+  })
+
 })
