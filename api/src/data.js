@@ -172,21 +172,28 @@ exports.getGraphData = async db => {
   const data = await exports.getAllData(db)
 
   const xyChart = []
+  const balanceChart = []
   let invested = 65000
 
   data.daily.forEach(item => {
     if (data.timeline[item.date]) {
       invested = data.timeline[item.date]
     }
-
+    const date = exports.parseDate(item.date)
     xyChart.push({
-      date: exports.parseDate(item.date),
+      date: date,
       current: item.value,
       invested: invested
+    })
+
+    balanceChart.push({
+      date: date,
+      balance: Math.round(item.value - invested)
     })
   })
 
   data.xyChart = JSON.stringify(xyChart)
+  data.balanceChart = JSON.stringify(balanceChart)
   // TODO - return only stringified data
   return data
 }
