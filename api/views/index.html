@@ -21,6 +21,11 @@
       height: 330px;
       float: left;
     }
+    #today {
+      width: 50%;
+      height: 450px;
+      float: left;
+    }
   </style>
 </head>
 
@@ -28,6 +33,8 @@
   <script>
     var xyChart = {{{xyChart}}};
     var balanceChart = {{{balanceChart}}};
+    var todayChart = {{{todayChart}}};
+    var todayTitle = "{{{todayTitle}}}";
   </script>
 
   <script src="static/amcharts/core.js"></script>
@@ -35,28 +42,9 @@
   <script src="static/amcharts/animated.js"></script>
   <div id="chartdiv"></div>
   <div id="balance"></div>
+  <div id="today"></div>
 
-  total order {{totalOrder}} <br />
-  today sum
-  <ul>
-  {{#todaySum}}
-    {{.}},
-  {{/todaySum}}
-  </ul>
-
-  today
-  <ul>
-  {{#today}}
-    <li>{{name}} ({{id}}):
-      {{#values}}
-        {{value}},
-      {{/values}}
-    </li>
-  {{/today}}
-  </ul>
-
-  orders
-  <ul>
+  <ul style="clear:both">
   {{#orders}}
     <li>{{name}} ({{id}}): {{value}}</li>
   {{/orders}}

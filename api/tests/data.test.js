@@ -83,7 +83,7 @@ describe('data function', () => {
     const indexData = await data.getAllData(db)
     expect(indexData.daily.length).toBe(1)
     expect(indexData.today.length).toBe(13)
-    expect(indexData.todaySum.length).toBe(1)
+    expect(indexData.todaySum.balance).toBe('0')
   })
 
   it('getTodaysData() should work', async () => {
@@ -105,7 +105,8 @@ describe('data function', () => {
   it('sumTodaysData() should work', async () => {
     const todaysData = await data.getTodaysData(db)
     let result = data.sumTodaysData(todaysData)
-    expect(result).toEqual([53983])
+    expect(result.lastSum).toEqual(58843)
+    expect(result.balance).toEqual('+4860')
   })
 
   it('getOrdersData(), getOrdersTimeline() and getTotalOrder() should work', async () => {
@@ -139,4 +140,11 @@ describe('graphData function', () => {
     expect(xyChart[0].current).toBe(58841)
   })
 
+  it('parseTodayData() should work', async () => {
+    const todaysData = await data.getTodaysData(db)
+    const result = data.parseTodayData(todaysData)
+    expect(result.length).toBe(13)
+    expect(result[0].name).toBe('mb')
+    expect(result[0].balance).toBe(4860)
+  })
 })

@@ -68,24 +68,20 @@ exports.getTodaysData = async db => {
 }
 
 exports.sumTodaysData = todaysData => {
-  let no
-  const result = []
-  if (todaysData[0] && todaysData[0].values) {
-    no = todaysData[0].values.length
-  } else {
-    no = 0
-  }
-  for(let i = 0; i < no; i++) {
-    result.push(0)
-  }
+  let fistSum = 0
+  let lastSum = 0
+  let balance = 0
 
   todaysData.forEach(item => {
-    for(let j = 0; j < no; j++) {
-      result[j] += item.values[j].value
-    }
+    fistSum += (item.values[0]) ? item.values[0].value : 0
+    const last = item.values.length - 1
+    lastSum += (item.values[last]) ? item.values[last].value : 0
   })
 
-  return result
+  balance = lastSum - fistSum
+  balance = (balance > 0) ? `+${balance}` : `${balance}`
+
+  return {lastSum, balance}
 }
 
 exports.getOrdersData = async db => {
@@ -167,6 +163,19 @@ exports.parseDate = str => {
   return new Date(Date.parse(str))
 }
 
+exports.parseTodayData = daily => {
+  const result = daily.map(item => {
+    let balance = 0
+
+    if (item.values.length > 1) {
+      balance = item.values[item.values.length - 1].value - item.values[0].value
+    }
+    return {name: item.name.substring(0, 10), balance}
+  })
+
+  return result.sort((a, b) => b.balance - a.balance)
+}
+
 exports.getGraphData = async db => {
   const ret = {}
   const data = await exports.getAllData(db)
@@ -194,6 +203,9 @@ exports.getGraphData = async db => {
 
   data.xyChart = JSON.stringify(xyChart)
   data.balanceChart = JSON.stringify(balanceChart)
+  data.todayTitle = `${data.todaySum.lastSum} (${data.todaySum.balance})`
+  data.todayChart = JSON.stringify(exports.parseTodayData(data.today))
+
   // TODO - return only stringified data
   return data
 }
