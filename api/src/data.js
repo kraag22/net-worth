@@ -97,32 +97,62 @@ exports.getOrdersData = async db => {
   return storage.call(db, sql)
 }
 
-exports.getOrdersTimeline = data => {
+exports.getOrders = data => {
   const orders = {}
   const timeline = {}
   let lastOrder = 0
   data.forEach(item => {
-    let added
+    let added, price
     if (orders[item.name]) {
-      added = item.size - orders[item.name]
-
+      added = item.size - orders[item.name].size
+      lastPrice = orders[item.name].price
     } else {
       added = item.size
+      lastPrice = 0
     }
-    orders[item.name] = item.size
-
+    orders[item.name] = {
+      size: item.size,
+      id: item.id,
+      price: lastPrice + added * item.price * item.ratio
+    }
     if (timeline[item.date] === undefined) {
       timeline[item.date] = lastOrder
     }
     timeline[item.date] += Math.round(added * item.price * item.ratio)
     lastOrder = timeline[item.date]
   })
-  return timeline
+  return {timeline, orders}
 }
 
 exports.getTotalOrder = orderData => {
   const lastDate = Object.keys(orderData).pop()
   return Math.round(orderData[lastDate])
+}
+
+exports.getStocksNewest = async db => {
+  let sql = `select round(price * size * ratio) as price, id, size, name `
+  sql += `from stocks where strftime('%Y-%m-%dT%H:%M:%S', created_at)=`
+  sql += `(select strftime('%Y-%m-%dT%H:%M:%S', created_at) from stocks order `
+  sql += `by created_at desc limit 1)`
+  return storage.call(db, sql)
+}
+
+exports.getStocksBalance = async (db, orders) => {
+  const result = []
+  const stocks = await exports.getStocksNewest(db)
+
+  Object.entries(orders).forEach(item => {
+    const name = item[0].substring(0, c.NAME_MAX_LENGTH)
+    const values = item[1]
+    const stock = stocks.find(item => item.id === values.id)
+
+    if (stock) {
+      result.push({id: values.id, name: name, price: stock.price,
+        balance: Math.round(stock.price - values.price)})
+    }
+  })
+
+  return result.sort((a, b) => b.balance - a.balance)
 }
 
 exports.getDailyData = async db => {
@@ -154,7 +184,9 @@ exports.getAllData = async db => {
   ret.today = await exports.getTodaysData(db)
   ret.todaySum = exports.sumTodaysData(ret.today)
   ret.orders = await exports.getOrdersData(db)
-  ret.timeline = exports.getOrdersTimeline(ret.orders)
+  const {timeline, orders} = exports.getOrders(ret.orders)
+  ret.timeline = timeline
+  ret.stocksBalance = await exports.getStocksBalance(db, orders)
   ret.totalOrder = exports.getTotalOrder(ret.timeline)
   return ret
 }
@@ -170,7 +202,7 @@ exports.parseTodayData = daily => {
     if (item.values.length > 1) {
       balance = item.values[item.values.length - 1].value - item.values[0].value
     }
-    return {name: item.name.substring(0, 10), balance}
+    return {name: item.name.substring(0, c.NAME_MAX_LENGTH), balance}
   })
 
   return result.sort((a, b) => b.balance - a.balance)
@@ -182,7 +214,7 @@ exports.getGraphData = async db => {
 
   const xyChart = []
   const balanceChart = []
-  let invested = 65000
+  let invested = c.INITIAL_INVESTMENT
 
   data.daily.forEach(item => {
     if (data.timeline[item.date]) {
@@ -201,11 +233,10 @@ exports.getGraphData = async db => {
     })
   })
 
-  data.xyChart = JSON.stringify(xyChart)
-  data.balanceChart = JSON.stringify(balanceChart)
-  data.todayTitle = `${data.todaySum.lastSum} (${data.todaySum.balance})`
-  data.todayChart = JSON.stringify(exports.parseTodayData(data.today))
-
-  // TODO - return only stringified data
-  return data
+  ret.xyChart = JSON.stringify(xyChart)
+  ret.balanceChart = JSON.stringify(balanceChart)
+  ret.todayTitle = `${data.todaySum.lastSum} (${data.todaySum.balance})`
+  ret.todayChart = JSON.stringify(exports.parseTodayData(data.today))
+  ret.stockChart = JSON.stringify(data.stocksBalance)
+  return ret
 }

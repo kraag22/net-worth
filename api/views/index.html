@@ -26,6 +26,11 @@
       height: 450px;
       float: left;
     }
+    #stocks {
+      width: 50%;
+      height: 450px;
+      float: left;
+    }
   </style>
 </head>
 
@@ -34,6 +39,7 @@
     var xyChart = {{{xyChart}}};
     var balanceChart = {{{balanceChart}}};
     var todayChart = {{{todayChart}}};
+    var stockChart = {{{stockChart}}};
     var todayTitle = "{{{todayTitle}}}";
   </script>
 
@@ -43,12 +49,7 @@
   <div id="chartdiv"></div>
   <div id="balance"></div>
   <div id="today"></div>
-
-  <ul style="clear:both">
-  {{#orders}}
-    <li>{{name}} ({{id}}): {{value}}</li>
-  {{/orders}}
-  </ul>
+  <div id="stocks"></div>
 
   <script src="static/graphs.js"></script>
 </body>

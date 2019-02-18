@@ -109,7 +109,7 @@ describe('data function', () => {
     expect(result.balance).toEqual('+4860')
   })
 
-  it('getOrdersData(), getOrdersTimeline() and getTotalOrder() should work', async () => {
+  it('getOrdersData(), getOrders() and getTotalOrder() should work', async () => {
     const promises = i.inserts.map(insert => {
       return storage.run(db, insert)
     })
@@ -119,8 +119,22 @@ describe('data function', () => {
     expect(ordersData.length).toEqual(18)
     expect(ordersData[8].value).toEqual(6398)
 
-    const result = data.getOrdersTimeline(ordersData)
-    expect(data.getTotalOrder(result)).toEqual(65403)
+    const {timeline, orders} = data.getOrders(ordersData)
+    expect(data.getTotalOrder(timeline)).toEqual(65403)
+    expect(orders['MONETA MONEY BANK'].size).toEqual(67)
+    expect(orders['MONETA MONEY BANK'].price).toEqual(5153.25)
+  })
+
+  it('getStocksBalance() should work', async () => {
+    const ordersData = await data.getOrdersData(db)
+    const {orders} = data.getOrders(ordersData)
+
+    const result = await data.getStocksBalance(db, orders)
+    expect(result.length).toBe(14)
+
+    let sum = 0
+    result.forEach(item => sum+= item.price + item.balance)
+    expect(sum).toBe(67796)
   })
 })
 

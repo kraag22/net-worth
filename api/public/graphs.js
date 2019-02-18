@@ -133,15 +133,9 @@ series.tooltipText = "[{categoryX}: bold]{valueY}[/]";
 series.columns.template.strokeWidth = 0;
 
 series.tooltip.pointerOrientation = "vertical";
-
-series.columns.template.column.cornerRadiusTopLeft = 10;
-series.columns.template.column.cornerRadiusTopRight = 10;
 series.columns.template.column.fillOpacity = 0.8;
 
-// on hover, make corner radiuses bigger
 let hoverState = series.columns.template.column.states.create("hover");
-hoverState.properties.cornerRadiusTopLeft = 0;
-hoverState.properties.cornerRadiusTopRight = 0;
 hoverState.properties.fillOpacity = 1;
 
 var range3 = valueAxis.createSeriesRange(series);
@@ -162,3 +156,67 @@ range4.contents.fillOpacity = 0.1;
 
 // Cursor
 today.cursor = new am4charts.XYCursor();
+
+
+
+///////////////
+//  STOCKS   //
+///////////////
+// Create chart instance
+var stocks = am4core.create("stocks", am4charts.XYChart);
+chart.scrollbarX = new am4core.Scrollbar();
+let title4 = stocks.titles.create();
+title4.text = "Stocks performance";
+title4.fontSize = titleSize;
+title4.marginBottom = titleMargin;
+
+// Add data
+stocks.data = stockChart;
+
+// Create axes
+var categoryAxis2 = stocks.xAxes.push(new am4charts.CategoryAxis());
+categoryAxis2.dataFields.category = "name";
+categoryAxis2.renderer.grid.template.location = 0;
+categoryAxis2.renderer.minGridDistance = 30;
+categoryAxis2.renderer.labels.template.horizontalCenter = "right";
+categoryAxis2.renderer.labels.template.verticalCenter = "middle";
+categoryAxis2.renderer.labels.template.rotation = 270;
+categoryAxis2.tooltip.disabled = true;
+categoryAxis2.renderer.minHeight = 110;
+
+var valueAxis2 = stocks.yAxes.push(new am4charts.ValueAxis());
+valueAxis2.renderer.minWidth = 50;
+
+// Create series
+var stockSeries = stocks.series.push(new am4charts.ColumnSeries());
+stockSeries.sequencedInterpolation = true;
+stockSeries.dataFields.valueY = "balance";
+stockSeries.dataFields.categoryX = "name";
+stockSeries.tooltipText = "[{categoryX}: bold]{valueY}[/]";
+stockSeries.columns.template.strokeWidth = 0;
+
+stockSeries.tooltip.pointerOrientation = "vertical";
+
+stockSeries.columns.template.column.fillOpacity = 0.8;
+
+let hoverState2 = stockSeries.columns.template.column.states.create("hover");
+hoverState2.properties.fillOpacity = 1;
+
+var range5 = valueAxis2.createSeriesRange(stockSeries);
+range5.value = 1000000;
+range5.endValue = 0;
+range5.contents.stroke = am4core.color(green);
+range5.contents.fill = range5.contents.stroke;
+range5.contents.strokeOpacity = 0.7;
+range5.contents.fillOpacity = 0.1;
+
+var range6 = valueAxis2.createSeriesRange(stockSeries);
+range6.value = -1000000;
+range6.endValue = 0;
+range6.contents.stroke = am4core.color(red);
+range6.contents.fill = range6.contents.stroke;
+range6.contents.strokeOpacity = 0.7;
+range6.contents.fillOpacity = 0.1;
+
+// Cursor
+stocks.cursor = new am4charts.XYCursor();
