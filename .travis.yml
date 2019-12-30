@@ -17,7 +17,7 @@ script:
   - npm run coveralls
 
 addons:
-  ssh_known_hosts: 188.226.180.247
+  ssh_known_hosts: 157.230.97.10
 
 before_deploy:
   - echo "$ssh_key" | base64 -d > /tmp/deploy_key
@@ -29,9 +29,9 @@ deploy:
   provider: script
   skip_cleanup: true
   script:
-    - rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/api root@188.226.180.247:/srv/net-worth
+    - rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/api root@157.230.97.10:/srv/net_worth
   on:
     branch: master
 
 after_deploy:
-  - ssh root@188.226.180.247 "service net-worth restart"
+  - ssh root@157.230.97.10 "service net-worth restart"
