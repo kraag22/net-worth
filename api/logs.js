@@ -7,7 +7,10 @@ const rootPath = process.env.logRootPath || './'
 
 const logger = winston.createLogger({
   level: 'info',
-  format: winston.format.simple(),
+  format: winston.format.combine(
+    winston.format.simple(),
+    winston.format.timestamp()
+  ),
   transports: [
     new winston.transports.File({ filename: path.join(rootPath, 'error.log'), level: 'error' }),
     new winston.transports.File({ filename: path.join(rootPath, 'info.log')})
