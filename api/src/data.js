@@ -1,6 +1,7 @@
 const axios = require('axios')
 const parse = require('./parse_api.js')
 const storage = require('./storage.js')
+const {logger} = require('../logs.js')
 const c = require('./constants')
 
 exports.getPortfolio = async (degiro, fixer) => {
@@ -12,7 +13,7 @@ exports.getPortfolio = async (degiro, fixer) => {
   parse.addMetaToPortfolio(portfolio, products)
 
   const currencies = parse.getCurrencies(portfolio)
-  const rates = await fixer.getRates(axios, currencies)
+  const rates = await fixer.getRates(axios, logger, currencies)
   parse.addCurrencyRateToPortfolio(portfolio, rates)
   return portfolio
 }
@@ -170,7 +171,7 @@ exports.fillMissingRates = async (db, fixer) => {
   currencies = currencies.map(item => item.currency)
 
   for (const item of Object.values(dates)) {
-    const rates = await fixer.getRates(axios, currencies, item.date)
+    const rates = await fixer.getRates(axios, logger, currencies, item.date)
     await storage.updateCurrencies(db, rates, item.date)
   }
 
