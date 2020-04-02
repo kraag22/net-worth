@@ -15,7 +15,7 @@ class Fixer {
     return newRates
   }
 
-  getRates(apiObj, currencies, date) {
+  getRates(apiObj, logger, currencies, date) {
     currencies.push(this.base)
     const api = date ? date : 'latest'
     const symbols = currencies.join(',')
@@ -23,6 +23,7 @@ class Fixer {
       + `&base=EUR&symbols=${symbols}&format=1`
     return apiObj.get(url)
       .then(result => this.changeBase(result.data.rates, this.base))
+      .catch(e => logger.error('fixer API call failed', e))
   }
 }
 
