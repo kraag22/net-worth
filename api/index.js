@@ -32,6 +32,7 @@ storage.connectDb('../data/stocks.db').then(db => {
   console.log('Connected to the database.')
 
   app.post('/import', async (req, res, next) => {
+    logger.info('API /import called')
     try {
       await data.importPortfolio(degiro, db, fixer)
       res.json({status: 'ok'})
@@ -42,6 +43,7 @@ storage.connectDb('../data/stocks.db').then(db => {
   })
 
   app.put('/fill-ratios', async (req, res, next) => {
+    logger.info('API /fill-ratios called')
     try {
       const datesNo = await data.fillMissingRates(db, fixer)
       res.json({updatedDates: datesNo})
@@ -52,6 +54,7 @@ storage.connectDb('../data/stocks.db').then(db => {
   })
 
   app.put('/fill-daily', async (req, res, next) => {
+    logger.info('API /fill-daily called')
     try {
       await sd.updateMissing(db)
       res.json({finished: 'ok'})
@@ -62,6 +65,7 @@ storage.connectDb('../data/stocks.db').then(db => {
   })
 
   app.get('/portfolio/:groupBy', async (req, res, next) => {
+    logger.info('API /portfolio/:groupBy called')
     try {
       const portfolio = await data.groupPortfolio(db, req.params.groupBy)
       res.json({portfolio: portfolio})
@@ -72,6 +76,7 @@ storage.connectDb('../data/stocks.db').then(db => {
   })
 
   app.get('/', async (req, res, next) => {
+    logger.info('path / called')
     try {
       const indexData = await data.getGraphData(db)
       res.render('index', indexData)
@@ -82,6 +87,7 @@ storage.connectDb('../data/stocks.db').then(db => {
   })
 
   app.get('/script.js', (req, res, next) => {
+    logger.info('path /script.js called')
     try {
       res.render('script')
     } catch (e) {
