@@ -142,7 +142,7 @@ exports.run = (db, sql, fceParams) => {
         profiler.done({ message: 'failed'})
         reject(err)
       } else {
-        profiler.done({ message: sql})
+        profiler.done({ message: sql, params: params})
         resolve()
       }
     })
@@ -158,7 +158,7 @@ exports.call = (db, sql, fceParams) => {
         profiler.done({ message: 'failed'})
         reject(err)
       } else {
-        profiler.done({ message: sql})
+        profiler.done({ message: sql, params: params})
         resolve(rows)
       }
     })
