@@ -86,7 +86,7 @@ exports.insert = (db, values) => {
   })
 }
 
-exports.getViewSql = (groupBy, lastValue) => {
+exports.getViewSql = (groupBy, lastValue, selectOnly, where) => {
   let dateFormat = ''
   switch(groupBy) {
     case 'monthly':
@@ -107,18 +107,20 @@ exports.getViewSql = (groupBy, lastValue) => {
 
   let sql = ''
   if (lastValue) {
-    sql += `create view if not exists stocks_last_${groupBy} as `
+    sql += selectOnly ? '' : `create view if not exists stocks_last_${groupBy} as `
     sql += `select s1.id, s1.price * s1.size * s1.ratio as value, `
     sql += `s1.name, strftime('${dateFormat}', s1.created_at) as created `
     sql += `from stocks as s1 `
     sql += `left join stocks as s2 on s1.id=s2.id and s1.rowid < s2.rowid and `
     sql += `strftime('${dateFormat}', s1.created_at)=strftime('${dateFormat}', s2.created_at) `
     sql += `where s2.rowid is null and s1.id not in (${cashFunds}) `
+    sql += where ? `and ${where} ` : ''
   } else {
-    sql += `create view if not exists stocks_${groupBy} as `
+    sql +=  selectOnly ? '' :`create view if not exists stocks_${groupBy} as `
     sql += `select id, min(${baseValue}) as min_value, max(${baseValue}) as max_value,`
     sql += `name, strftime('${dateFormat}', created_at) as created `
     sql += `from stocks as s1 where s1.id not in (${cashFunds}) `
+    sql += where ? `and ${where} ` : ''
     sql += `group by strftime('${dateFormat}', created_at), id`
   }
   return sql
@@ -142,7 +144,7 @@ exports.run = (db, sql, fceParams) => {
         profiler.done({ message: 'failed'})
         reject(err)
       } else {
-        profiler.done({ message: sql})
+        profiler.done({ message: sql, params: params})
         resolve()
       }
     })
@@ -158,7 +160,7 @@ exports.call = (db, sql, fceParams) => {
         profiler.done({ message: 'failed'})
         reject(err)
       } else {
-        profiler.done({ message: sql})
+        profiler.done({ message: sql, params: params})
         resolve(rows)
       }
     })
