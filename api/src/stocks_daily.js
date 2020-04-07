@@ -6,7 +6,7 @@ exports.fillStocksDaily = async (db, from, to) => {
   let params = [from]
   if (to) {
     clearSql += ' and date <= ?'
-    params = params.concat([to])
+    params = params.concat([to + ' 23:59:59'])
   }
 
   await storage.run(db, clearSql, params)
