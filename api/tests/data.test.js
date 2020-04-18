@@ -4,7 +4,7 @@ const {MockFixer} = require('./mockFixer.js')
 const storage = require('../src/storage.js')
 const sqlite3 = require('sqlite3')
 const sd = require('../src/stocks_daily.js')
-const i = require('./orders.js')
+const {insertStocks} = require('./orders.js')
 
 let db = null
 const mockFixer = new MockFixer('x')
@@ -110,10 +110,7 @@ describe('data function', () => {
   })
 
   it('getOrdersData(), getOrders() and getTotalOrder() should work', async () => {
-    const promises = i.inserts.map(insert => {
-      return storage.run(db, insert)
-    })
-    await Promise.all(promises)
+    await insertStocks(db)
 
     const ordersData = await data.getOrdersData(db)
     expect(ordersData.length).toEqual(18)
@@ -123,6 +120,8 @@ describe('data function', () => {
     expect(data.getTotalOrder(timeline)).toEqual(65403)
     expect(orders['MONETA MONEY BANK'].size).toEqual(67)
     expect(orders['MONETA MONEY BANK'].price).toEqual(5153.25)
+    expect(orders['Apple Inc'].avgRatio).toEqual(22.59299731525348)
+    expect(orders['NOKIA OYJ A ADR 1/EO-,06'].avgRatio).toEqual(25.412921666666662)
   })
 
   it('getStocksBalance() should work', async () => {

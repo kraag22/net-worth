@@ -53,6 +53,17 @@ storage.connectDb('../data/stocks.db').then(db => {
     }
   })
 
+  app.put('/fill-balance/:to', async (req, res, next) => {
+    logger.info('API /fill-balance called')
+    try {
+      await sd.updateMissingBalance(db, req.params.to)
+      res.json({seems: 'ok'})
+    } catch (e) {
+      logger.error('API /fill-balance failed', e)
+      next(e)
+    }
+  })
+
   app.put('/fill-daily', async (req, res, next) => {
     logger.info('API /fill-daily called')
     try {
