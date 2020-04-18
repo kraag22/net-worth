@@ -89,7 +89,7 @@ exports.getOrdersData = async db => {
   const cashFunds = c.CASH_FUNDS.join(',')
 
   const sql = 'select s.id, s.name, round(s.price * s.size * s.ratio) as value, ' +
-    's.price, s.size, s.ratio, ' +
+    's.price, s.size, s.ratio, s.currency, ' +
     `strftime('%Y-%m-%d', s.created_at) as date from ` +
     '(select id, name, min(created_at) as first_created_at ' +
     'from stocks group by id, size) as sm left join stocks as s ' +
@@ -103,18 +103,27 @@ exports.getOrders = data => {
   const timeline = {}
   let lastOrder = 0
   data.forEach(item => {
-    let added, price
+    let added, price, avgRatio
     if (orders[item.name]) {
       added = item.size - orders[item.name].size
+      if (added > 0) {
+        avgRatio = (orders[item.name].size * orders[item.name].avgRatio + added * item.ratio) / item.size
+      } else {
+        avgRatio = orders[item.name].size * orders[item.name].avgRatio
+      }
+
       lastPrice = orders[item.name].price
     } else {
       added = item.size
+      avgRatio = item.ratio
       lastPrice = 0
     }
     orders[item.name] = {
       size: item.size,
       id: item.id,
-      price: lastPrice + added * item.price * item.ratio
+      price: lastPrice + added * item.price * item.ratio,
+      currency: item.currency,
+      avgRatio: avgRatio
     }
     if (timeline[item.date] === undefined) {
       timeline[item.date] = lastOrder
@@ -157,7 +166,8 @@ exports.getStocksBalance = async (db, orders) => {
 }
 
 exports.getDailyData = async db => {
-  const sql = 'select round(sum(last_value)) as value, date ' +
+  const sql = 'select round(sum(last_value)) as value, date, ' +
+    `round(sum(currency_balance)) as sum_balance ` +
     `from ${storage.STOCKS_DAILY_TABLE} group by date order by date`
   return storage.call(db, sql)
 }
@@ -215,6 +225,7 @@ exports.getGraphData = async db => {
 
   const xyChart = []
   const balanceChart = []
+  const currencyBalanceChart = []
   let invested = c.INITIAL_INVESTMENT
 
   data.daily.forEach(item => {
@@ -232,10 +243,16 @@ exports.getGraphData = async db => {
       date: date,
       balance: Math.round(item.value - invested)
     })
+
+    currencyBalanceChart.push({
+      date: date,
+      balance: item.sum_balance
+    })
   })
 
   ret.xyChart = JSON.stringify(xyChart)
   ret.balanceChart = JSON.stringify(balanceChart)
+  ret.currencyBalanceChart = JSON.stringify(currencyBalanceChart)
   ret.todayTitle = `${data.todaySum.lastSum} (${data.todaySum.balance})`
   ret.todayChart = JSON.stringify(exports.parseTodayData(data.today))
   ret.stockChart = JSON.stringify(data.stocksBalance)

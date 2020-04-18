@@ -1,3 +1,5 @@
+const storage = require('../src/storage.js')
+
 exports.inserts = [
 `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('10306755', 76.8, 50.0, 3840.0, 'MONETA MONEY BANK', 'CZK', '2017-11-27', 1.0);`,
 `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('4798004', 500.0, 10.0, 5000.0, 'CEZ', 'CZK', '2017-12-18', 1.0);`,
@@ -17,3 +19,10 @@ exports.inserts = [
 `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('331868', 217.86, 1.0, 4922.110395101124, 'Apple Inc', 'USD', '2018-10-18', 22.59299731525348);`,
 `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('4798017', 227.0, 22.0, 4994.0, 'O2 Czech Republic', 'CZK', '2018-11-17', 1.0);`
 ]
+
+exports.insertStocks = async(db) => {
+  const promises = exports.inserts.map(insert => {
+    return storage.run(db, insert)
+  })
+  return Promise.all(promises)
+}

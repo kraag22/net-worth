@@ -54,7 +54,8 @@ exports.createTable = db => {
     'last_value real, ' +
     'name TEXT, ' +
     'currency TEXT, ' +
-    'date TEXT' +
+    'date TEXT, ' +
+    'currency_balance real ' +
     ')'
 
   return Promise.all([
@@ -109,6 +110,7 @@ exports.getViewSql = (groupBy, lastValue, selectOnly, where) => {
   if (lastValue) {
     sql += selectOnly ? '' : `create view if not exists stocks_last_${groupBy} as `
     sql += `select s1.id, s1.price * s1.size * s1.ratio as value, `
+    sql += `s1.price, s1.size, s1.ratio, `
     sql += `s1.name, strftime('${dateFormat}', s1.created_at) as created `
     sql += `from stocks as s1 `
     sql += `left join stocks as s2 on s1.id=s2.id and s1.rowid < s2.rowid and `

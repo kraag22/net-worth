@@ -220,3 +220,54 @@ range6.contents.fillOpacity = 0.1;
 
 // Cursor
 stocks.cursor = new am4charts.XYCursor();
+
+
+///////////////////////
+// CURRENCY BALANCE  //
+///////////////////////
+var balance = am4core.create("currency", am4charts.XYChart);
+let title7 = balance.titles.create();
+title7.text = "Currency balance";
+title7.fontSize = titleSize;
+title7.marginBottom = titleMargin;
+balance.data = currencyBalanceChart;
+
+// Create axes
+var dateAxis = balance.xAxes.push(new am4charts.DateAxis());
+dateAxis.startLocation = 0.5;
+dateAxis.endLocation = 0.5;
+
+// Create value axis
+var valueAxis = balance.yAxes.push(new am4charts.ValueAxis());
+
+// Create series
+var series = balance.series.push(new am4charts.LineSeries());
+series.dataFields.valueY = "balance";
+series.dataFields.dateX = "date";
+series.strokeWidth = 3;
+series.tooltipText = "{valueY.value}";
+series.fillOpacity = 0.1;
+
+var range8 = valueAxis.createSeriesRange(series);
+range8.value = 0;
+range8.endValue = -1000000;
+range8.contents.stroke = am4core.color(red);
+range8.contents.fill = range8.contents.stroke;
+range8.contents.strokeOpacity = 0.7;
+range8.contents.fillOpacity = 0.1;
+
+var range7 = valueAxis.createSeriesRange(series);
+range7.value = 1000000;
+range7.endValue = 0;
+range7.contents.stroke = am4core.color(green);
+range7.contents.fill = range7.contents.stroke;
+range7.contents.strokeOpacity = 0.7;
+range7.contents.fillOpacity = 0.1;
+
+// Add cursor
+balance.cursor = new am4charts.XYCursor();
+balance.cursor.xAxis = dateAxis;
+balance.scrollbarX = new am4core.Scrollbar();
+
+
+
