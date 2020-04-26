@@ -14,9 +14,10 @@ exports.fillStocksDaily = async (db, from, to) => {
 
   const viewWhere = 's1.created_at >= ?' + (to ? ' and s1.created_at <= ?' : '')
   let sql = `insert into ${storage.STOCKS_DAILY_TABLE} ` +
-    'select d.id, d.min_value, d.max_value, sld.value as last_value, d.name, s.currency, ' +
-    'd.created as date, null as currency_balance from ' +
-    '(' + storage.getViewSql('daily', false, true, viewWhere) + ')' +
+    'select d.id, d.min_value, d.max_value, sld.value as last_value, ' +
+    'sld.name, s.currency, d.created as date, ' +
+    'null as currency_balance, sld.price, sld.size, sld.ratio ' +
+    'from (' + storage.getViewSql('daily', false, true, viewWhere) + ')' +
     ' as d left join (select id, currency from ' +
     `${storage.STOCKS_TABLE} group by id) as s on d.id=s.id ` +
     'left join ' +
@@ -67,9 +68,7 @@ exports.fillCurrencyBalance = async (db, orders, from, to) => {
 
   const promises = rows.map(async item => {
     if (orders[item.name]) {
-      const daily = await storage.call(db, `select * from (` + storage.getViewSql('daily', true, true) + `) where id=${item.id} and created='${item.date}'`)
-      const {price} = daily[0]
-      const balance = item.last_value - orders[item.name].avgRatio * orders[item.name].size * price
+      const balance = item.last_value - orders[item.name].avgRatio * item.size * item.price
       const sql = `update ${storage.STOCKS_DAILY_TABLE} ` +
                 `set currency_balance = ${balance} ` +
                 `where rowid=${item.rowid}`
