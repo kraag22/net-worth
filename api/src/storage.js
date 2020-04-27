@@ -55,7 +55,10 @@ exports.createTable = db => {
     'name TEXT, ' +
     'currency TEXT, ' +
     'date TEXT, ' +
-    'currency_balance real ' +
+    'currency_balance real, ' +
+    'price real, ' +
+    'size real, ' +
+    'ratio real' +
     ')'
 
   return Promise.all([
