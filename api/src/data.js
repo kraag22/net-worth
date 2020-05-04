@@ -262,6 +262,9 @@ exports.getGraphData = async db => {
     xyChart.push({
       date: date,
       current: item.value,
+      usd_value: item.usd_value,
+      eur_value: item.eur_value,
+      other_value: item.other_value,
       invested: invested
     })
 
