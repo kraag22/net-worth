@@ -38,7 +38,7 @@ exports.getMissingDates = async db => {
   if (lastDate && lastDate[0]) {
     fromDate = lastDate[0].date
   } else {
-    fromDate = '2000-01-01'
+    fromDate = '2018-12-02'
   }
 
   let d = new Date()
