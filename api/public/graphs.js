@@ -285,3 +285,54 @@ balance.scrollbarX = new am4core.Scrollbar();
 
 
 
+///////////////////////
+//  CURRENCY TOTALS  //
+///////////////////////
+var totals = am4core.create("currency_totals", am4charts.XYChart);
+let title8 = totals.titles.create();
+title8.text = "Currency split";
+title8.fontSize = titleSize;
+title8.marginBottom = titleMargin;
+totals.data = xyChart;
+
+// Create axes
+var dateAxis = totals.xAxes.push(new am4charts.DateAxis());
+dateAxis.startLocation = 0.5;
+dateAxis.endLocation = 0.5;
+
+// Create value axis
+var valueAxis = totals.yAxes.push(new am4charts.ValueAxis());
+
+// Create series
+var series7 = totals.series.push(new am4charts.LineSeries());
+series7.dataFields.valueY = "current";
+series7.dataFields.dateX = "date";
+series7.strokeWidth = 3;
+series7.tooltipText = "{valueY.value} CZK (all)";
+series7.fillOpacity = 0;
+
+var series8 = totals.series.push(new am4charts.LineSeries());
+series8.dataFields.valueY = "usd_value";
+series8.dataFields.dateX = "date";
+series8.strokeWidth = 3;
+series8.tooltipText = "{valueY.value}  CZK ($)";
+series8.fillOpacity = 0;
+
+var series9 = totals.series.push(new am4charts.LineSeries());
+series9.dataFields.valueY = "eur_value";
+series9.dataFields.dateX = "date";
+series9.strokeWidth = 3;
+series9.tooltipText = "{valueY.value}  CZK (€)";
+series9.fillOpacity = 0;
+
+var series10 = totals.series.push(new am4charts.LineSeries());
+series10.dataFields.valueY = "other_value";
+series10.dataFields.dateX = "date";
+series10.strokeWidth = 3;
+series10.tooltipText = "{valueY.value}  CZK (other)";
+series10.fillOpacity = 0;
+
+// Add cursor
+totals.cursor = new am4charts.XYCursor();
+totals.cursor.xAxis = dateAxis;
+totals.scrollbarX = new am4core.Scrollbar();
