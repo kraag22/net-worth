@@ -166,9 +166,35 @@ exports.getStocksBalance = async (db, orders) => {
 }
 
 exports.getDailyData = async db => {
-  const sql = 'select round(sum(last_value)) as value, date, ' +
-    `round(sum(currency_balance)) as sum_balance ` +
-    `from ${storage.STOCKS_DAILY_TABLE} group by date order by date`
+  const sql = '' +
+    `select d.date, a.value, u.usd_value, e.eur_value, ` +
+    `  a.value - u.usd_value - e.eur_value as other_value, ` +
+    `  a.sum_balance, u.usd_balance, e.eur_balance ` +
+    `from ` +
+    `(select date from ${storage.STOCKS_DAILY_TABLE} group by date order by date) as d ` +
+    `left join ` +
+    `    (select round(sum(last_value)) as value, date, ` +
+    `    round(sum(currency_balance)) as sum_balance ` +
+    `    from ${storage.STOCKS_DAILY_TABLE} ` +
+    `    group by date) as a ` +
+    `    on d.date=a.date ` +
+    `left join ` +
+    `    (select round(sum(currency_balance)) as usd_balance, date, ` +
+    `    round(sum(last_value)) as usd_value ` +
+    `    from ${storage.STOCKS_DAILY_TABLE} ` +
+    `    where currency='USD' ` +
+    `    group by date ` +
+    `    ) as u ` +
+    `    on d.date=u.date ` +
+    `left join ` +
+    `    (select round(sum(currency_balance)) as eur_balance, date, ` +
+    `    round(sum(last_value)) as eur_value ` +
+    `    from ${storage.STOCKS_DAILY_TABLE} ` +
+    `    where currency='EUR' ` +
+    `    group by date ` +
+    `    ) as e ` +
+    `    on d.date=e.date `
+
   return storage.call(db, sql)
 }
 
@@ -246,7 +272,9 @@ exports.getGraphData = async db => {
 
     currencyBalanceChart.push({
       date: date,
-      balance: item.sum_balance
+      balance: item.sum_balance,
+      usd_balance: item.usd_balance,
+      eur_balance: item.eur_balance
     })
   })
 

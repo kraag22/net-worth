@@ -245,7 +245,7 @@ var series = balance.series.push(new am4charts.LineSeries());
 series.dataFields.valueY = "balance";
 series.dataFields.dateX = "date";
 series.strokeWidth = 3;
-series.tooltipText = "{valueY.value}";
+series.tooltipText = "{valueY.value} CZK (all)";
 series.fillOpacity = 0.1;
 
 var range8 = valueAxis.createSeriesRange(series);
@@ -263,6 +263,20 @@ range7.contents.stroke = am4core.color(green);
 range7.contents.fill = range7.contents.stroke;
 range7.contents.strokeOpacity = 0.7;
 range7.contents.fillOpacity = 0.1;
+
+var serie_usd = balance.series.push(new am4charts.LineSeries());
+serie_usd.dataFields.valueY = "usd_balance";
+serie_usd.dataFields.dateX = "date";
+serie_usd.strokeWidth = 1;
+serie_usd.tooltipText = "{valueY.value} CZK ($)";
+serie_usd.fillOpacity = 0;
+
+var serie_eur = balance.series.push(new am4charts.LineSeries());
+serie_eur.dataFields.valueY = "eur_balance";
+serie_eur.dataFields.dateX = "date";
+serie_eur.strokeWidth = 1;
+serie_eur.tooltipText = "{valueY.value} CZK (€)";
+serie_eur.fillOpacity = 0;
 
 // Add cursor
 balance.cursor = new am4charts.XYCursor();

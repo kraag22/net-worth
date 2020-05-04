@@ -82,6 +82,9 @@ describe('data function', () => {
 
     const indexData = await data.getAllData(db)
     expect(indexData.daily.length).toBe(1)
+    expect(indexData.daily[0].usd_value
+        + indexData.daily[0].other_value
+        + indexData.daily[0].eur_value).toBe(indexData.daily[0].value)
     expect(indexData.today.length).toBe(13)
     expect(indexData.todaySum.balance).toBe('0')
   })
