@@ -1,67 +1,21 @@
-@media only screen and (max-width: 850px) {
-  #chartdiv {
-    width: 100%;
-    height: 400px;
-    float: left;
-  }
+.charts div{
+  float: left;
+}
 
-  #balance {
+@media only screen and (max-width: 850px) {
+  .big, .small {
     width: 100%;
     height: 400px;
-    float: left;
-  }
-  #today {
-    width: 100%;
-    height: 400px;
-    float: left;
-  }
-  #stocks {
-    width: 100%;
-    height: 400px;
-    float: left;
-  }
-  #currency {
-    width: 100%;
-    height: 400px;
-    float: left;
-  }
-  #currency_totals {
-    width: 100%;
-    height: 400px;
-    float: left;
   }
 }
 
 @media only screen and (min-width: 851px) {
-  #chartdiv {
+  .small {
     width: 50%;
     height: 330px;
-    float: left;
   }
-
-  #balance {
-    width: 50%;
-    height: 330px;
-    float: left;
-  }
-  #today {
+  .big {
     width: 50%;
     height: 450px;
-    float: left;
-  }
-  #stocks {
-    width: 50%;
-    height: 450px;
-    float: left;
-  }
-  #currency {
-    width: 50%;
-    height: 450px;
-    float: left;
-  }
-  #currency_totals {
-    width: 50%;
-    height: 450px;
-    float: left;
   }
 }
