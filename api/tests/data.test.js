@@ -92,24 +92,25 @@ describe('data function', () => {
   it('getTodaysData() should work', async () => {
     const sql = `INSERT INTO stocks ` +
       `(id, price, size, value, name, currency, ratio, created_at)` +
-      `VALUES ('10306755', 400, 1, 4000, 'mb', 'CZK', 1, DATETIME('now', '-1 hour'))`
+      `VALUES ('11', 300, 2, 600, 'made up', 'CZK', 1, DATETIME('now', '-1 hour'))`
     await storage.run(db, sql)
 
     const sql2 = `INSERT INTO stocks ` +
       `(id, price, size, value, name, currency, ratio, created_at)` +
-      `VALUES ('10306755', 400, 1, 3800, 'mb', 'CZK', 1, DATETIME('now', '-2 hour'))`
+      `VALUES ('11', 400, 2, 800, 'made up', 'CZK', 1, DATETIME('now', '-2 hour'))`
     await storage.run(db, sql2)
 
     const todaysData = await data.getTodaysData(db)
-    expect(todaysData[10].name).toBe('mb')
-    expect(todaysData[10].values.length).toBe(3)
+    const res = todaysData.find(i => i.id === '11')
+    expect(res.name).toBe('made up')
+    expect(res.values.length).toBe(2)
   })
 
   it('sumTodaysData() should work', async () => {
     const todaysData = await data.getTodaysData(db)
     let result = data.sumTodaysData(todaysData)
-    expect(result.lastSum).toEqual(58843)
-    expect(result.balance).toEqual('+4860')
+    expect(result.lastSum).toEqual(59443)
+    expect(result.balance).toEqual('-200')
   })
 
   it('getOrdersData(), getOrders() and getTotalOrder() should work', async () => {
@@ -120,11 +121,11 @@ describe('data function', () => {
     expect(ordersData[8].value).toEqual(6398)
 
     const {timeline, orders} = data.getOrders(ordersData)
-    expect(data.getTotalOrder(timeline)).toEqual(65403)
-    expect(orders['MONETA MONEY BANK'].size).toEqual(67)
-    expect(orders['MONETA MONEY BANK'].price).toEqual(5153.25)
-    expect(orders['Apple Inc'].avgRatio).toEqual(22.59299731525348)
-    expect(orders['NOKIA OYJ A ADR 1/EO-,06'].avgRatio).toEqual(25.412921666666662)
+    expect(data.getTotalOrder(timeline)).toEqual(65803)
+    expect(orders['10306755'].size).toEqual(67)
+    expect(orders['10306755'].price).toEqual(5153.25)
+    expect(orders['331868'].avgRatio).toEqual(22.59299731525348)
+    expect(orders['890163'].avgRatio).toEqual(25.412921666666662)
   })
 
   it('getStocksBalance() should work', async () => {
@@ -132,12 +133,24 @@ describe('data function', () => {
     const {orders} = data.getOrders(ordersData)
 
     const result = await data.getStocksBalance(db, orders)
-    expect(result.length).toBe(14)
+    expect(result.length).toBe(13)
 
     let sum = 0
     result.forEach(item => sum+= item.price + item.balance)
-    expect(sum).toBe(67796)
+    expect(sum).toBe(57676)
   })
+
+  it('getStocksBalance() should work with name change', async () => {
+    const ordersData = await data.getOrdersData(db)
+    const {orders} = data.getOrders(ordersData)
+
+    const result = await data.getStocksBalance(db, orders)
+    expect(result.length).toBe(13)
+    const nokia = result.find(i => i.id === '890163')
+    expect(nokia.name).toBe('NOKIA OYJ')
+    expect(nokia.balance).toBe(593)
+  })
+
 })
 
 describe('graphData function', () => {
@@ -152,15 +165,17 @@ describe('graphData function', () => {
     const xyChart = JSON.parse(graphData.xyChart)
 
     expect(xyChart.length).toBe(1)
-    expect(xyChart[0].invested).toBe(65403)
+    expect(xyChart[0].invested).toBe(65803)
     expect(xyChart[0].current).toBe(58841)
   })
 
   it('parseTodayData() should work', async () => {
     const todaysData = await data.getTodaysData(db)
     const result = data.parseTodayData(todaysData)
-    expect(result.length).toBe(13)
-    expect(result[0].name).toBe('mb')
-    expect(result[0].balance).toBe(4860)
+    const madeUp = result.find(i => i.name === 'made up')
+
+    expect(result.length).toBe(14)
+    expect(madeUp.name).toBe('made up')
+    expect(madeUp.balance).toBe(-200)
   })
 })
