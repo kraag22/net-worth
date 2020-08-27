@@ -7,7 +7,7 @@ exports.inserts = [
 `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('8565591', 419.0, 11.0, 4609.0, 'KOFOLA CS', 'CZK', '2018-01-21', 1.0);`,
 `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('332111', 92.0, 2.0, 3758.1995591765603, 'Microsoft Corp', 'USD', '2018-02-17', 20.42499760422044);`,
 `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('1533610', 168.2, 1.0, 3458.1924357583507, 'Facebook', 'USD', '2018-03-21', 20.56000259071552);`,
-`INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('890163', 4.62, 30.0, 3502.3227623999996, 'NOKIA OYJ A ADR 1/EO-,06', 'EUR', '2018-04-17', 25.269284);`,
+`INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('890163', 4.62, 30.0, 3502.3227623999996, 'NOKIA OYJ', 'EUR', '2018-04-17', 25.269284);`,
 `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('4798008', 924.5, 4.0, 3698.0, 'Komercni Banka AS', 'CZK', '2018-04-17', 1.0);`,
 `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('4798015', 914.0, 7.0, 6398.0, 'Erste Group Bank AG', 'CZK', '2018-05-29', 1.0);`,
 `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('1533610', 195.4, 2.0, 8654.673743441355, 'Facebook', 'USD', '2018-06-15', 22.14604335578647);`,

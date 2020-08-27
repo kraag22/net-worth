@@ -122,10 +122,10 @@ describe('data function', () => {
 
     const {timeline, orders} = data.getOrders(ordersData)
     expect(data.getTotalOrder(timeline)).toEqual(65803)
-    expect(orders['MONETA MONEY BANK'].size).toEqual(67)
-    expect(orders['MONETA MONEY BANK'].price).toEqual(5153.25)
-    expect(orders['Apple Inc'].avgRatio).toEqual(22.59299731525348)
-    expect(orders['NOKIA OYJ A ADR 1/EO-,06'].avgRatio).toEqual(25.412921666666662)
+    expect(orders['10306755'].size).toEqual(67)
+    expect(orders['10306755'].price).toEqual(5153.25)
+    expect(orders['331868'].avgRatio).toEqual(22.59299731525348)
+    expect(orders['890163'].avgRatio).toEqual(25.412921666666662)
   })
 
   it('getStocksBalance() should work', async () => {
@@ -139,6 +139,18 @@ describe('data function', () => {
     result.forEach(item => sum+= item.price + item.balance)
     expect(sum).toBe(57676)
   })
+
+  it('getStocksBalance() should work with name change', async () => {
+    const ordersData = await data.getOrdersData(db)
+    const {orders} = data.getOrders(ordersData)
+
+    const result = await data.getStocksBalance(db, orders)
+    expect(result.length).toBe(13)
+    const nokia = result.find(i => i.id === '890163')
+    expect(nokia.name).toBe('NOKIA OYJ')
+    expect(nokia.balance).toBe(593)
+  })
+
 })
 
 describe('graphData function', () => {

@@ -104,23 +104,24 @@ exports.getOrders = data => {
   let lastOrder = 0
   data.forEach(item => {
     let added, price, avgRatio
-    if (orders[item.name]) {
-      added = item.size - orders[item.name].size
+    if (orders[item.id]) {
+      added = item.size - orders[item.id].size
       if (added > 0) {
-        avgRatio = (orders[item.name].size * orders[item.name].avgRatio + added * item.ratio) / item.size
+        avgRatio = (orders[item.id].size * orders[item.id].avgRatio + added * item.ratio) / item.size
       } else {
-        avgRatio = orders[item.name].size * orders[item.name].avgRatio
+        avgRatio = orders[item.id].size * orders[item.id].avgRatio
       }
 
-      lastPrice = orders[item.name].price
+      lastPrice = orders[item.id].price
     } else {
       added = item.size
       avgRatio = item.ratio
       lastPrice = 0
     }
-    orders[item.name] = {
+    orders[item.id] = {
       size: item.size,
       id: item.id,
+      name: item.name,
       price: lastPrice + added * item.price * item.ratio,
       currency: item.currency,
       avgRatio: avgRatio
@@ -152,8 +153,8 @@ exports.getStocksBalance = async (db, orders) => {
   const stocks = await exports.getStocksNewest(db)
 
   Object.entries(orders).forEach(item => {
-    const name = item[0].substring(0, c.NAME_MAX_LENGTH)
     const values = item[1]
+    const name = values.name.substring(0, c.NAME_MAX_LENGTH)
     const stock = stocks.find(item => item.id === values.id)
 
     if (stock) {
@@ -222,6 +223,7 @@ exports.getAllData = async db => {
   ret.todaySum = exports.sumTodaysData(ret.today)
   ret.orders = await exports.getOrdersData(db)
   const {timeline, orders} = exports.getOrders(ret.orders)
+  logger.info(orders)
   ret.timeline = timeline
   ret.stocksBalance = await exports.getStocksBalance(db, orders)
   ret.totalOrder = exports.getTotalOrder(ret.timeline)
@@ -287,5 +289,6 @@ exports.getGraphData = async db => {
   ret.todayTitle = `${data.todaySum.lastSum} (${data.todaySum.balance})`
   ret.todayChart = JSON.stringify(exports.parseTodayData(data.today))
   ret.stockChart = JSON.stringify(data.stocksBalance)
+
   return ret
 }

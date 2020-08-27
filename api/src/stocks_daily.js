@@ -67,8 +67,8 @@ exports.fillCurrencyBalance = async (db, orders, from, to) => {
   rows = await storage.call(db, missingSql, params)
 
   const promises = rows.map(async item => {
-    if (orders[item.name]) {
-      const balance = item.last_value - orders[item.name].avgRatio * item.size * item.price
+    if (orders[item.id]) {
+      const balance = item.last_value - orders[item.id].avgRatio * item.size * item.price
       const sql = `update ${storage.STOCKS_DAILY_TABLE} ` +
                 `set currency_balance = ${balance} ` +
                 `where rowid=${item.rowid}`
