@@ -34,6 +34,20 @@ describe('data function', () => {
     expect(Math.round(sum)).toBe(59156)
   })
 
+  it('getAvgCurrencyRatio() should work for buying', () => {
+    const lastOrder = {size: 10, avgRatio: 26}
+
+    const ret = data.getAvgCurrencyRatio(lastOrder, 20, 25)
+    expect(ret).toBe(25.5)
+  })
+
+  it('getAvgCurrencyRatio() should work for selling', () => {
+    const lastOrder = {size: 20, avgRatio: 30}
+
+    const ret = data.getAvgCurrencyRatio(lastOrder, 10, 20)
+    expect(ret).toBe(30)
+  })
+
   it('fillMissingRates() should work', async () => {
     const sql = "select * from stocks where ratio is null"
     const sqlBase = 'update stocks set ratio = null where currency=?'

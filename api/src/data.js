@@ -98,38 +98,46 @@ exports.getOrdersData = async db => {
   return storage.call(db, sql)
 }
 
+// avg currency rate to CZK thu orders
+exports.getAvgCurrencyRatio = (lastOrder, size, ratio) => {
+  let added = size - lastOrder.size
+  if (added > 0) {
+    avgRatio = (lastOrder.size * lastOrder.avgRatio + added * ratio) / size
+  } else {
+    avgRatio = lastOrder.avgRatio
+  }
+  return avgRatio
+}
+
 exports.getOrders = data => {
+  let ids = new Set(data.map(item => item.id))
   const orders = {}
+
+  ids.forEach(id =>
+    orders[id] = {
+      id: id,
+      size: 0,
+      price: 0,
+      avgRatio: 0
+  })
   const timeline = {}
   let lastOrder = 0
-  data.forEach(item => {
-    let added, price, avgRatio
-    if (orders[item.id]) {
-      added = item.size - orders[item.id].size
-      if (added > 0) {
-        avgRatio = (orders[item.id].size * orders[item.id].avgRatio + added * item.ratio) / item.size
-      } else {
-        avgRatio = orders[item.id].size * orders[item.id].avgRatio
-      }
 
-      lastPrice = orders[item.id].price
-    } else {
-      added = item.size
-      avgRatio = item.ratio
-      lastPrice = 0
-    }
+  data.forEach(item => {
+    let priceAdded = (item.size - orders[item.id].size) * item.price * item.ratio
+
     orders[item.id] = {
       size: item.size,
       id: item.id,
       name: item.name,
-      price: lastPrice + added * item.price * item.ratio,
+      price: orders[item.id].price + priceAdded,
       currency: item.currency,
-      avgRatio: avgRatio
+      avgRatio: exports.getAvgCurrencyRatio(orders[item.id], item.size, item.ratio)
     }
     if (timeline[item.date] === undefined) {
       timeline[item.date] = lastOrder
     }
-    timeline[item.date] += Math.round(added * item.price * item.ratio)
+    timeline[item.date] += Math.round(priceAdded)
     lastOrder = timeline[item.date]
   })
   return {timeline, orders}
