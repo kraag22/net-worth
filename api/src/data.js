@@ -166,12 +166,33 @@ exports.getStocksBalance = async (db, orders) => {
     const stock = stocks.find(item => item.id === values.id)
 
     if (stock) {
-      result.push({id: values.id, name: name, price: stock.price,
-        balance: Math.round(stock.price - values.price)})
+      result.push({id: values.id, name: name.trim(), price: stock.price,
+        currency: values.currency,  balance: Math.round(stock.price - values.price)})
     }
   })
 
   return result.sort((a, b) => b.balance - a.balance)
+}
+
+exports.sumStocksBalanceByCurrency = stocksBalance => {
+  const result = {}
+  stocksBalance.forEach(item => {
+    if (result[item.currency]) {
+      result[item.currency].balance += item.balance
+      result[item.currency].price += item.price
+    } else {
+      result[item.currency] = {
+        balance: item.balance,
+        price: item.price,
+        currency: item.currency
+      }
+    }
+  })
+  const list = Object.entries(result).map(item => item[1])
+  return list.map(item => {
+    item.percents = (100 * (item.balance + item.price) / item.price) - 100
+    return item
+  })
 }
 
 exports.getDailyData = async db => {
@@ -234,6 +255,7 @@ exports.getAllData = async db => {
   logger.info(orders)
   ret.timeline = timeline
   ret.stocksBalance = await exports.getStocksBalance(db, orders)
+  ret.sumStocksBalanceByCurrency = exports.sumStocksBalanceByCurrency(ret.stocksBalance)
   ret.totalOrder = exports.getTotalOrder(ret.timeline)
   return ret
 }
@@ -294,9 +316,10 @@ exports.getGraphData = async db => {
   ret.sumByCurrencyData = JSON.stringify(sumByCurrencyData)
   ret.balanceData = JSON.stringify(balanceData)
   ret.currencyBalanceData = JSON.stringify(currencyBalanceData)
-  ret.todayTitle = `${data.todaySum.lastSum} (${data.todaySum.balance})`
-  ret.balanceTodayData = JSON.stringify(exports.parseTodayData(data.today))
-  ret.sumByStockData = JSON.stringify(data.stocksBalance)
+  // ret.todayTitle = `${data.todaySum.lastSum} (${data.todaySum.balance})`
+  // ret.balanceTodayData = JSON.stringify(exports.parseTodayData(data.today))
+  ret.balanceByStockData = JSON.stringify(data.stocksBalance)
+  ret.sumStocksBalanceByCurrency = JSON.stringify(data.sumStocksBalanceByCurrency)
 
   return ret
 }

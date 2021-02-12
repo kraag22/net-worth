@@ -148,10 +148,25 @@ describe('data function', () => {
 
     const result = await data.getStocksBalance(db, orders)
     expect(result.length).toBe(13)
-
+    expect(result[0].currency).toBe('USD')
+    expect(result[0].name).toBe('Microsoft')
+    expect(result[0].price).toBe(4774)
     let sum = 0
     result.forEach(item => sum+= item.price + item.balance)
     expect(sum).toBe(57676)
+  })
+
+  it('sumStocksBalanceByCurrency() should work', async () => {
+    const ordersData = await data.getOrdersData(db)
+    const {orders} = data.getOrders(ordersData)
+    const stocksBalance = await data.getStocksBalance(db, orders)
+
+    const result = data.sumStocksBalanceByCurrency(stocksBalance)
+    expect(result.length).toBe(3)
+    expect(result[1].price).toBe(34863)
+    expect(result[1].currency).toBe('CZK')
+    expect(result[1].balance).toBe(-350)
+    expect(result[1].percents).toBe(-1.003929667555866)
   })
 
   it('getStocksBalance() should work with name change', async () => {

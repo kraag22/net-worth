@@ -65,33 +65,46 @@ class Chart {
   }
 }
 
-///////////////
-//  TODAY    //
-///////////////
-let today = new Chart('balance_today', balanceTodayData)
-today.setTitle('Today change ' + todayTitle)
-let todayAxeX = today.setCategoryAxeX('name')
-let todayAxeY = today.setAxeY(am4charts.ValueAxis)
-todayAxeY.renderer.minWidth = 50;
+/////////////////////////////////////
+//  BALANCE SUMMARY BY CURRENCY    //
+/////////////////////////////////////
+let sumBalanceByCurr = new Chart('sum_balance_by_currency', sumStocksBalanceByCurrency)
+sumBalanceByCurr.setTitle('Balance summary by currency')
+let sumBalAxeX = sumBalanceByCurr.setCategoryAxeX('currency')
+let sumBalAxeY = sumBalanceByCurr.setAxeY(am4charts.ValueAxis)
+sumBalAxeY.renderer.minWidth = 50;
 
-let todaySerie = today.setSerie(am4charts.ColumnSeries,
-  'categoryX', 'name', 'balance', 3, '[{categoryX}: bold]{valueY}[/]', 0.8)
-todaySerie.sequencedInterpolation = true;
-todaySerie.columns.template.strokeWidth = 0;
-todaySerie.tooltip.pointerOrientation = "vertical";
-todaySerie.columns.template.column.fillOpacity = 0.8;
+let sumBalSerie = sumBalanceByCurr.setSerie(am4charts.ColumnSeries,
+  'categoryX', 'currency', 'balance', 3, '[{categoryX}: bold]{valueY}[/]', 0.8)
+sumBalSerie.sequencedInterpolation = true;
+sumBalSerie.columns.template.strokeWidth = 0;
+sumBalSerie.tooltip.pointerOrientation = "vertical";
+sumBalSerie.columns.template.column.fillOpacity = 0.8;
 
-let todayHoverState = todaySerie.columns.template.column.states.create("hover");
-todayHoverState.properties.fillOpacity = 1;
+let sumBalHoverState = sumBalSerie.columns.template.column.states.create("hover");
+sumBalHoverState.properties.fillOpacity = 1;
 
-today.setRange(todayAxeY, todaySerie, false)
-today.setRange(todayAxeY, todaySerie, true)
+sumBalanceByCurr.setRange(sumBalAxeY, sumBalSerie, true)
+sumBalanceByCurr.setRange(sumBalAxeY, sumBalSerie, false)
 
+let sumBalAxeY2 = sumBalanceByCurr.setAxeY(am4charts.ValueAxis)
+sumBalAxeY2.renderer.opposite = true;
+
+let priceSerie = sumBalanceByCurr.setSerie(am4charts.LineSeries,
+  'categoryX', 'currency', 'percents', 3, "{valueY.formatNumber('#.0')}%[/]", 0)
+priceSerie.sequencedInterpolation = true;
+priceSerie.yAxis = sumBalAxeY2;
+priceSerie.tooltip.pointerOrientation = "vertical";
+priceSerie.bullets.push(new am4charts.CircleBullet());
+priceSerie.strokeWidth = 0;
+
+priceSerie.cursor = new am4charts.XYCursor();
+priceSerie.cursor.behavior = "panX";
 
 ///////////////
 //  STOCKS   //
 ///////////////
-let stocks = new Chart('sum_by_stock', sumByStockData);
+let stocks = new Chart('balance_by_stock', balanceByStockData);
 stocks.setTitle('Stocks performance');
 let stocksAxeX = stocks.setCategoryAxeX('name')
 let stocksAxeY = stocks.setAxeY(am4charts.ValueAxis)
