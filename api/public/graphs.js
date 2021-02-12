@@ -68,7 +68,7 @@ class Chart {
 ///////////////
 //  TODAY    //
 ///////////////
-let today = new Chart('today', todayChart)
+let today = new Chart('balance_today', balanceTodayData)
 today.setTitle('Today change ' + todayTitle)
 let todayAxeX = today.setCategoryAxeX('name')
 let todayAxeY = today.setAxeY(am4charts.ValueAxis)
@@ -91,7 +91,7 @@ today.setRange(todayAxeY, todaySerie, true)
 ///////////////
 //  STOCKS   //
 ///////////////
-let stocks = new Chart('stocks', stockChart);
+let stocks = new Chart('sum_by_stock', sumByStockData);
 stocks.setTitle('Stocks performance');
 let stocksAxeX = stocks.setCategoryAxeX('name')
 let stocksAxeY = stocks.setAxeY(am4charts.ValueAxis)
@@ -113,7 +113,7 @@ stocks.setRange(stocksAxeY, stocksSerie, true)
 ////////////////
 //  INVESTED  //
 ////////////////
-let invested = new Chart('chartdiv', xyChart);
+let invested = new Chart('invested_vs_value', sumByCurrencyData);
 invested.setTitle('Invested vs. current value');
 invested.setScrollBarX();
 invested.chart.hiddenState.properties.opacity = 0;
@@ -143,7 +143,7 @@ invested.chart.cursor.xAxis = investedAxeX;
 ///////////////
 //  BALANCE  //
 ///////////////
-let balance = new Chart('balance', balanceChart);
+let balance = new Chart('balance', balanceData);
 balance.setTitle('Gains/loses');
 balance.setScrollBarX();
 let balanceAxeX = balance.setAxeX(am4charts.DateAxis)
@@ -160,7 +160,7 @@ balance.chart.cursor.xAxis = balanceAxeX;
 ///////////////////////
 // CURRENCY BALANCE  //
 ///////////////////////
-let currencyBalance = new Chart('currency', currencyBalanceChart);
+let currencyBalance = new Chart('currency_balance', currencyBalanceData);
 currencyBalance.setTitle('Currency balance');
 currencyBalance.setScrollBarX();
 let currencyBalanceAxeX = currencyBalance.setAxeX(am4charts.DateAxis)
@@ -182,10 +182,10 @@ currencyBalance.chart.cursor.xAxis = currencyBalanceAxeX;
 
 
 /////////////////////////
-//  STOCKS BY CURRENCY //
+//  SUM BY CURRENCY    //
 /////////////////////////
-let stocksByCurrency = new Chart('currency_totals', xyChart);
-stocksByCurrency.setTitle('Stocks by currency');
+let stocksByCurrency = new Chart('sum_by_currency', sumByCurrencyData);
+stocksByCurrency.setTitle('Sum by currency');
 stocksByCurrency.setScrollBarX();
 
 let stocksByCurrencyAxeX = stocksByCurrency.setAxeX(am4charts.DateAxis)

@@ -16,11 +16,11 @@
 
 <body>
   <script>
-    var xyChart = {{{xyChart}}};
-    var balanceChart = {{{balanceChart}}};
-    var currencyBalanceChart = {{{currencyBalanceChart}}};
-    var todayChart = {{{todayChart}}};
-    var stockChart = {{{stockChart}}};
+    var sumByCurrencyData = {{{sumByCurrencyData}}};
+    var balanceData = {{{balanceData}}};
+    var currencyBalanceData = {{{currencyBalanceData}}};
+    var balanceTodayData = {{{balanceTodayData}}};
+    var sumByStockData = {{{sumByStockData}}};
     var todayTitle = "{{{todayTitle}}}";
   </script>
 
@@ -28,12 +28,12 @@
   <script src="static/amcharts/charts.js"></script>
   <script src="static/amcharts/animated.js"></script>
   <div class="charts">
-    <div id="today" class="big"></div>
-    <div id="stocks" class="big"></div>
-    <div id="chartdiv" class="small"></div>
+    <div id="balance_today" class="big"></div>
+    <div id="sum_by_stock" class="big"></div>
+    <div id="invested_vs_value" class="small"></div>
     <div id="balance" class="small"></div>
-    <div id="currency" class="big"></div>
-    <div id="currency_totals" class="big"></div>
+    <div id="currency_balance" class="big"></div>
+    <div id="sum_by_currency" class="big"></div>
   </div>
 
   <script src="static/graphs.js"></script>

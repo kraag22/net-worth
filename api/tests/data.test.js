@@ -176,11 +176,11 @@ describe('graphData function', () => {
 
   it('getGraphData() should work', async () => {
     const graphData = await data.getGraphData(db)
-    const xyChart = JSON.parse(graphData.xyChart)
+    const sumByCurrencyData = JSON.parse(graphData.sumByCurrencyData)
 
-    expect(xyChart.length).toBe(1)
-    expect(xyChart[0].invested).toBe(65803)
-    expect(xyChart[0].current).toBe(58841)
+    expect(sumByCurrencyData.length).toBe(1)
+    expect(sumByCurrencyData[0].invested).toBe(65803)
+    expect(sumByCurrencyData[0].current).toBe(58841)
   })
 
   it('parseTodayData() should work', async () => {
