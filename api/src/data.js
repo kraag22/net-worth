@@ -259,9 +259,9 @@ exports.getGraphData = async db => {
   const ret = {}
   const data = await exports.getAllData(db)
 
-  const xyChart = []
-  const balanceChart = []
-  const currencyBalanceChart = []
+  const sumByCurrencyData = []
+  const balanceData = []
+  const currencyBalanceData = []
   let invested = c.INITIAL_INVESTMENT
 
   data.daily.forEach(item => {
@@ -269,7 +269,7 @@ exports.getGraphData = async db => {
       invested = data.timeline[item.date]
     }
     const date = exports.parseDate(item.date)
-    xyChart.push({
+    sumByCurrencyData.push({
       date: date,
       current: item.value,
       usd_value: item.usd_value,
@@ -278,12 +278,12 @@ exports.getGraphData = async db => {
       invested: invested
     })
 
-    balanceChart.push({
+    balanceData.push({
       date: date,
       balance: Math.round(item.value - invested)
     })
 
-    currencyBalanceChart.push({
+    currencyBalanceData.push({
       date: date,
       balance: item.sum_balance,
       usd_balance: item.usd_balance,
@@ -291,12 +291,12 @@ exports.getGraphData = async db => {
     })
   })
 
-  ret.xyChart = JSON.stringify(xyChart)
-  ret.balanceChart = JSON.stringify(balanceChart)
-  ret.currencyBalanceChart = JSON.stringify(currencyBalanceChart)
+  ret.sumByCurrencyData = JSON.stringify(sumByCurrencyData)
+  ret.balanceData = JSON.stringify(balanceData)
+  ret.currencyBalanceData = JSON.stringify(currencyBalanceData)
   ret.todayTitle = `${data.todaySum.lastSum} (${data.todaySum.balance})`
-  ret.todayChart = JSON.stringify(exports.parseTodayData(data.today))
-  ret.stockChart = JSON.stringify(data.stocksBalance)
+  ret.balanceTodayData = JSON.stringify(exports.parseTodayData(data.today))
+  ret.sumByStockData = JSON.stringify(data.stocksBalance)
 
   return ret
 }
