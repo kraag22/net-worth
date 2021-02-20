@@ -323,3 +323,19 @@ exports.getGraphData = async db => {
 
   return ret
 }
+
+exports.getImportStatus = async (db, now) => {
+  const today = exports.getDateString(now)
+  const sql = `select * from stocks where created_at like '${today}%' ` +
+              'limit 100'
+  const data = await storage.call(db, sql)
+
+  const ret = {}
+  ret.import_status = (data?.length > 0) ? 'OK' : 'FAILED'
+
+  if (now.getHours() < 1) {
+    // after midnight is everything OK :)
+    ret.import_status = 'OK'
+  }
+  return ret
+}

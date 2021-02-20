@@ -97,12 +97,13 @@ storage.connectDb('../data/stocks.db').then(db => {
     }
   })
 
-  app.get('/script.js', (req, res, next) => {
-    logger.info('path /script.js called')
+  app.get('/status', async (req, res, next) => {
+    logger.info('path /status called')
     try {
-      res.render('script')
+      const state = await data.getImportStatus(db, new Date())
+      res.render('status', state)
     } catch (e) {
-      logger.error('API /script.js failed', e)
+      logger.error('API /status.html failed', e)
       next(e)
     }
   })
