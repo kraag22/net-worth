@@ -180,6 +180,32 @@ describe('data function', () => {
     expect(nokia.balance).toBe(593)
   })
 
+  it('getImportStatus() should work', async () => {
+    const ret = await data.getImportStatus(db, new Date())
+
+    expect(ret.import_status).toBe('OK')
+
+
+    const futureDate = new Date()
+    futureDate.setDate(futureDate.getDate() + 10)
+    const retFail = await data.getImportStatus(db, futureDate)
+
+    expect(retFail.import_status).toBe('FAILED')
+  })
+
+  it('getImportStatus() should work after midnight', async () => {
+    const afterMidnight = new Date()
+    afterMidnight.setDate(afterMidnight.getDate() + 10)
+    afterMidnight.setHours(0)
+    afterMidnight.setMinutes(10)
+    const ret = await data.getImportStatus(db, afterMidnight)
+
+    expect(ret.import_status).toBe('OK')
+
+    afterMidnight.setHours(1)
+    const retFail = await data.getImportStatus(db, afterMidnight)
+    expect(retFail.import_status).toBe('FAILED')
+  })
 })
 
 describe('graphData function', () => {
