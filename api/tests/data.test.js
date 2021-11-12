@@ -127,9 +127,19 @@ describe('data function', () => {
     expect(result.balance).toEqual('-200')
   })
 
-  it('getOrdersData(), getOrders() and getTotalOrder() should work', async () => {
+  it('computeAndStoreOrdersData() should work', async () => {
     await insertStocks(db)
+    let ordersData = await data.getOrdersData(db)
+    expect(ordersData.length).toEqual(13)
 
+    await data.computeAndStoreOrdersData(db)
+    await data.computeAndStoreOrdersData(db)
+
+    ordersData = await data.getOrdersData(db)
+    expect(ordersData.length).toEqual(18)
+  })
+
+  it('getOrdersData(), getOrders() and getTotalOrder() should work', async () => {
     const ordersData = await data.getOrdersData(db)
     expect(ordersData.length).toEqual(18)
     expect(ordersData[8].value).toEqual(6398)

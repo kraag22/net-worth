@@ -21,6 +21,7 @@ exports.getPortfolio = async (degiro, fixer) => {
 exports.importPortfolio = async (degiro, db, fixer) => {
   const portfolio = await exports.getPortfolio(degiro, fixer)
   await storage.insert(db, portfolio)
+  await exports.computeAndStoreOrdersData(db)
 }
 
 exports.groupPortfolio = async (db, groupBy) => {
@@ -85,16 +86,25 @@ exports.sumTodaysData = todaysData => {
   return {lastSum, balance}
 }
 
-exports.getOrdersData = async db => {
+exports.computeAndStoreOrdersData = async db => {
   const cashFunds = c.CASH_FUNDS.join(',')
 
-  const sql = 'select s.id, s.name, round(s.price * s.size * s.ratio) as value, ' +
+  await storage.run(db, `delete from ${storage.EVENTS_TABLE}`)
+
+  const sql = `insert into ${storage.EVENTS_TABLE} select s.id, s.name, ` +
+    'round(s.price * s.size * s.ratio) as value, ' +
     's.price, s.size, s.ratio, s.currency, ' +
     `strftime('%Y-%m-%d', s.created_at) as date from ` +
     '(select id, name, min(created_at) as first_created_at ' +
-    'from stocks group by id, size) as sm left join stocks as s ' +
+    `from ${storage.STOCKS_TABLE} group by id, size) as sm ` +
+    `left join ${storage.STOCKS_TABLE} as s ` +
     'on sm.id=s.id and sm.first_created_at=s.created_at ' +
     `where s.id not in (${cashFunds}) order by s.created_at`
+  return storage.run(db, sql)
+}
+
+exports.getOrdersData = async db => {
+  const sql = `select * from ${storage.EVENTS_TABLE} order by date`
   return storage.call(db, sql)
 }
 
