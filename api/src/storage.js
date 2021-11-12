@@ -4,9 +4,11 @@ const c = require('./constants')
 const columns = ['id', 'price', 'size', 'value', 'name', 'currency', 'ratio']
 const STOCKS_TABLE = 'stocks'
 const STOCKS_DAILY_TABLE = 'stocks_by_daily'
+const EVENTS_TABLE = 'events'
 
 exports.STOCKS_TABLE = STOCKS_TABLE
 exports.STOCKS_DAILY_TABLE = STOCKS_DAILY_TABLE
+exports.EVENTS_TABLE = EVENTS_TABLE
 
 const flattenItem = value => {
   const ret = []
@@ -61,9 +63,22 @@ exports.createTable = db => {
     'ratio real' +
     ')'
 
+  const eventsTable =`CREATE TABLE IF NOT EXISTS ${EVENTS_TABLE} (` +
+    'id TEXT, ' +
+    'name TEXT, ' +
+    'value real, ' +
+    'price real, ' +
+    'size real, ' +
+    'ratio real,' +
+    'currency TEXT, ' +
+    'date TEXT' +
+    ')'
+
+
   return Promise.all([
     exports.run(db, stocksTable),
     exports.run(db, stocksDailyTable),
+    exports.run(db, eventsTable),
     exports.run(db, exports.getViewSql('hourly', false)),
     exports.run(db, exports.getViewSql('daily', false)),
     exports.run(db, exports.getViewSql('monthly', false),
