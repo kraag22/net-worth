@@ -150,8 +150,7 @@ exports.getTotalOrder = orderData => {
 
 exports.getStocksNewest = async db => {
   let sql = `select round(price * size * ratio) as price, id, size, name `
-  sql += `from stocks where strftime('%Y-%m-%dT%H:%M:%S', created_at)=`
-  sql += `(select strftime('%Y-%m-%dT%H:%M:%S', created_at) from stocks order `
+  sql += `from stocks where created_at=(select created_at from stocks order `
   sql += `by created_at desc limit 1)`
   return storage.call(db, sql)
 }
@@ -327,7 +326,7 @@ exports.getGraphData = async db => {
 exports.getImportStatus = async (db, now) => {
   const today = exports.getDateString(now)
   const sql = `select * from stocks where created_at like '${today}%' ` +
-              'limit 100'
+              'order by created_at desc limit 100'
   const data = await storage.call(db, sql)
 
   const ret = {}
