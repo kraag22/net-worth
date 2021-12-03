@@ -5,6 +5,7 @@ const columns = ['id', 'price', 'size', 'value', 'name', 'currency', 'ratio']
 const STOCKS_TABLE = 'stocks'
 const STOCKS_DAILY_TABLE = 'stocks_by_daily'
 const EVENTS_TABLE = 'events'
+const REAILTY_TABLE = 'reality'
 
 exports.STOCKS_TABLE = STOCKS_TABLE
 exports.STOCKS_DAILY_TABLE = STOCKS_DAILY_TABLE
@@ -16,7 +17,7 @@ const flattenItem = value => {
   return ret
 }
 
-const getInsertQuestionmarks = () => {
+const getInsertQuestionmarks = (columns) => {
   const questionmarks = columns.map(col => '?').join(',')
   return `(${questionmarks}, DATETIME('now'))`
 }
@@ -74,11 +75,18 @@ exports.createTable = db => {
     'date TEXT' +
     ')'
 
+  const realityTabel =`CREATE TABLE IF NOT EXISTS ${REAILTY_TABLE} (` +
+    'name TEXT, ' +
+    'price real, ' +
+    'created_at TEXT' +
+    ')'
+
 
   return Promise.all([
     exports.run(db, stocksTable),
     exports.run(db, stocksDailyTable),
     exports.run(db, eventsTable),
+    exports.run(db, realityTabel),
     exports.run(db, exports.getViewSql('hourly', false)),
     exports.run(db, exports.getViewSql('daily', false)),
     exports.run(db, exports.getViewSql('monthly', false),
@@ -86,10 +94,29 @@ exports.createTable = db => {
     exports.run(db, exports.getViewSql('monthly', true)))])
 }
 
+exports.insertReality = (db, name, averagePrice) => {
+  const values = [name, averagePrice]
+  let sql = `INSERT INTO ${REAILTY_TABLE} `
+  sql += '(name, price, created_at) VALUES '
+  sql += getInsertQuestionmarks(values)
+
+  let params = values
+  return new Promise((resolve, reject) => {
+    db.run(sql, params, (err) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve()
+      }
+    })
+  })
+}
+
+//TODO: create insertStocks(), create reusable insert() function
 exports.insert = (db, values) => {
   let sql = `INSERT INTO ${STOCKS_TABLE} `
   sql += '(id, price, size, value, name, currency, ratio, created_at) VALUES '
-  sql += values.map(value => getInsertQuestionmarks()).join(',')
+  sql += values.map(value => getInsertQuestionmarks(columns)).join(',')
 
   let params = []
   values.forEach(value => params = params.concat(flattenItem(value)))
