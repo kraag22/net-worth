@@ -1,6 +1,7 @@
 {
   "collectCoverage": true,
   "collectCoverageFrom": [
-  "src/*"
+  "src/*",
+  "src/reality/*"
   ]
 }
