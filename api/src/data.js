@@ -20,7 +20,7 @@ exports.getPortfolio = async (degiro, fixer) => {
 
 exports.importPortfolio = async (degiro, db, fixer) => {
   const portfolio = await exports.getPortfolio(degiro, fixer)
-  await storage.insert(db, portfolio)
+  await storage.insertStocks(db, portfolio)
   await exports.computeAndStoreOrdersData(db)
 }
 

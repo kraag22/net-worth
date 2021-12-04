@@ -94,13 +94,7 @@ exports.createTable = db => {
     exports.run(db, exports.getViewSql('monthly', true)))])
 }
 
-exports.insertReality = (db, name, averagePrice) => {
-  const values = [name, averagePrice]
-  let sql = `INSERT INTO ${REAILTY_TABLE} `
-  sql += '(name, price, created_at) VALUES '
-  sql += getInsertQuestionmarks(values)
-
-  let params = values
+exports.insert = (db, sql, params) => {
   return new Promise((resolve, reject) => {
     db.run(sql, params, (err) => {
       if (err) {
@@ -112,8 +106,16 @@ exports.insertReality = (db, name, averagePrice) => {
   })
 }
 
-//TODO: create insertStocks(), create reusable insert() function
-exports.insert = (db, values) => {
+exports.insertReality = (db, name, averagePrice) => {
+  const values = [name, averagePrice]
+  let sql = `INSERT INTO ${REAILTY_TABLE} `
+  sql += '(name, price, created_at) VALUES '
+  sql += getInsertQuestionmarks(values)
+
+  return exports.insert(db, sql, values)
+}
+
+exports.insertStocks = (db, values) => {
   let sql = `INSERT INTO ${STOCKS_TABLE} `
   sql += '(id, price, size, value, name, currency, ratio, created_at) VALUES '
   sql += values.map(value => getInsertQuestionmarks(columns)).join(',')
@@ -121,15 +123,7 @@ exports.insert = (db, values) => {
   let params = []
   values.forEach(value => params = params.concat(flattenItem(value)))
 
-  return new Promise((resolve, reject) => {
-    db.run(sql, params, (err) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve()
-      }
-    })
-  })
+  return exports.insert(db, sql, params)
 }
 
 exports.getViewSql = (groupBy, lastValue, selectOnly, where) => {
