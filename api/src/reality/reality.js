@@ -4,8 +4,7 @@ const fs = require('fs')
 const {logger} = require('../../logs.js')
 const storage = require('../storage.js')
 
-
-exports.storeAveragePrice = async (db, name, url) => {
+exports.storeAveragePrice = async (db, makeRequest, name, url) => {
   let html = ''
   try {
     html = await makeRequest(url)
@@ -22,17 +21,6 @@ exports.storeAveragePrice = async (db, name, url) => {
   }
 
   return "nothing_inserted"
-}
-
-// TODO: export to scrapper class, mock it in tests and test storeAveragePrice()
-async function makeRequest(url) {
-  const browser = await puppeteer.launch()
-  const page = await browser.newPage()
-  await page.goto(url)
-  let html = await page.content()
-
-  await browser.close()
-  return html
 }
 
 exports.computeAveragePricePerSquareMeter = (flats) => {
@@ -60,8 +48,8 @@ exports.parseHtml = (html) => {
 
   list.forEach(node => {
     properties.push({
-      "title": node.querySelector('a.title span').innerHTML,
-      "price": node.querySelector('span.price span.norm-price').innerHTML
+      "title": node.querySelector('a.title span')?.innerHTML,
+      "price": node.querySelector('span.price span.norm-price')?.innerHTML
     })
   })
   return properties

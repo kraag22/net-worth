@@ -1,13 +1,23 @@
 const fs = require('fs')
-var path = require('path')
+const path = require('path')
+const storage = require('../src/storage.js')
 const reality = require('../src/reality/reality.js')
+const {makeRequest, makeRejectRequest, makeEmptyRequest} = require('./mockScrapper.js')
 
-beforeAll(() => {
-    const html = fs.readFileSync(path.join('tests','reality.txt'), 'utf8')
-    parsedLines = reality.parseHtml(html)
+beforeAll(async () => {
+  const html = fs.readFileSync(path.join('tests','reality.txt'), 'utf8')
+  parsedLines = reality.parseHtml(html)
+  db = await storage.connectDb(':memory:')
 })
 
-describe("parsing data", () => {
+afterAll((done) => {
+  db.close(err => {
+    expect(err).toBeNull()
+    done()
+  })
+})
+
+describe("reality", () => {
   it("parseHtml() should work", () => {
     expect(parsedLines).toHaveLength(9)
     expect(parsedLines[3].title).toBe('Prodej bytu 2+1&nbsp;43&nbsp;m²')
@@ -57,5 +67,22 @@ describe("parsing data", () => {
     expect(reality.computeAveragePricePerSquareMeter(
       [randomFlat, randomFlat, randomFlat]
     )).toBe(19_767)
+  })
+})
+
+describe("storeAveragePrice", () => {
+  it("should work", async () => {
+    const result = await reality.storeAveragePrice(db, makeRequest, 'jihlava2kk', 'https://xxx.cz')
+    expect(result).toBe("ok")
+  })
+
+  it("should handle error well", async () => {
+    const result = await reality.storeAveragePrice(db, makeRejectRequest, 'jihlava2kk', 'https://xxx.cz')
+    expect(result).toBe("error")
+  })
+
+  it("should handle empty input", async () => {
+    const result = await reality.storeAveragePrice(db, makeEmptyRequest, 'jihlava2kk', 'https://xxx.cz')
+    expect(result).toBe("nothing_inserted")
   })
 })

@@ -1,0 +1,10 @@
+<!DOCTYPE html><html lang="cs" ng-app="sreality" ng-controller="MainCtrl" class="ng-scope"><head>
+</head>
+<body>
+
+<div class="dir-property-list">
+  <div class="property">
+    <span class="basic"></span>
+  </div>
+</div>
+</body></html>
