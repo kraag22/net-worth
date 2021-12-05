@@ -30,7 +30,7 @@ describe('insert()', () => {
     }
     const sql = 'select id, price, size, value, name, currency, ratio from stocks'
 
-    await storage.insert(db, [expected, expected])
+    await storage.insertStocks(db, [expected, expected])
 
     const rows = await storage.call(db, sql)
     expect(rows.length).toBe(2)
@@ -85,7 +85,7 @@ describe('updateCurrencies()', () => {
     const expectedDate = (new Date()).toISOString().split('T')[0]
     const rates = await fixer.getRates()
 
-    await storage.insert(db, [eur, czk])
+    await storage.insertStocks(db, [eur, czk])
 
     const rows = await storage.call(db, sql)
     expect(rows.length).toBe(2)
