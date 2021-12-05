@@ -1,5 +1,4 @@
 const { JSDOM } = require("jsdom")
-const puppeteer = require('puppeteer')
 const fs = require('fs')
 const {logger} = require('../../logs.js')
 const storage = require('../storage.js')
