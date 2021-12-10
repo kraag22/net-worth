@@ -8,6 +8,7 @@ const storage = require('./src/storage.js')
 const mustacheExpress = require('mustache-express')
 const {logger} = require('./logs.js')
 const c = require('./src/constants.js')
+const {makeRequest} = require('./src/reality/scrapper.js')
 
 console.log('Env variables loaded from .env file.')
 require('dotenv').config({ path: __dirname + '/../.env' })
@@ -91,8 +92,8 @@ storage.connectDb('../data/stocks.db').then(db => {
   app.get('/reality/import', async (req, res, next) => {
     logger.info('API /reality/import called')
     try {
-      const status = await reality.storeAveragePrice(db, 'jihlava2kk', c.jihlava_2_rooms_url)
-      const status2 = await reality.storeAveragePrice(db, 'holesovice3_4kk', c.praha_3_4_rooms_url)
+      const status = await reality.storeAveragePrice(db, makeRequest, 'jihlava2kk', c.jihlava_2_rooms_url)
+      const status2 = await reality.storeAveragePrice(db, makeRequest, 'holesovice3_4kk', c.praha_3_4_rooms_url)
       res.json({statusJihlava: status, statusPraha: status2})
     } catch (e) {
       logger.error('API /reality/import failed', e)
