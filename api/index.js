@@ -94,7 +94,8 @@ storage.connectDb('../data/stocks.db').then(db => {
     try {
       const status = await reality.storeAveragePrice(db, makeRequest, 'jihlava2kk', c.jihlava_2_rooms_url)
       const status2 = await reality.storeAveragePrice(db, makeRequest, 'holesovice3_4kk', c.praha_3_4_rooms_url)
-      res.json({statusJihlava: status, statusPraha: status2})
+      const status3 = await reality.storeAveragePrice(db, makeRequest, 'holesovice1kk', c.praha_1_rooms_url)
+      res.json({statusJihlava: status, statusPraha: status2, statusPraha1kk: status3})
     } catch (e) {
       logger.error('API /reality/import failed', e)
       next(e)
