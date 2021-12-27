@@ -33,9 +33,11 @@ describe("reality", () => {
       reality.parseFloorSize(parsedLines[5].title)
     ).toBe(68)
 
-    expect(reality.parseFloorSize("Prodej bytu 2+1 43&nbsp;m²")).toBe(null)
+    expect(reality.parseFloorSize("Prodej bytu 2+1 43&nbsp;m²")).toBe(43)
     expect(reality.parseFloorSize("Prodej bytu 2+1&nbsp;43&nbsp;")).toBe(null)
     expect(reality.parseFloorSize("Prodej bytu 2+1")).toBe(null)
+    expect(reality.parseFloorSize("Prodej bytu 1+kk 30&nbsp;m²")).toBe(30)
+
     expect(reality.parseFloorSize("")).toBe(null)
     expect(reality.parseFloorSize()).toBe(null)
   })
@@ -60,7 +62,7 @@ describe("reality", () => {
       title:"&nbsp;43&nbsp;m²",
       price: "850&nbsp;000&nbsp;Kč"
     }
-    expect(reality.computeAveragePricePerSquareMeter(parsedLines)).toBe(59_635)
+    expect(reality.computeAveragePricePerSquareMeter(parsedLines)).toBe(60_689)
     expect(reality.computeAveragePricePerSquareMeter([])).toBeNull()
     expect(reality.computeAveragePricePerSquareMeter([{title:"x", price: "y"}])).toBeNull()
     expect(reality.computeAveragePricePerSquareMeter([randomFlat, randomFlat])).toBeNull()

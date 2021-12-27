@@ -55,7 +55,7 @@ exports.parseHtml = (html) => {
 }
 
 exports.parseFloorSize = (title) => {
-  const regex = /&nbsp;(\d+)&nbsp;m²/
+  const regex = /(\d+)&nbsp;m²/
   const found = title?.match(regex)
   if (found?.length > 1) {
     return parseInt(found[1])
