@@ -5,11 +5,12 @@ const columns = ['id', 'price', 'size', 'value', 'name', 'currency', 'ratio']
 const STOCKS_TABLE = 'stocks'
 const STOCKS_DAILY_TABLE = 'stocks_by_daily'
 const EVENTS_TABLE = 'events'
-const REAILTY_TABLE = 'reality'
+const REALITY_TABLE = 'reality'
 
 exports.STOCKS_TABLE = STOCKS_TABLE
 exports.STOCKS_DAILY_TABLE = STOCKS_DAILY_TABLE
 exports.EVENTS_TABLE = EVENTS_TABLE
+exports.REALITY_TABLE = REALITY_TABLE
 
 const flattenItem = value => {
   const ret = []
@@ -75,7 +76,7 @@ exports.createTable = db => {
     'date TEXT' +
     ')'
 
-  const realityTabel =`CREATE TABLE IF NOT EXISTS ${REAILTY_TABLE} (` +
+  const realityTabel =`CREATE TABLE IF NOT EXISTS ${REALITY_TABLE} (` +
     'name TEXT, ' +
     'price real, ' +
     'created_at TEXT' +
@@ -108,7 +109,7 @@ exports.insert = (db, sql, params) => {
 
 exports.insertReality = (db, name, averagePrice) => {
   const values = [name, averagePrice]
-  let sql = `INSERT INTO ${REAILTY_TABLE} `
+  let sql = `INSERT INTO ${REALITY_TABLE} `
   sql += '(name, price, created_at) VALUES '
   sql += getInsertQuestionmarks(values)
 

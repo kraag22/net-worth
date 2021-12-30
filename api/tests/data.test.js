@@ -226,12 +226,19 @@ describe('graphData function', () => {
   })
 
   it('getGraphData() should work', async () => {
+    await storage.insertReality(db, "jezdovice3kk", 23_445)
+
     const graphData = await data.getGraphData(db)
     const sumByCurrencyData = JSON.parse(graphData.sumByCurrencyData)
 
     expect(sumByCurrencyData.length).toBe(1)
     expect(sumByCurrencyData[0].invested).toBe(65803)
     expect(sumByCurrencyData[0].current).toBe(58841)
+
+    const realityData = JSON.parse(graphData.realityData)
+
+    expect(realityData.length).toBe(1)
+
   })
 
   it('parseTodayData() should work', async () => {

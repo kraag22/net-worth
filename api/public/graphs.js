@@ -219,3 +219,27 @@ stocksByCurrency.setSerie(am4charts.LineSeries,
   'dateX', 'date', 'other_value', 2, '{valueY.value} CZK (other)', 0)
 
 stocksByCurrency.chart.cursor.xAxis = stocksByCurrencyAxeX;
+
+
+/////////////////////////////
+//  REALITY PRICE PER m^2  //
+/////////////////////////////
+let realityPricePerMeter = new Chart('reality_price_per_meter', realityData);
+realityPricePerMeter.setTitle('Price per m^2');
+realityPricePerMeter.setScrollBarX();
+
+let realityPricePerMeterAxeX = realityPricePerMeter.setAxeX(am4charts.DateAxis)
+realityPricePerMeterAxeX.startLocation = 0.5;
+realityPricePerMeterAxeX.endLocation = 0.5;
+let realityPricePerMeterAxeY = realityPricePerMeter.setAxeY(am4charts.ValueAxis);
+
+realityPricePerMeter.setSerie(am4charts.LineSeries,
+  'dateX', 'date', 'jihlava2kk', 2, 'jihlava2kk {valueY.value} CZK', 0)
+
+realityPricePerMeter.setSerie(am4charts.LineSeries,
+  'dateX', 'date', 'holesovice3_4kk', 2, 'holesovice3_4kk {valueY.value} CZK', 0)
+
+realityPricePerMeter.setSerie(am4charts.LineSeries,
+  'dateX', 'date', 'holesovice1kk', 2, 'holesovice1kk {valueY.value} CZK', 0)
+
+realityPricePerMeter.chart.cursor.xAxis = realityPricePerMeterAxeX;

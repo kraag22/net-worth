@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const storage = require('../src/storage.js')
 const reality = require('../src/reality/reality.js')
+const data = require("../src/reality/data.js")
 const {makeRequest, makeRejectRequest, makeEmptyRequest} = require('./mockScrapper.js')
 
 beforeAll(async () => {
@@ -86,5 +87,17 @@ describe("storeAveragePrice", () => {
   it("should handle empty input", async () => {
     const result = await reality.storeAveragePrice(db, makeEmptyRequest, 'jihlava2kk', 'https://xxx.cz')
     expect(result).toBe("nothing_inserted")
+  })
+})
+
+describe("reality data", () => {
+  it("getRealityData should work", async () => {
+    await storage.insertReality(db, "jezdovice3kk", 23_445)
+    await storage.insertReality(db, "jezdovice2kk", 3_445)
+
+    const result = await data.getRealityData(db)
+    expect(result[0].jihlava2kk).toBe(60_689)
+    expect(result[0].jezdovice3kk).toBe(23_445)
+    expect(result[0].jezdovice2kk).toBe(3_445)
   })
 })
