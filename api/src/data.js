@@ -1,6 +1,7 @@
 const axios = require('axios')
 const parse = require('./parse_api.js')
 const storage = require('./storage.js')
+const realityData = require('./reality/data.js')
 const {logger} = require('../logs.js')
 const c = require('./constants')
 
@@ -266,6 +267,7 @@ exports.getAllData = async db => {
   ret.stocksBalance = await exports.getStocksBalance(db, orders)
   ret.sumStocksBalanceByCurrency = exports.sumStocksBalanceByCurrency(ret.stocksBalance)
   ret.totalOrder = exports.getTotalOrder(ret.timeline)
+  ret.realityData = await realityData.getRealityData(db)
   return ret
 }
 
@@ -329,6 +331,7 @@ exports.getGraphData = async db => {
   // ret.balanceTodayData = JSON.stringify(exports.parseTodayData(data.today))
   ret.balanceByStockData = JSON.stringify(data.stocksBalance)
   ret.sumStocksBalanceByCurrency = JSON.stringify(data.sumStocksBalanceByCurrency)
+  ret.realityData  = JSON.stringify(data.realityData)
 
   return ret
 }
