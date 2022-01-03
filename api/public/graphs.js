@@ -229,8 +229,6 @@ realityPricePerMeter.setTitle('Price per m^2');
 realityPricePerMeter.setScrollBarX();
 
 let realityPricePerMeterAxeX = realityPricePerMeter.setAxeX(am4charts.DateAxis)
-realityPricePerMeterAxeX.startLocation = 0.5;
-realityPricePerMeterAxeX.endLocation = 0.5;
 let realityPricePerMeterAxeY = realityPricePerMeter.setAxeY(am4charts.ValueAxis);
 
 realityPricePerMeter.setSerie(am4charts.LineSeries,
