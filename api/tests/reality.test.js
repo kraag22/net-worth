@@ -92,12 +92,20 @@ describe("storeAveragePrice", () => {
 
 describe("reality data", () => {
   it("getRealityData should work", async () => {
-    await storage.insertReality(db, "jezdovice3kk", 23_445)
-    await storage.insertReality(db, "jezdovice2kk", 3_445)
+    let sql = `INSERT INTO ${storage.REALITY_TABLE} `
+        sql += '(name, price, created_at) VALUES (?,?,?)'
+
+    await storage.insert(db, sql, ["jihlava2kk", 61_000, "2021-12-25"])
+    await storage.insert(db, sql, ["jezdovice3kk", 23_445, "2021-12-15"])
+    await storage.insert(db, sql, ["jezdovice2kk", 3_445, "2021-12-15"])
+    await storage.insert(db, sql, ["jihlava2kk", 60_000, "2021-12-15"])
 
     const result = await data.getRealityData(db)
-    expect(result[0].jihlava2kk).toBe(60_689)
+    expect(result[0].jihlava2kk).toBe(60_000)
     expect(result[0].jezdovice3kk).toBe(23_445)
     expect(result[0].jezdovice2kk).toBe(3_445)
+    expect(result[0].date).toBe("2021-12-15")
+    expect(result[1].date).toBe("2021-12-25")
+    expect(result[1].jihlava2kk).toBe(61_000)
   })
 })
