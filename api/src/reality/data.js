@@ -1,7 +1,7 @@
 const storage = require('../storage.js')
 
 exports.getRealityData = async db => {
-  const sql = `select * from ${storage.REALITY_TABLE} order by created_at desc`
+  const sql = `select * from ${storage.REALITY_TABLE} order by created_at asc`
   const data = await storage.call(db, sql)
   const parsed = []
   let lastItem = {}
