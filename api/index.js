@@ -102,6 +102,17 @@ storage.connectDb('../data/stocks.db').then(db => {
     }
   })
 
+  app.get('/json/:action', async (req, res, next) => {
+    logger.info(`API /json/${req.params.action} called`)
+    try {
+      const singleData = await data.getSingleData(db, req.params.action)
+      res.json(singleData)
+    } catch (e) {
+      logger.error(`API /json/${req.params.action} failed`, e)
+      next(e)
+    }
+  })
+
   app.get('/', async (req, res, next) => {
     logger.info('path / called')
     try {

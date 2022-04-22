@@ -40,13 +40,16 @@ class Chart {
     return this.chart.yAxes.push(new am4axe());
   }
 
-  setSerie(am4serie, nameX, valueX, valueY, width, tooltip, opacity) {
+  setSerie(am4serie, nameX, valueX, valueY, width, tooltip, opacity, tension = null) {
     let serie = this.chart.series.push(new am4serie());
     serie.dataFields.valueY = valueY;
     serie.dataFields[nameX] = valueX;
     serie.strokeWidth = width;
     serie.tooltipText = tooltip;
     serie.fillOpacity = opacity;
+    if (tension) {
+      serie.tensionX = tension;
+    }
     return serie;
   }
 
@@ -136,14 +139,14 @@ let investedAxeY = invested.setAxeY(am4charts.ValueAxis);
 investedAxeY.tooltip.disabled = true;
 
 let investedSerie = invested.setSerie(am4charts.LineSeries, 'dateX', 'date',
-  'invested', 1, 'current: {openValueY.value} invested: {valueY.value}', 0.3)
+  'invested', 1, 'current: {openValueY.value} invested: {valueY.value}', 0.3, 0.7)
 investedSerie.dataFields.openValueY = "current";
 investedSerie.sequencedInterpolation = true;
 investedSerie.defaultState.transitionDuration = 1500;
 investedSerie.tensionX = 0.8;
 
 let investedCurrentSerie = invested.setSerie(am4charts.LineSeries, 'dateX', 'date',
-  'current', 2, '', 0)
+  'current', 2, '', 0, 0.7)
 
 investedCurrentSerie.sequencedInterpolation = true;
 investedCurrentSerie.defaultState.transitionDuration = 1500;
@@ -164,7 +167,7 @@ balanceAxeX.startLocation = 0.5;
 balanceAxeX.endLocation = 0.5;
 let balanceAxeY = balance.setAxeY(am4charts.ValueAxis);
 let balanceSerie = balance.setSerie(am4charts.LineSeries,
-  'dateX', 'date', 'balance', 3, '{valueY.value}', 0.1)
+  'dateX', 'date', 'balance', 3, '{valueY.value}', 0.1, 0.7)
 balance.setRange(balanceAxeY, balanceSerie, false)
 balance.setRange(balanceAxeY, balanceSerie, true)
 balance.chart.cursor.xAxis = balanceAxeX;
@@ -182,14 +185,14 @@ currencyBalanceAxeX.endLocation = 0.5;
 let currencyBalanceAxeY = currencyBalance.setAxeY(am4charts.ValueAxis);
 
 let currencyBalanceSerie = currencyBalance.setSerie(am4charts.LineSeries,
-  'dateX', 'date', 'balance', 3, '{valueY.value} CZK (all)', 0.1)
+  'dateX', 'date', 'balance', 3, '{valueY.value} CZK (all)', 0.1, 0.7)
 currencyBalance.setRange(currencyBalanceAxeY, currencyBalanceSerie, false)
 currencyBalance.setRange(currencyBalanceAxeY, currencyBalanceSerie, true)
 
 currencyBalance.setSerie(am4charts.LineSeries,
-  'dateX', 'date', 'usd_balance', 1, '{valueY.value} CZK ($)', 0)
+  'dateX', 'date', 'usd_balance', 1, '{valueY.value} CZK ($)', 0, 0.7)
 currencyBalance.setSerie(am4charts.LineSeries,
-  'dateX', 'date', 'eur_balance', 1, '{valueY.value} CZK (€)', 0)
+  'dateX', 'date', 'eur_balance', 1, '{valueY.value} CZK (€)', 0, 0.7)
 
 currencyBalance.chart.cursor.xAxis = currencyBalanceAxeX;
 
@@ -207,16 +210,16 @@ stocksByCurrencyAxeX.endLocation = 0.5;
 let stocksByCurrencyAxeY = stocksByCurrency.setAxeY(am4charts.ValueAxis);
 
 stocksByCurrency.setSerie(am4charts.LineSeries,
-  'dateX', 'date', 'current', 3, '{valueY.value} CZK (all)', 0)
+  'dateX', 'date', 'current', 3, '{valueY.value} CZK (all)', 0, 0.7)
 
 stocksByCurrency.setSerie(am4charts.LineSeries,
-  'dateX', 'date', 'usd_value', 2, '{valueY.value} CZK ($)', 0)
+  'dateX', 'date', 'usd_value', 2, '{valueY.value} CZK ($)', 0, 0.7)
 
 stocksByCurrency.setSerie(am4charts.LineSeries,
-  'dateX', 'date', 'eur_value', 2, '{valueY.value} CZK (€)', 0)
+  'dateX', 'date', 'eur_value', 2, '{valueY.value} CZK (€)', 0, 0.7)
 
 stocksByCurrency.setSerie(am4charts.LineSeries,
-  'dateX', 'date', 'other_value', 2, '{valueY.value} CZK (other)', 0)
+  'dateX', 'date', 'other_value', 2, '{valueY.value} CZK (other)', 0, 0.7)
 
 stocksByCurrency.chart.cursor.xAxis = stocksByCurrencyAxeX;
 
@@ -232,12 +235,33 @@ let realityPricePerMeterAxeX = realityPricePerMeter.setAxeX(am4charts.DateAxis)
 let realityPricePerMeterAxeY = realityPricePerMeter.setAxeY(am4charts.ValueAxis);
 
 realityPricePerMeter.setSerie(am4charts.LineSeries,
-  'dateX', 'date', 'jihlava2kk', 2, 'jihlava2kk {valueY.value} CZK', 0)
+  'dateX', 'date', 'jihlava2kk', 2, 'jihlava2kk {valueY.value} CZK', 0, 0.7)
 
 realityPricePerMeter.setSerie(am4charts.LineSeries,
-  'dateX', 'date', 'holesovice3_4kk', 2, 'holesovice3_4kk {valueY.value} CZK', 0)
+  'dateX', 'date', 'holesovice3_4kk', 2, 'holesovice3_4kk {valueY.value} CZK', 0, 0.7)
 
 realityPricePerMeter.setSerie(am4charts.LineSeries,
-  'dateX', 'date', 'holesovice1kk', 2, 'holesovice1kk {valueY.value} CZK', 0)
+  'dateX', 'date', 'holesovice1kk', 2, 'holesovice1kk {valueY.value} CZK', 0, 0.7)
 
 realityPricePerMeter.chart.cursor.xAxis = realityPricePerMeterAxeX;
+
+
+/////////////////////////////
+//  SINGLE STOCK           //
+/////////////////////////////
+let singleStock = new Chart('single_stock', realityData);
+singleStock.chart.dataSource.url = "/json/single_stock";
+
+
+singleStock.setTitle('Snap Inc');
+singleStock.setScrollBarX();
+
+let singleStockAxeX = singleStock.setAxeX(am4charts.DateAxis)
+let singleStockAxeY = singleStock.setAxeY(am4charts.ValueAxis);
+
+singleStock.setSerie(am4charts.LineSeries,
+  'dateX', 'date', 'stock_value', 2, '{valueY.value} CZK', 0, 0.7)
+
+singleStock.chart.cursor.xAxis = singleStockAxeX;
+
+

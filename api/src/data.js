@@ -2,6 +2,7 @@ const axios = require('axios')
 const parse = require('./parse_api.js')
 const storage = require('./storage.js')
 const realityData = require('./reality/data.js')
+const singleStock = require('./single_stock.js')
 const {logger} = require('../logs.js')
 const c = require('./constants')
 
@@ -334,6 +335,16 @@ exports.getGraphData = async db => {
   ret.realityData  = JSON.stringify(data.realityData)
 
   return ret
+}
+
+exports.getSingleData = async (db, action) => {
+  let data = []
+  switch(action) {
+    case 'single_stock':
+      data = singleStock.getStock(db, 13200994)
+      break;
+  }
+  return data
 }
 
 exports.getImportStatus = async (db, now) => {
