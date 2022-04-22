@@ -44,7 +44,7 @@ exports.inserts = [
 `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('332126', 11180.583787178788, 11221.53180656253, 11196.606823069513, 'AT&T Inc', 'USD', '2021-09-21', 39.33283052102161, 27.21, 19.0, 21.65729863840599);`
 ]
 
-exports.insertAtat = async(db) => {
+exports.insertATaT = async(db) => {
   const promises = exports.inserts.map(insert => {
     return storage.run(db, insert)
   })

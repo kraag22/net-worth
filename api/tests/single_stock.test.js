@@ -1,7 +1,7 @@
 const storage = require('../src/storage.js')
 const {getStock} = require('../src/single_stock.js')
 const sqlite3 = require('sqlite3')
-const {insertAtat} = require('./atat_daily.js')
+const {insertATaT} = require('./atat_daily.js')
 
 let db = null
 
@@ -18,11 +18,10 @@ afterAll((done) => {
 
 describe('it', () => {
   it('should', async () => {
-    await insertAtat(db)
+    await insertATaT(db)
 
     let data = await getStock(db, '332126')
 
     expect(data.length).toBe(41)
-    expect(data.map(item => item.size).filter(item => item == 6).length).toBe(4)
   })
 })
