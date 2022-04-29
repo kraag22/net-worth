@@ -288,7 +288,6 @@ exports.getAllData = async (db) => {
     ret.stocksBalance
   )
   ret.totalOrder = exports.getTotalOrder(ret.timeline)
-  ret.realityData = await realityData.getRealityData(db)
   return ret
 }
 
@@ -309,7 +308,7 @@ exports.parseTodayData = (daily) => {
   return result.sort((a, b) => b.balance - a.balance)
 }
 
-exports.getGraphData = async (db) => {
+exports.getBulkData = async (db) => {
   const ret = {}
   const data = await exports.getAllData(db)
 
@@ -345,29 +344,37 @@ exports.getGraphData = async (db) => {
     })
   })
 
-  ret.sumByCurrencyData = JSON.stringify(sumByCurrencyData)
-  ret.balanceData = JSON.stringify(balanceData)
-  ret.currencyBalanceData = JSON.stringify(currencyBalanceData)
-  // ret.todayTitle = `${data.todaySum.lastSum} (${data.todaySum.balance})`
-  // ret.balanceTodayData = JSON.stringify(exports.parseTodayData(data.today))
-  ret.balanceByStockData = JSON.stringify(data.stocksBalance)
-  ret.sumStocksBalanceByCurrency = JSON.stringify(
-    data.sumStocksBalanceByCurrency
-  )
-  ret.realityData = JSON.stringify(data.realityData)
+  ret.sumByCurrencyData = sumByCurrencyData
+  ret.balanceData = balanceData
+  ret.currencyBalanceData = currencyBalanceData
+  ret.sumStocksBalanceByCurrency = data.sumStocksBalanceByCurrency
 
   return ret
 }
 
-exports.getSingleData = async (db, action) => {
+exports.getData = async (db, action) => {
   let data = []
   switch (action) {
     case 'single_stock':
       data = singleStock.getStock(db, 13200994)
       break
 
+    case 'reality':
+      data = await realityData.getRealityData(db)
+      break
+
+    case 'balance_by_stocks':
+      let ordersData = await exports.getOrdersData(db)
+      const { orders } = exports.getOrders(ordersData)
+      data = await exports.getStocksBalance(db, orders)
+      break
+
+    case 'bulk':
+      data = await exports.getBulkData(db)
+      break
+
     default:
-      throw new Error(`Unknow action to process: $action`)
+      throw new Error(`Unknow action to process: ${action}`)
   }
   return data
 }
