@@ -3,8 +3,9 @@ const parse = require('./parse_api.js')
 const storage = require('./storage.js')
 const realityData = require('./reality/data.js')
 const singleStock = require('./single_stock.js')
-const {logger} = require('../logs.js')
+const { logger } = require('../logs.js')
 const c = require('./constants')
+const { ExceptionHandler } = require('winston')
 
 exports.getPortfolio = async (degiro, fixer) => {
   await degiro.login()
@@ -28,7 +29,7 @@ exports.importPortfolio = async (degiro, db, fixer) => {
 
 exports.groupPortfolio = async (db, groupBy) => {
   let group = ''
-  switch(groupBy) {
+  switch (groupBy) {
     case 'monthly':
       group = groupBy
       break
@@ -43,57 +44,60 @@ exports.groupPortfolio = async (db, groupBy) => {
   return storage.call(db, `select * from stocks_${group}`)
 }
 
-exports.getDateString = now => {
+exports.getDateString = (now) => {
   const dd = String(now.getDate()).padStart(2, '0')
   const mm = String(now.getMonth() + 1).padStart(2, '0')
   const yyyy = now.getFullYear()
   return `${yyyy}-${mm}-${dd}`
 }
 
-exports.getTodaysData = async db => {
+exports.getTodaysData = async (db) => {
   const today = exports.getDateString(new Date())
 
-  const sql = 'select id, round(max_value) as value, name, created from stocks_hourly ' +
-              `where created like '${today}%'` +
-              'order by created'
+  const sql =
+    'select id, round(max_value) as value, name, created from stocks_hourly ' +
+    `where created like '${today}%'` +
+    'order by created'
   const data = await storage.call(db, sql)
   const ret = {}
-  data.forEach(row => {
+  data.forEach((row) => {
     if (ret[row.id]) {
-      ret[row.id].values.push({value: row.value, created: row.created})
+      ret[row.id].values.push({ value: row.value, created: row.created })
     } else {
       ret[row.id] = {
         name: row.name,
         id: row.id,
-        values: [{value: row.value, created: row.created}]}
+        values: [{ value: row.value, created: row.created }],
+      }
     }
   })
   return Object.values(ret)
 }
 
-exports.sumTodaysData = todaysData => {
+exports.sumTodaysData = (todaysData) => {
   let fistSum = 0
   let lastSum = 0
   let balance = 0
 
-  todaysData.forEach(item => {
-    fistSum += (item.values[0]) ? item.values[0].value : 0
+  todaysData.forEach((item) => {
+    fistSum += item.values[0] ? item.values[0].value : 0
     const last = item.values.length - 1
-    lastSum += (item.values[last]) ? item.values[last].value : 0
+    lastSum += item.values[last] ? item.values[last].value : 0
   })
 
   balance = lastSum - fistSum
-  balance = (balance > 0) ? `+${balance}` : `${balance}`
+  balance = balance > 0 ? `+${balance}` : `${balance}`
 
-  return {lastSum, balance}
+  return { lastSum, balance }
 }
 
-exports.computeAndStoreOrdersData = async db => {
+exports.computeAndStoreOrdersData = async (db) => {
   const cashFunds = c.CASH_FUNDS.join(',')
 
   await storage.run(db, `delete from ${storage.EVENTS_TABLE}`)
 
-  const sql = `insert into ${storage.EVENTS_TABLE} select s.id, s.name, ` +
+  const sql =
+    `insert into ${storage.EVENTS_TABLE} select s.id, s.name, ` +
     'round(s.price * s.size * s.ratio) as value, ' +
     's.price, s.size, s.ratio, s.currency, ' +
     `strftime('%Y-%m-%d', s.created_at) as date from ` +
@@ -105,7 +109,7 @@ exports.computeAndStoreOrdersData = async db => {
   return storage.run(db, sql)
 }
 
-exports.getOrdersData = async db => {
+exports.getOrdersData = async (db) => {
   const sql = `select * from ${storage.EVENTS_TABLE} order by date`
   return storage.call(db, sql)
 }
@@ -121,22 +125,25 @@ exports.getAvgCurrencyRatio = (lastOrder, size, ratio) => {
   return avgRatio
 }
 
-exports.getOrders = data => {
-  let ids = new Set(data.map(item => item.id))
+exports.getOrders = (data) => {
+  let ids = new Set(data.map((item) => item.id))
   const orders = {}
 
-  ids.forEach(id =>
-    orders[id] = {
-      id: id,
-      size: 0,
-      price: 0,
-      avgRatio: 0
-  })
+  ids.forEach(
+    (id) =>
+      (orders[id] = {
+        id: id,
+        size: 0,
+        price: 0,
+        avgRatio: 0,
+      })
+  )
   const timeline = {}
   let lastOrder = 0
 
-  data.forEach(item => {
-    let priceAdded = (item.size - orders[item.id].size) * item.price * item.ratio
+  data.forEach((item) => {
+    let priceAdded =
+      (item.size - orders[item.id].size) * item.price * item.ratio
 
     orders[item.id] = {
       size: item.size,
@@ -144,7 +151,11 @@ exports.getOrders = data => {
       name: item.name,
       price: orders[item.id].price + priceAdded,
       currency: item.currency,
-      avgRatio: exports.getAvgCurrencyRatio(orders[item.id], item.size, item.ratio)
+      avgRatio: exports.getAvgCurrencyRatio(
+        orders[item.id],
+        item.size,
+        item.ratio
+      ),
     }
     if (timeline[item.date] === undefined) {
       timeline[item.date] = lastOrder
@@ -152,15 +163,15 @@ exports.getOrders = data => {
     timeline[item.date] += Math.round(priceAdded)
     lastOrder = timeline[item.date]
   })
-  return {timeline, orders}
+  return { timeline, orders }
 }
 
-exports.getTotalOrder = orderData => {
+exports.getTotalOrder = (orderData) => {
   const lastDate = Object.keys(orderData).pop()
   return Math.round(orderData[lastDate])
 }
 
-exports.getStocksNewest = async db => {
+exports.getStocksNewest = async (db) => {
   let sql = `select round(price * size * ratio) as price, id, size, name `
   sql += `from stocks where created_at=(select created_at from stocks order `
   sql += `by created_at desc limit 1)`
@@ -171,23 +182,28 @@ exports.getStocksBalance = async (db, orders) => {
   const result = []
   const stocks = await exports.getStocksNewest(db)
 
-  Object.entries(orders).forEach(item => {
+  Object.entries(orders).forEach((item) => {
     const values = item[1]
     const name = values.name.substring(0, c.NAME_MAX_LENGTH)
-    const stock = stocks.find(item => item.id === values.id)
+    const stock = stocks.find((item) => item.id === values.id)
 
     if (stock) {
-      result.push({id: values.id, name: name.trim(), price: stock.price,
-        currency: values.currency,  balance: Math.round(stock.price - values.price)})
+      result.push({
+        id: values.id,
+        name: name.trim(),
+        price: stock.price,
+        currency: values.currency,
+        balance: Math.round(stock.price - values.price),
+      })
     }
   })
 
   return result.sort((a, b) => b.balance - a.balance)
 }
 
-exports.sumStocksBalanceByCurrency = stocksBalance => {
+exports.sumStocksBalanceByCurrency = (stocksBalance) => {
   const result = {}
-  stocksBalance.forEach(item => {
+  stocksBalance.forEach((item) => {
     if (result[item.currency]) {
       result[item.currency].balance += item.balance
       result[item.currency].price += item.price
@@ -195,19 +211,20 @@ exports.sumStocksBalanceByCurrency = stocksBalance => {
       result[item.currency] = {
         balance: item.balance,
         price: item.price,
-        currency: item.currency
+        currency: item.currency,
       }
     }
   })
-  const list = Object.entries(result).map(item => item[1])
-  return list.map(item => {
-    item.percents = (100 * (item.balance + item.price) / item.price) - 100
+  const list = Object.entries(result).map((item) => item[1])
+  return list.map((item) => {
+    item.percents = (100 * (item.balance + item.price)) / item.price - 100
     return item
   })
 }
 
-exports.getDailyData = async db => {
-  const sql = '' +
+exports.getDailyData = async (db) => {
+  const sql =
+    '' +
     `select d.date, a.value, u.usd_value, e.eur_value, ` +
     `  a.value - u.usd_value - e.eur_value as other_value, ` +
     `  a.sum_balance, u.usd_balance, e.eur_balance ` +
@@ -240,12 +257,13 @@ exports.getDailyData = async db => {
 }
 
 exports.fillMissingRates = async (db, fixer) => {
-  const sql = `select distinct(strftime('%Y-%m-%d', created_at)) as date ` +
+  const sql =
+    `select distinct(strftime('%Y-%m-%d', created_at)) as date ` +
     'from stocks where ratio is null'
   const dates = await storage.call(db, sql)
   const sql2 = 'select distinct(currency) from stocks where ratio is null'
   let currencies = await storage.call(db, sql2)
-  currencies = currencies.map(item => item.currency)
+  currencies = currencies.map((item) => item.currency)
 
   for (const item of Object.values(dates)) {
     const rates = await fixer.getRates(axios, logger, currencies, item.date)
@@ -255,41 +273,43 @@ exports.fillMissingRates = async (db, fixer) => {
   return dates.length
 }
 
-exports.getAllData = async db => {
+exports.getAllData = async (db) => {
   const ret = {}
 
   ret.daily = await exports.getDailyData(db)
   ret.today = await exports.getTodaysData(db)
   ret.todaySum = exports.sumTodaysData(ret.today)
   ret.orders = await exports.getOrdersData(db)
-  const {timeline, orders} = exports.getOrders(ret.orders)
+  const { timeline, orders } = exports.getOrders(ret.orders)
   logger.info(orders)
   ret.timeline = timeline
   ret.stocksBalance = await exports.getStocksBalance(db, orders)
-  ret.sumStocksBalanceByCurrency = exports.sumStocksBalanceByCurrency(ret.stocksBalance)
+  ret.sumStocksBalanceByCurrency = exports.sumStocksBalanceByCurrency(
+    ret.stocksBalance
+  )
   ret.totalOrder = exports.getTotalOrder(ret.timeline)
   ret.realityData = await realityData.getRealityData(db)
   return ret
 }
 
-exports.parseDate = str => {
+exports.parseDate = (str) => {
   return new Date(Date.parse(str))
 }
 
-exports.parseTodayData = daily => {
-  const result = daily.map(item => {
+exports.parseTodayData = (daily) => {
+  const result = daily.map((item) => {
     let balance = 0
 
     if (item.values.length > 1) {
       balance = item.values[item.values.length - 1].value - item.values[0].value
     }
-    return {name: item.name.substring(0, c.NAME_MAX_LENGTH), balance}
+    return { name: item.name.substring(0, c.NAME_MAX_LENGTH), balance }
   })
 
   return result.sort((a, b) => b.balance - a.balance)
 }
 
-exports.getGraphData = async db => {
+exports.getGraphData = async (db) => {
   const ret = {}
   const data = await exports.getAllData(db)
 
@@ -298,7 +318,7 @@ exports.getGraphData = async db => {
   const currencyBalanceData = []
   let invested = c.INITIAL_INVESTMENT
 
-  data.daily.forEach(item => {
+  data.daily.forEach((item) => {
     if (data.timeline[item.date]) {
       invested = data.timeline[item.date]
     }
@@ -309,19 +329,19 @@ exports.getGraphData = async db => {
       usd_value: item.usd_value,
       eur_value: item.eur_value,
       other_value: item.other_value,
-      invested: invested
+      invested: invested,
     })
 
     balanceData.push({
       date: date,
-      balance: Math.round(item.value - invested)
+      balance: Math.round(item.value - invested),
     })
 
     currencyBalanceData.push({
       date: date,
       balance: item.sum_balance,
       usd_balance: item.usd_balance,
-      eur_balance: item.eur_balance
+      eur_balance: item.eur_balance,
     })
   })
 
@@ -331,30 +351,36 @@ exports.getGraphData = async db => {
   // ret.todayTitle = `${data.todaySum.lastSum} (${data.todaySum.balance})`
   // ret.balanceTodayData = JSON.stringify(exports.parseTodayData(data.today))
   ret.balanceByStockData = JSON.stringify(data.stocksBalance)
-  ret.sumStocksBalanceByCurrency = JSON.stringify(data.sumStocksBalanceByCurrency)
-  ret.realityData  = JSON.stringify(data.realityData)
+  ret.sumStocksBalanceByCurrency = JSON.stringify(
+    data.sumStocksBalanceByCurrency
+  )
+  ret.realityData = JSON.stringify(data.realityData)
 
   return ret
 }
 
 exports.getSingleData = async (db, action) => {
   let data = []
-  switch(action) {
+  switch (action) {
     case 'single_stock':
       data = singleStock.getStock(db, 13200994)
-      break;
+      break
+
+    default:
+      throw new Error(`Unknow action to process: $action`)
   }
   return data
 }
 
 exports.getImportStatus = async (db, now) => {
   const today = exports.getDateString(now)
-  const sql = `select * from stocks where created_at like '${today}%' ` +
-              'order by created_at desc limit 100'
+  const sql =
+    `select * from stocks where created_at like '${today}%' ` +
+    'order by created_at desc limit 100'
   const data = await storage.call(db, sql)
 
   const ret = {}
-  ret.import_status = (data?.length > 0) ? 'OK' : 'FAILED'
+  ret.import_status = data?.length > 0 ? 'OK' : 'FAILED'
 
   if (now.getHours() < 1) {
     // after midnight is everything OK :)

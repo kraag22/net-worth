@@ -1,5 +1,5 @@
 const sqlite3 = require('sqlite3')
-const {logger} = require('../logs.js')
+const { logger } = require('../logs.js')
 const c = require('./constants')
 const columns = ['id', 'price', 'size', 'value', 'name', 'currency', 'ratio']
 const STOCKS_TABLE = 'stocks'
@@ -12,35 +12,38 @@ exports.STOCKS_DAILY_TABLE = STOCKS_DAILY_TABLE
 exports.EVENTS_TABLE = EVENTS_TABLE
 exports.REALITY_TABLE = REALITY_TABLE
 
-const flattenItem = value => {
+const flattenItem = (value) => {
   const ret = []
-  columns.forEach(col => ret.push(value[col]))
+  columns.forEach((col) => ret.push(value[col]))
   return ret
 }
 
 const getInsertQuestionmarks = (columns) => {
-  const questionmarks = columns.map(col => '?').join(',')
+  const questionmarks = columns.map((col) => '?').join(',')
   return `(${questionmarks}, DATETIME('now'))`
 }
 
-exports.connectDb = file => {
+exports.connectDb = (file) => {
   return new Promise((resolve, reject) => {
     let db = new sqlite3.Database(file, (err) => {
       if (err) {
         reject(err.message)
       }
-      exports.createTable(db).then(() => {
-        resolve(db)
-      })
-      .catch(err => {
-        reject(err)
-      })
+      exports
+        .createTable(db)
+        .then(() => {
+          resolve(db)
+        })
+        .catch((err) => {
+          reject(err)
+        })
     })
   })
 }
 
-exports.createTable = db => {
-  const stocksTable = `CREATE TABLE IF NOT EXISTS ${STOCKS_TABLE} (` +
+exports.createTable = (db) => {
+  const stocksTable =
+    `CREATE TABLE IF NOT EXISTS ${STOCKS_TABLE} (` +
     'id TEXT, ' +
     'price real, ' +
     'size real, ' +
@@ -51,7 +54,8 @@ exports.createTable = db => {
     'created_at TEXT' +
     ')'
 
-  const stocksDailyTable = `CREATE TABLE IF NOT EXISTS ${STOCKS_DAILY_TABLE} (` +
+  const stocksDailyTable =
+    `CREATE TABLE IF NOT EXISTS ${STOCKS_DAILY_TABLE} (` +
     'id TEXT, ' +
     'min_value real, ' +
     'max_value real, ' +
@@ -65,7 +69,8 @@ exports.createTable = db => {
     'ratio real' +
     ')'
 
-  const eventsTable =`CREATE TABLE IF NOT EXISTS ${EVENTS_TABLE} (` +
+  const eventsTable =
+    `CREATE TABLE IF NOT EXISTS ${EVENTS_TABLE} (` +
     'id TEXT, ' +
     'name TEXT, ' +
     'value real, ' +
@@ -76,12 +81,12 @@ exports.createTable = db => {
     'date TEXT' +
     ')'
 
-  const realityTabel =`CREATE TABLE IF NOT EXISTS ${REALITY_TABLE} (` +
+  const realityTabel =
+    `CREATE TABLE IF NOT EXISTS ${REALITY_TABLE} (` +
     'name TEXT, ' +
     'price real, ' +
     'created_at TEXT' +
     ')'
-
 
   return Promise.all([
     exports.run(db, stocksTable),
@@ -90,9 +95,13 @@ exports.createTable = db => {
     exports.run(db, realityTabel),
     exports.run(db, exports.getViewSql('hourly', false)),
     exports.run(db, exports.getViewSql('daily', false)),
-    exports.run(db, exports.getViewSql('monthly', false),
-    exports.run(db, exports.getViewSql('daily', true)),
-    exports.run(db, exports.getViewSql('monthly', true)))])
+    exports.run(
+      db,
+      exports.getViewSql('monthly', false),
+      exports.run(db, exports.getViewSql('daily', true)),
+      exports.run(db, exports.getViewSql('monthly', true))
+    ),
+  ])
 }
 
 exports.insert = (db, sql, params) => {
@@ -119,17 +128,17 @@ exports.insertReality = (db, name, averagePrice) => {
 exports.insertStocks = (db, values) => {
   let sql = `INSERT INTO ${STOCKS_TABLE} `
   sql += '(id, price, size, value, name, currency, ratio, created_at) VALUES '
-  sql += values.map(value => getInsertQuestionmarks(columns)).join(',')
+  sql += values.map((value) => getInsertQuestionmarks(columns)).join(',')
 
   let params = []
-  values.forEach(value => params = params.concat(flattenItem(value)))
+  values.forEach((value) => (params = params.concat(flattenItem(value))))
 
   return exports.insert(db, sql, params)
 }
 
 exports.getViewSql = (groupBy, lastValue, selectOnly, where) => {
   let dateFormat = ''
-  switch(groupBy) {
+  switch (groupBy) {
     case 'monthly':
       dateFormat = '%Y-%m-00'
       break
@@ -148,7 +157,9 @@ exports.getViewSql = (groupBy, lastValue, selectOnly, where) => {
 
   let sql = ''
   if (lastValue) {
-    sql += selectOnly ? '' : `create view if not exists stocks_last_${groupBy} as `
+    sql += selectOnly
+      ? ''
+      : `create view if not exists stocks_last_${groupBy} as `
     sql += `select s1.id, s1.price * s1.size * s1.ratio as value, `
     sql += `s1.price, s1.size, s1.ratio, `
     sql += `s1.name, strftime('${dateFormat}', s1.created_at) as created `
@@ -158,7 +169,7 @@ exports.getViewSql = (groupBy, lastValue, selectOnly, where) => {
     sql += `where s2.rowid is null and s1.id not in (${cashFunds}) `
     sql += where ? `and ${where} ` : ''
   } else {
-    sql +=  selectOnly ? '' :`create view if not exists stocks_${groupBy} as `
+    sql += selectOnly ? '' : `create view if not exists stocks_${groupBy} as `
     sql += `select id, min(${baseValue}) as min_value, max(${baseValue}) as max_value,`
     sql += `name, strftime('${dateFormat}', created_at) as created `
     sql += `from stocks as s1 where s1.id not in (${cashFunds}) `
@@ -171,7 +182,8 @@ exports.getViewSql = (groupBy, lastValue, selectOnly, where) => {
 exports.updateCurrencies = async (db, rates, date) => {
   for (const currency of Object.keys(rates)) {
     const ratio = rates[currency]
-    const sql = `update stocks set ratio=? where currency=? ` +
+    const sql =
+      `update stocks set ratio=? where currency=? ` +
       `and strftime('%Y-%m-%d', created_at)=? and ratio is null`
     await exports.run(db, sql, [ratio, currency, date])
   }
@@ -183,10 +195,10 @@ exports.run = (db, sql, fceParams) => {
   return new Promise((resolve, reject) => {
     db.run(sql, params, (err) => {
       if (err) {
-        profiler.done({ message: 'failed'})
+        profiler.done({ message: 'failed' })
         reject(err)
       } else {
-        profiler.done({ message: sql, params: params})
+        profiler.done({ message: sql, params: params })
         resolve()
       }
     })
@@ -199,10 +211,10 @@ exports.call = (db, sql, fceParams) => {
   return new Promise((resolve, reject) => {
     db.all(sql, params, (err, rows) => {
       if (err) {
-        profiler.done({ message: 'failed'})
+        profiler.done({ message: 'failed' })
         reject(err)
       } else {
-        profiler.done({ message: sql, params: params})
+        profiler.done({ message: sql, params: params })
         resolve(rows)
       }
     })

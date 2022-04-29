@@ -1,4 +1,4 @@
-const {Fixer} = require('../src/fixer.js')
+const { Fixer } = require('../src/fixer.js')
 const rates = require('./rates.json')
 
 let fixer = null
@@ -9,7 +9,6 @@ beforeAll(async () => {
 
 describe('Fixer function', () => {
   it('changeBase() should work', async () => {
-
     const expected = {}
     const result = fixer.changeBase(rates.rates, 'CZK')
     expect(Object.keys(result).length).toEqual(7)
@@ -21,14 +20,15 @@ describe('Fixer function', () => {
 
   it('getRates() should work', async () => {
     const api = {}
-    const expectedUrl = 'http://data.fixer.io/api/2018-12-24?access_key=x&'
-      + 'base=EUR&symbols=EUR,USD,CZK&format=1'
+    const expectedUrl =
+      'http://data.fixer.io/api/2018-12-24?access_key=x&' +
+      'base=EUR&symbols=EUR,USD,CZK&format=1'
     let calledUrl = ''
 
     api.get = (url) => {
       calledUrl = url
       return new Promise((resolve, reject) => {
-        resolve({data: rates})
+        resolve({ data: rates })
       })
     }
 
@@ -37,10 +37,10 @@ describe('Fixer function', () => {
     expect(result['EUR']).toEqual(25.790743)
     expect(result['CZK']).toEqual(1)
     expect(Math.round(result['USD'] * 100) / 100).toEqual(22.48)
-    expect((Object.keys(result)).length).toEqual(7)
+    expect(Object.keys(result).length).toEqual(7)
   })
 
-  it('getRates should log errors', async() => {
+  it('getRates should log errors', async () => {
     const logger = {}
     let calledError = ''
     logger.error = (title, e) => {
@@ -55,7 +55,12 @@ describe('Fixer function', () => {
       })
     }
 
-    const result = await fixer.getRates(api, logger, ['EUR', 'USD'], '2018-12-24')
+    const result = await fixer.getRates(
+      api,
+      logger,
+      ['EUR', 'USD'],
+      '2018-12-24'
+    )
     expect(calledError).toBe('fixer API call failed')
   })
 })
