@@ -1,7 +1,7 @@
 const storage = require('../src/storage.js')
-const {getStock} = require('../src/single_stock.js')
+const { getStock } = require('../src/single_stock.js')
 const sqlite3 = require('sqlite3')
-const {insertATaT} = require('./atat_daily.js')
+const { insertATaT } = require('./atat_daily.js')
 
 let db = null
 
@@ -10,7 +10,7 @@ beforeAll(async () => {
 })
 
 afterAll((done) => {
-  db.close(err => {
+  db.close((err) => {
     expect(err).toBeNull()
     done()
   })

@@ -1,5 +1,5 @@
 const rates = require('./rates.json')
-const {Fixer} = require('../src/fixer.js')
+const { Fixer } = require('../src/fixer.js')
 
 class MockFixer {
   constructor(apiKey) {

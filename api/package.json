@@ -8,7 +8,8 @@
     "test": "jest --watchAll",
     "test-ci": "jest",
     "coverage": "jest --watchAll --config jest.config.json",
-    "coveralls": "jest --coverage --config jest.config.json && cat ./coverage/lcov.info | coveralls"
+    "coveralls": "jest --coverage --config jest.config.json && cat ./coverage/lcov.info | coveralls",
+    "format": "prettier --write \"{src,tests}/**/*.js\""
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +26,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "coveralls": "^3.1.1"
+    "coveralls": "^3.1.1",
+    "prettier": "^2.6.2"
   }
 }
