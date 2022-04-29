@@ -1,7 +1,7 @@
 am4core.useTheme(am4themes_animated)
 
 class Chart {
-  constructor(id, data) {
+  constructor(id, data = null) {
     this.chart = am4core.create(id, am4charts.XYChart)
     this.chart.data = data
     this.chart.cursor = new am4charts.XYCursor()
@@ -80,10 +80,7 @@ class Chart {
 /////////////////////////////////////
 //  BALANCE SUMMARY BY CURRENCY    //
 /////////////////////////////////////
-let sumBalanceByCurr = new Chart(
-  'sum_balance_by_currency',
-  sumStocksBalanceByCurrency
-)
+let sumBalanceByCurr = new Chart('sum_balance_by_currency')
 sumBalanceByCurr.setTitle('Balance summary by currency')
 let sumBalAxeX = sumBalanceByCurr.setCategoryAxeX('currency')
 let sumBalAxeY = sumBalanceByCurr.setAxeY(am4charts.ValueAxis)
@@ -134,7 +131,9 @@ priceSerie.cursor.behavior = 'panX'
 ///////////////
 //  STOCKS   //
 ///////////////
-let stocks = new Chart('balance_by_stock', balanceByStockData)
+let stocks = new Chart('balance_by_stock')
+stocks.chart.dataSource.url = '/json/balance_by_stocks'
+
 stocks.setTitle('Stocks performance')
 let stocksAxeX = stocks.setCategoryAxeX('name')
 let stocksAxeY = stocks.setAxeY(am4charts.ValueAxis)
@@ -164,7 +163,7 @@ stocks.setRange(stocksAxeY, stocksSerie, true)
 ////////////////
 //  INVESTED  //
 ////////////////
-let invested = new Chart('invested_vs_value', sumByCurrencyData)
+let invested = new Chart('invested_vs_value')
 invested.setTitle('Invested vs. current value')
 invested.setScrollBarX()
 invested.chart.hiddenState.properties.opacity = 0
@@ -209,7 +208,7 @@ invested.chart.cursor.xAxis = investedAxeX
 ///////////////
 //  BALANCE  //
 ///////////////
-let balance = new Chart('balance', balanceData)
+let balance = new Chart('balance')
 balance.setTitle('Gains/loses')
 balance.setScrollBarX()
 let balanceAxeX = balance.setAxeX(am4charts.DateAxis)
@@ -233,7 +232,7 @@ balance.chart.cursor.xAxis = balanceAxeX
 ///////////////////////
 // CURRENCY BALANCE  //
 ///////////////////////
-let currencyBalance = new Chart('currency_balance', currencyBalanceData)
+let currencyBalance = new Chart('currency_balance')
 currencyBalance.setTitle('Currency balance')
 currencyBalance.setScrollBarX()
 let currencyBalanceAxeX = currencyBalance.setAxeX(am4charts.DateAxis)
@@ -280,7 +279,7 @@ currencyBalance.chart.cursor.xAxis = currencyBalanceAxeX
 /////////////////////////
 //  SUM BY CURRENCY    //
 /////////////////////////
-let stocksByCurrency = new Chart('sum_by_currency', sumByCurrencyData)
+let stocksByCurrency = new Chart('sum_by_currency')
 stocksByCurrency.setTitle('Sum by currency')
 stocksByCurrency.setScrollBarX()
 
@@ -338,7 +337,9 @@ stocksByCurrency.chart.cursor.xAxis = stocksByCurrencyAxeX
 /////////////////////////////
 //  REALITY PRICE PER m^2  //
 /////////////////////////////
-let realityPricePerMeter = new Chart('reality_price_per_meter', realityData)
+let realityPricePerMeter = new Chart('reality_price_per_meter')
+realityPricePerMeter.chart.dataSource.url = '/json/reality'
+
 realityPricePerMeter.setTitle('Price per m^2')
 realityPricePerMeter.setScrollBarX()
 
@@ -383,7 +384,7 @@ realityPricePerMeter.chart.cursor.xAxis = realityPricePerMeterAxeX
 /////////////////////////////
 //  SINGLE STOCK           //
 /////////////////////////////
-let singleStock = new Chart('single_stock', realityData)
+let singleStock = new Chart('single_stock')
 singleStock.chart.dataSource.url = '/json/single_stock'
 
 singleStock.setTitle('Snap Inc')
@@ -404,3 +405,22 @@ singleStock.setSerie(
 )
 
 singleStock.chart.cursor.xAxis = singleStockAxeX
+
+/////////////////////////////
+//  LOAD BULK DATA         //
+/////////////////////////////
+fetch('/json/bulk')
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`)
+    }
+
+    return response.json()
+  })
+  .then((data) => {
+    sumBalanceByCurr.chart.data = data.sumStocksBalanceByCurrency
+    balance.chart.data = data.balanceData
+    currencyBalance.chart.data = data.currencyBalanceData
+    invested.chart.data = data.sumByCurrencyData
+    stocksByCurrency.chart.data = data.sumByCurrencyData
+  })

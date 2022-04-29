@@ -221,26 +221,52 @@ describe('data function', () => {
   })
 })
 
+describe('getData() function', () => {
+  it('should work for reality', async () => {
+    await storage.insertReality(db, 'jezdovice3kk', 23_445)
+    const graphData = await data.getData(db, 'reality')
+
+    expect(graphData.length).toBe(1)
+    expect(graphData[0].jezdovice3kk).toBe(23445)
+    expect(graphData[0].date).toBe('2022-04-29')
+  })
+
+  it('should work for single stock', async () => {
+    const graphData = await data.getData(db, 'single_stock')
+
+    expect(graphData.length).toBe(1)
+    expect(graphData[0].stock_value).toBeCloseTo(3833.518)
+    expect(graphData[0].date).toBe('2022-04-29')
+  })
+
+  it('should work for stocks performance', async () => {
+    const graphData = await data.getData(db, 'balance_by_stocks')
+
+    expect(graphData.length).toBe(13)
+    expect(graphData[0].id).toBe('332111')
+    expect(graphData[0].balance).toBe(1016)
+  })
+
+  it('getBulkData() should work', async () => {
+    const graphData = await data.getData(db, 'bulk')
+
+    expect(graphData.sumByCurrencyData.length).toBe(1)
+    expect(graphData.sumByCurrencyData[0].invested).toBe(65803)
+    expect(graphData.sumByCurrencyData[0].current).toBe(58841)
+  })
+
+  it('throws for wrong action', async () => {
+    await expect(data.getData(db, 'XXX')).rejects.toThrow(
+      'Unknow action to process: XXX'
+    )
+  })
+})
+
 describe('graphData function', () => {
   it('parseDate() should work', async () => {
     const ret = data.parseDate('2000-02-11')
     expect(ret.getFullYear()).toBe(2000)
     expect(ret.getMonth()).toBe(1)
-  })
-
-  it('getGraphData() should work', async () => {
-    await storage.insertReality(db, 'jezdovice3kk', 23_445)
-
-    const graphData = await data.getGraphData(db)
-    const sumByCurrencyData = JSON.parse(graphData.sumByCurrencyData)
-
-    expect(sumByCurrencyData.length).toBe(1)
-    expect(sumByCurrencyData[0].invested).toBe(65803)
-    expect(sumByCurrencyData[0].current).toBe(58841)
-
-    const realityData = JSON.parse(graphData.realityData)
-
-    expect(realityData.length).toBe(1)
   })
 
   it('parseTodayData() should work', async () => {
