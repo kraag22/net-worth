@@ -352,11 +352,12 @@ exports.getBulkData = async (db) => {
   return ret
 }
 
-exports.getData = async (db, action) => {
+exports.getData = async (db, action, params = {}) => {
   let data = []
   switch (action) {
     case 'single_stock':
-      data = singleStock.getStock(db, 13200994)
+      let ids = params?.ids?.split(',')
+      data = singleStock.getStock(db, ids)
       break
 
     case 'reality':

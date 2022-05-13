@@ -124,7 +124,7 @@ storage.connectDb('../data/stocks.db').then((db) => {
   app.get('/json/:action', async (req, res, next) => {
     logger.info(`API /json/${req.params.action} called`)
     try {
-      const singleData = await data.getData(db, req.params.action)
+      const singleData = await data.getData(db, req.params.action, req.query)
       res.json(singleData)
     } catch (e) {
       logger.error(`API /json/${req.params.action} failed`, e)
