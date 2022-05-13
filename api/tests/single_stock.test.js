@@ -17,10 +17,10 @@ afterAll((done) => {
 })
 
 describe('it', () => {
-  it('should', async () => {
+  it('should be able to get the data', async () => {
     await insertATaT(db)
 
-    let data = await getStock(db, '332126')
+    let data = await getStock(db, ['332126', '13200994'])
 
     expect(data.length).toBe(41)
   })

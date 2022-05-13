@@ -228,15 +228,15 @@ describe('getData() function', () => {
 
     expect(graphData.length).toBe(1)
     expect(graphData[0].jezdovice3kk).toBe(23445)
-    expect(graphData[0].date).toBe('2022-04-29')
   })
 
   it('should work for single stock', async () => {
-    const graphData = await data.getData(db, 'single_stock')
+    const graphData = await data.getData(db, 'single_stock', {
+      ids: '13200994',
+    })
 
     expect(graphData.length).toBe(1)
     expect(graphData[0].stock_value).toBeCloseTo(3833.518)
-    expect(graphData[0].date).toBe('2022-04-29')
   })
 
   it('should work for stocks performance', async () => {

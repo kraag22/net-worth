@@ -385,9 +385,10 @@ realityPricePerMeter.chart.cursor.xAxis = realityPricePerMeterAxeX
 //  SINGLE STOCK           //
 /////////////////////////////
 let singleStock = new Chart('single_stock')
-singleStock.chart.dataSource.url = '/json/single_stock'
+singleStock.chart.dataSource.url = '/json/single_stock?ids=13200994'
 
 singleStock.setTitle('Snap Inc')
+singleStock.setTitle('Single stock')
 singleStock.setScrollBarX()
 
 let singleStockAxeX = singleStock.setAxeX(am4charts.DateAxis)
