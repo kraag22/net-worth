@@ -27,7 +27,15 @@
     <div id="currency_balance" class="big"></div>
     <div id="sum_by_currency" class="big"></div>
     <div id="reality_price_per_meter" class="big"></div>
-    <div id="single_stock" class="big"></div>
+    <div class="big">
+      <select onchange="singleStockChange(this)" class="single-stock-select">
+        {{#stockIds}}
+        <option value="{{id}}">{{name}} - {{currency}}</option>
+        {{/stockIds}}
+      </select>
+      <div id="single_stock" class="single-stock-graph"></div>
+    </div>
+
 
   </div>
 

@@ -357,7 +357,8 @@ exports.getData = async (db, action, params = {}) => {
   switch (action) {
     case 'single_stock':
       let ids = params?.ids?.split(',')
-      data = singleStock.getStock(db, ids)
+      let stock = new singleStock.Stock(db, ids[0])
+      data = stock.getBalance()
       break
 
     case 'reality':
@@ -395,4 +396,10 @@ exports.getImportStatus = async (db, now) => {
     ret.import_status = 'OK'
   }
   return ret
+}
+
+exports.getStockIds = async (db) => {
+  let query = `select distinct id, name, currency from ${storage.EVENTS_TABLE} group by id order by name`
+  let rows = await storage.call(db, query)
+  return rows
 }

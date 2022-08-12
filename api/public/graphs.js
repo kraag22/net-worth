@@ -385,7 +385,6 @@ realityPricePerMeter.chart.cursor.xAxis = realityPricePerMeterAxeX
 //  SINGLE STOCK           //
 /////////////////////////////
 let singleStock = new Chart('single_stock')
-singleStock.chart.dataSource.url = '/json/single_stock?ids=13200994'
 
 singleStock.setTitle('Single stock')
 singleStock.setScrollBarX()
@@ -405,6 +404,12 @@ singleStock.setSerie(
 )
 
 singleStock.chart.cursor.xAxis = singleStockAxeX
+
+function singleStockChange(selectObject) {
+  singleStock.chart.dataSource.url =
+    '/json/single_stock?ids=' + selectObject.value
+  singleStock.chart.dataSource.load()
+}
 
 /////////////////////////////
 //  LOAD BULK DATA         //
