@@ -44,8 +44,32 @@ exports.inserts = [
   `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('332126', 11180.583787178788, 11221.53180656253, 11196.606823069513, 'AT&T Inc', 'USD', '2021-09-21', 39.33283052102161, 27.21, 19.0, 21.65729863840599);`,
 ]
 
-exports.insertATaT = async (db) => {
+exports.monetaInserts = [
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('10306755', 3654.2346378720226, 3655.616931256235, 3655.026741094519, 'Moneta random USD', 'USD', '2021-08-12', 2.22915562642356, 28.16, 6.0, 21.6324972839401);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('10306755', 3621.204895689399, 3635.5104939570842, 3621.204895689399, 'Moneta random USD', 'USD', '2021-08-13', -13.4324745100339, 28.02, 6.0, 21.53940575594456);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('10306755', 3641.7110650367913, 3643.0029100403513, 3641.7110650367913, 'Moneta random USD', 'USD', '2021-08-14', -14.97799513173186, 28.19, 6.0, 21.53075005934014);`,
+]
+
+exports.monetaOrders = [
+  `INSERT INTO events (id, name, value, price, size, ratio, currency, date) VALUES ('10306755', 'USD', 3500.0, 27, 6, 1.0, 'USD', '2021-04-18');`,
+]
+
+exports.insertATaTDaily = async (db) => {
   const promises = exports.inserts.map((insert) => {
+    return storage.run(db, insert)
+  })
+  return Promise.all(promises)
+}
+
+exports.insertMonetaDaily = async (db) => {
+  const promises = exports.monetaInserts.map((insert) => {
+    return storage.run(db, insert)
+  })
+  return Promise.all(promises)
+}
+
+exports.insertMonetaOrders = async (db) => {
+  const promises = exports.monetaOrders.map((insert) => {
     return storage.run(db, insert)
   })
   return Promise.all(promises)

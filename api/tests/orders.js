@@ -1,6 +1,6 @@
 const storage = require('../src/storage.js')
 
-exports.inserts = [
+exports.stocksInserts = [
   `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('10306755', 76.8, 50.0, 3840.0, 'MONETA MONEY BANK', 'CZK', '2017-11-27', 1.0);`,
   `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('4798004', 500.0, 10.0, 5000.0, 'CEZ', 'CZK', '2017-12-18', 1.0);`,
   `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('890163', 3.96, 10.0, 1017.7278012, 'NOKIA OYJ A ADR 1/EO-,06', 'EUR', '2017-12-18', 25.700197);`,
@@ -20,8 +20,20 @@ exports.inserts = [
   `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('4798017', 227.0, 22.0, 4994.0, 'O2 Czech Republic', 'CZK', '2018-11-17', 1.0);`,
 ]
 
+exports.stockATnTInserts = [
+  `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('332126', 27.0, 3.0, 4994.0, 'ATaT made up', 'USD', '2021-08-12', 21.0);`,
+  `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('332126', 72.0, 8.0, 4994.0, 'ATaT made up', 'USD', '2021-09-15', 22.0);`,
+]
+
 exports.insertStocks = async (db) => {
-  const promises = exports.inserts.map((insert) => {
+  const promises = exports.stocksInserts.map((insert) => {
+    return storage.run(db, insert)
+  })
+  return Promise.all(promises)
+}
+
+exports.insertATnTOrders = async (db) => {
+  const promises = exports.stockATnTInserts.map((insert) => {
     return storage.run(db, insert)
   })
   return Promise.all(promises)

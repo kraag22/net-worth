@@ -135,7 +135,8 @@ storage.connectDb('../data/stocks.db').then((db) => {
   app.get('/', async (req, res, next) => {
     logger.info('path / called')
     try {
-      res.render('index')
+      let stockIds = await data.getStockIds(db)
+      res.render('index', { stockIds: stockIds })
     } catch (e) {
       logger.error('API / failed', e)
       next(e)

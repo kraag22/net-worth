@@ -219,6 +219,15 @@ describe('data function', () => {
     const retFail = await data.getImportStatus(db, afterMidnight)
     expect(retFail.import_status).toBe('FAILED')
   })
+
+  it('getStockIds() should work', async () => {
+    const stocks = await data.getStockIds(db)
+
+    expect(stocks.length).toBe(15)
+    expect(stocks[0].id).toBe('14660208')
+    expect(stocks[0].name).toBe('AVAST PLC')
+    expect(stocks[0].currency).toBe('CZK')
+  })
 })
 
 describe('getData() function', () => {
@@ -232,11 +241,11 @@ describe('getData() function', () => {
 
   it('should work for single stock', async () => {
     const graphData = await data.getData(db, 'single_stock', {
-      ids: '13200994',
+      ids: '10306755',
     })
 
     expect(graphData.length).toBe(1)
-    expect(graphData[0].stock_value).toBeCloseTo(3833.518)
+    expect(graphData[0].stock_value).toBeCloseTo(83.5)
   })
 
   it('should work for stocks performance', async () => {
