@@ -1,6 +1,7 @@
 const axios = require('axios')
 const parse = require('./parse_api.js')
 const storage = require('./storage.js')
+const order = require('./order.js')
 const realityData = require('./reality/data.js')
 const singleStock = require('./single_stock.js')
 const { logger } = require('../logs.js')
@@ -107,68 +108,6 @@ exports.computeAndStoreOrdersData = async (db) => {
     'on sm.id=s.id and sm.first_created_at=s.created_at ' +
     `where s.id not in (${cashFunds}) order by s.created_at`
   return storage.run(db, sql)
-}
-
-exports.getOrdersData = async (db) => {
-  const sql = `select * from ${storage.EVENTS_TABLE} order by date`
-  return storage.call(db, sql)
-}
-
-// avg currency rate to CZK thu orders
-exports.getAvgCurrencyRatio = (lastOrder, size, ratio) => {
-  let added = size - lastOrder.size
-  if (added > 0) {
-    avgRatio = (lastOrder.size * lastOrder.avgRatio + added * ratio) / size
-  } else {
-    avgRatio = lastOrder.avgRatio
-  }
-  return avgRatio
-}
-
-exports.getOrders = (data) => {
-  let ids = new Set(data.map((item) => item.id))
-  const orders = {}
-
-  ids.forEach(
-    (id) =>
-      (orders[id] = {
-        id: id,
-        size: 0,
-        price: 0,
-        avgRatio: 0,
-      })
-  )
-  const timeline = {}
-  let lastOrder = 0
-
-  data.forEach((item) => {
-    let priceAdded =
-      (item.size - orders[item.id].size) * item.price * item.ratio
-
-    orders[item.id] = {
-      size: item.size,
-      id: item.id,
-      name: item.name,
-      price: orders[item.id].price + priceAdded,
-      currency: item.currency,
-      avgRatio: exports.getAvgCurrencyRatio(
-        orders[item.id],
-        item.size,
-        item.ratio
-      ),
-    }
-    if (timeline[item.date] === undefined) {
-      timeline[item.date] = lastOrder
-    }
-    timeline[item.date] += Math.round(priceAdded)
-    lastOrder = timeline[item.date]
-  })
-  return { timeline, orders }
-}
-
-exports.getTotalOrder = (orderData) => {
-  const lastDate = Object.keys(orderData).pop()
-  return Math.round(orderData[lastDate])
 }
 
 exports.getStocksNewest = async (db) => {
@@ -279,15 +218,15 @@ exports.getAllData = async (db) => {
   ret.daily = await exports.getDailyData(db)
   ret.today = await exports.getTodaysData(db)
   ret.todaySum = exports.sumTodaysData(ret.today)
-  ret.orders = await exports.getOrdersData(db)
-  const { timeline, orders } = exports.getOrders(ret.orders)
+  ret.orders = await order.getOrdersData(db)
+  const { timeline, orders } = order.getOrders(ret.orders)
   logger.info(orders)
   ret.timeline = timeline
   ret.stocksBalance = await exports.getStocksBalance(db, orders)
   ret.sumStocksBalanceByCurrency = exports.sumStocksBalanceByCurrency(
     ret.stocksBalance
   )
-  ret.totalOrder = exports.getTotalOrder(ret.timeline)
+  ret.totalOrder = order.getTotalOrder(ret.timeline)
   return ret
 }
 
@@ -366,8 +305,8 @@ exports.getData = async (db, action, params = {}) => {
       break
 
     case 'balance_by_stocks':
-      let ordersData = await exports.getOrdersData(db)
-      const { orders } = exports.getOrders(ordersData)
+      let ordersData = await order.getOrdersData(db)
+      const { orders } = order.getOrders(ordersData)
       data = await exports.getStocksBalance(db, orders)
       break
 

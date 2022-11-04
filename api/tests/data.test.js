@@ -1,4 +1,5 @@
 const data = require('../src/data.js')
+const order = require('../src/order.js')
 const { mockDegiro } = require('./mockDegiro.js')
 const { MockFixer } = require('./mockFixer.js')
 const storage = require('../src/storage.js')
@@ -37,14 +38,14 @@ describe('data function', () => {
   it('getAvgCurrencyRatio() should work for buying', () => {
     const lastOrder = { size: 10, avgRatio: 26 }
 
-    const ret = data.getAvgCurrencyRatio(lastOrder, 20, 25)
+    const ret = order.getAvgCurrencyRatio(lastOrder, 20, 25)
     expect(ret).toBe(25.5)
   })
 
   it('getAvgCurrencyRatio() should work for selling', () => {
     const lastOrder = { size: 20, avgRatio: 30 }
 
-    const ret = data.getAvgCurrencyRatio(lastOrder, 10, 20)
+    const ret = order.getAvgCurrencyRatio(lastOrder, 10, 20)
     expect(ret).toBe(30)
   })
 
@@ -133,23 +134,23 @@ describe('data function', () => {
 
   it('computeAndStoreOrdersData() should work', async () => {
     await insertStocks(db)
-    let ordersData = await data.getOrdersData(db)
+    let ordersData = await order.getOrdersData(db)
     expect(ordersData.length).toEqual(13)
 
     await data.computeAndStoreOrdersData(db)
     await data.computeAndStoreOrdersData(db)
 
-    ordersData = await data.getOrdersData(db)
+    ordersData = await order.getOrdersData(db)
     expect(ordersData.length).toEqual(18)
   })
 
   it('getOrdersData(), getOrders() and getTotalOrder() should work', async () => {
-    const ordersData = await data.getOrdersData(db)
+    const ordersData = await order.getOrdersData(db)
     expect(ordersData.length).toEqual(18)
     expect(ordersData[8].value).toEqual(6398)
 
-    const { timeline, orders } = data.getOrders(ordersData)
-    expect(data.getTotalOrder(timeline)).toEqual(65803)
+    const { timeline, orders } = order.getOrders(ordersData)
+    expect(order.getTotalOrder(timeline)).toEqual(65803)
     expect(orders['10306755'].size).toEqual(67)
     expect(orders['10306755'].price).toEqual(5153.25)
     expect(orders['331868'].avgRatio).toEqual(22.59299731525348)
@@ -157,8 +158,8 @@ describe('data function', () => {
   })
 
   it('getStocksBalance() should work', async () => {
-    const ordersData = await data.getOrdersData(db)
-    const { orders } = data.getOrders(ordersData)
+    const ordersData = await order.getOrdersData(db)
+    const { orders } = order.getOrders(ordersData)
 
     const result = await data.getStocksBalance(db, orders)
     expect(result.length).toBe(13)
@@ -171,8 +172,8 @@ describe('data function', () => {
   })
 
   it('sumStocksBalanceByCurrency() should work', async () => {
-    const ordersData = await data.getOrdersData(db)
-    const { orders } = data.getOrders(ordersData)
+    const ordersData = await order.getOrdersData(db)
+    const { orders } = order.getOrders(ordersData)
     const stocksBalance = await data.getStocksBalance(db, orders)
 
     const result = data.sumStocksBalanceByCurrency(stocksBalance)
@@ -184,8 +185,8 @@ describe('data function', () => {
   })
 
   it('getStocksBalance() should work with name change', async () => {
-    const ordersData = await data.getOrdersData(db)
-    const { orders } = data.getOrders(ordersData)
+    const ordersData = await order.getOrdersData(db)
+    const { orders } = order.getOrders(ordersData)
 
     const result = await data.getStocksBalance(db, orders)
     expect(result.length).toBe(13)
@@ -245,7 +246,7 @@ describe('getData() function', () => {
     })
 
     expect(graphData.length).toBe(1)
-    expect(graphData[0].stock_value).toBeCloseTo(83.5)
+    expect(graphData[0].stock_value).toBeCloseTo(106.5)
   })
 
   it('should work for stocks performance', async () => {
