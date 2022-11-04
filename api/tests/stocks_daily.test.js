@@ -1,5 +1,6 @@
 const sd = require('../src/stocks_daily.js')
 const data = require('../src/data.js')
+const order = require('../src/order.js')
 const { mockDegiro } = require('./mockDegiro.js')
 const { MockFixer } = require('./mockFixer.js')
 const storage = require('../src/storage.js')
@@ -77,8 +78,8 @@ describe('stocks daily', () => {
     const result = await storage.call(db, sql)
     expect(result[0].no).toBe(0)
 
-    const ordersData = await data.getOrdersData(db)
-    const { orders } = await data.getOrders(ordersData)
+    const ordersData = await order.getOrdersData(db)
+    const { orders } = await order.getOrders(ordersData)
     await sd.fillCurrencyBalance(db, orders, '2018-12-24', '2018-12-26')
 
     const sql2 =

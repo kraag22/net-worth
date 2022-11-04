@@ -1,5 +1,6 @@
 const storage = require('./storage.js')
-const { getDateString, getOrdersData, getOrders } = require('./data.js')
+const { getDateString } = require('./data.js')
+const { getOrdersData, getOrders } = require('./order.js')
 const { logger } = require('../logs.js')
 
 exports.fillStocksDaily = async (db, from, to) => {

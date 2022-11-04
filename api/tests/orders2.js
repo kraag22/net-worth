@@ -44,14 +44,44 @@ exports.inserts = [
   `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('332126', 11180.583787178788, 11221.53180656253, 11196.606823069513, 'AT&T Inc', 'USD', '2021-09-21', 39.33283052102161, 27.21, 19.0, 21.65729863840599);`,
 ]
 
-exports.monetaInserts = [
-  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('10306755', 3654.2346378720226, 3655.616931256235, 3655.026741094519, 'Moneta random USD', 'USD', '2021-08-12', 2.22915562642356, 28.16, 6.0, 21.6324972839401);`,
-  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('10306755', 3621.204895689399, 3635.5104939570842, 3621.204895689399, 'Moneta random USD', 'USD', '2021-08-13', -13.4324745100339, 28.02, 6.0, 21.53940575594456);`,
-  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('10306755', 3641.7110650367913, 3643.0029100403513, 3641.7110650367913, 'Moneta random USD', 'USD', '2021-08-14', -14.97799513173186, 28.19, 6.0, 21.53075005934014);`,
+exports.sp500Inserts = [
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14626.954355199998, 14633.224224, 14633.224224, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-01', -16.75869599999896, 286.4, 2.0, 25.54683);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14409.070283640001, 14641.0939232, 14409.070283640001, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-02', -14.82002285999988, 281.98, 2.0, 25.549809);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14213.82310014, 14408.9975328, 14213.82310014, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-03', -28.4769851100009, 278.43, 2.0, 25.524949);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14207.38524168, 14388.61139724, 14388.61139724, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-04', -20.44477851000011, 281.69, 2.0, 25.539798);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14363.764213999999, 14403.806870239998, 14363.764213999999, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-05', -14.08913500000017, 281.08, 2.0, 25.551025);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14351.089241599999, 14562.733612, 14562.733612, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-06', -28.42430674999923, 285.25, 2.0, 25.526264);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14561.0877195, 14597.84138526, 14597.84138526, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-07', -30.14609949000078, 285.97, 2.0, 25.523379);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14593.572997040003, 14613.56001228, 14593.572997040003, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-08', -34.41448770999887, 285.97, 2.0, 25.515916);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14543.92622208, 14609.18867486, 14543.92622208, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-09', -28.30539192000106, 284.88, 2.0, 25.526408);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14494.081829119998, 14559.3454931, 14494.081829119998, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-10', -24.95152288000099, 283.84, 2.0, 25.532134);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14477.385810000002, 14496.772632319999, 14477.385810000002, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-11', -37.04384624999875, 283.75, 2.0, 25.510812);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14472.24583272, 14563.84091404, 14563.84091404, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-12', -31.92070045999935, 285.34, 2.0, 25.520153);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14536.60454136, 14568.475406319998, 14543.38143188, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-13', -58.51844361999974, 285.46, 2.0, 25.473589);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14514.34154042, 14544.03456436, 14514.34154042, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-14', -58.4015953299986, 284.89, 2.0, 25.473589);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14514.336982179999, 14524.06027788, 14524.048882279998, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-15', -48.69425347000106, 284.89, 2.0, 25.490626);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14486.688977459999, 14643.12398736, 14643.12398736, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-16', -76.42589063999912, 287.76, 2.0, 25.443293);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14626.27868448, 14670.345616120001, 14626.27868448, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-17', -80.99467152000034, 287.52, 2.0, 25.435237);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14613.612636480002, 14695.43749992, 14695.43749992, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-18', -54.80368307999925, 288.36, 2.0, 25.481061);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14672.956066020002, 14711.101072500001, 14694.468834399999, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-19', -96.18256685000051, 289.15, 2.0, 25.409768);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14682.9281782, 14703.89250884, 14692.088885759998, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-20', -72.47490624000056, 288.64, 2.0, 25.450542);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14689.5188352, 14813.233465679998, 14813.233465679998, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-21', -73.07250282000132, 291.02, 2.0, 25.450542);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14803.045437519999, 14813.233465679998, 14807.56556016, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-22', -78.7404083399997, 291.02, 2.0, 25.440804);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14810.091613759998, 14851.821553599999, 14848.718858760001, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-23', -45.77145773999837, 291.18, 2.0, 25.497491);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14834.94022116, 14870.868921360001, 14855.70310224, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-24', -38.78721425999902, 291.18, 2.0, 25.509484);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14856.181219799999, 15170.37550464, 15061.26045852, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-25', 166.770142020001, 291.18, 2.0, 25.862457);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14819.04936384, 14858.37031104, 14835.27216636, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-26', -59.21815013999912, 291.18, 2.0, 25.474401);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14769.906437299998, 14863.84391268, 14769.906437299998, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-27', -71.89713895000023, 290.15, 2.0, 25.452191);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14772.519528199999, 14820.378112919998, 14820.378112919998, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-28', -69.50850782999987, 291.09, 2.0, 25.456694);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14761.20716, 14772.519528199999, 14765.901206699999, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-29', -75.90236955, 290.15, 2.0, 25.445289);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14609.5000758, 14783.996121299999, 14609.5000758, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-30', -96.23871494999912, 287.49, 2.0, 25.40871);`,
+  `INSERT INTO stocks_by_daily (id, min_value, max_value, last_value, name, currency, date, currency_balance, price, size, ratio) VALUES ('4622757', 14610.601737480001, 14627.735994239998, 14625.340452839999, 'SPDR S&P 500 UCITS ETF', 'EUR', '2019-12-31', -85.00203366000096, 287.58, 2.0, 25.428299);`,
 ]
 
-exports.monetaOrders = [
-  `INSERT INTO events (id, name, value, price, size, ratio, currency, date) VALUES ('10306755', 'USD', 3500.0, 27, 6, 1.0, 'USD', '2021-04-18');`,
+exports.sp500Orders = [
+  `INSERT INTO events (id, name, value, price, size, ratio, currency, date) VALUES ('4622757', 'SPDR S&P 500 UCITS ETF', 6674.0, 258.91, 1.0, 25.778412, 'EUR', '2019-08-27');`,
+  `INSERT INTO events (id, name, value, price, size, ratio, currency, date) VALUES ('4622757', 'SPDR S&P 500 UCITS ETF', 14462.0, 282.68, 2.0, 25.580806, 'EUR', '2019-11-18');`,
+  `INSERT INTO events (id, name, value, price, size, ratio, currency, date) VALUES ('4622757', 'SPDR S&P 500 UCITS ETF', 27069.0, 265.67, 4.0, 25.472566, 'EUR', '2020-03-02');`,
 ]
 
 exports.insertATaTDaily = async (db) => {
@@ -61,15 +91,15 @@ exports.insertATaTDaily = async (db) => {
   return Promise.all(promises)
 }
 
-exports.insertMonetaDaily = async (db) => {
-  const promises = exports.monetaInserts.map((insert) => {
+exports.insertSP500Daily = async (db) => {
+  const promises = exports.sp500Inserts.map((insert) => {
     return storage.run(db, insert)
   })
   return Promise.all(promises)
 }
 
-exports.insertMonetaOrders = async (db) => {
-  const promises = exports.monetaOrders.map((insert) => {
+exports.insertSP500Orders = async (db) => {
+  const promises = exports.sp500Orders.map((insert) => {
     return storage.run(db, insert)
   })
   return Promise.all(promises)

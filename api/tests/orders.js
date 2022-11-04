@@ -21,8 +21,9 @@ exports.stocksInserts = [
 ]
 
 exports.stockATnTInserts = [
-  `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('332126', 27.0, 3.0, 4994.0, 'ATaT made up', 'USD', '2021-08-12', 21.0);`,
-  `INSERT INTO stocks (id, price, size, value, name, currency, created_at, ratio) VALUES ('332126', 72.0, 8.0, 4994.0, 'ATaT made up', 'USD', '2021-09-15', 22.0);`,
+  `INSERT INTO events (id, name, value, price, size, ratio, currency, date) VALUES ('332126', 'AT&T Inc', 3688.0, 28.43, 6.0, 21.61930389126477, 'USD', '2021-07-16');`,
+  `INSERT INTO events (id, name, value, price, size, ratio, currency, date) VALUES ('332126', 'AT&T Inc', 8514.0, 28.19, 14.0, 21.57403557481964, 'USD', '2021-08-16');`,
+  `INSERT INTO events (id, name, value, price, size, ratio, currency, date) VALUES ('332126', 'AT&T Inc', 11287.0, 27.57, 19.0, 21.54700753644885, 'USD', '2021-09-16');`,
 ]
 
 exports.insertStocks = async (db) => {
