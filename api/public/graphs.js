@@ -392,7 +392,7 @@ singleStock.setScrollBarX()
 let singleStockAxeX = singleStock.setAxeX(am4charts.DateAxis)
 let singleStockAxeY = singleStock.setAxeY(am4charts.ValueAxis)
 
-singleStock.setSerie(
+let singleStockSerie = singleStock.setSerie(
   am4charts.LineSeries,
   'dateX',
   'date',
@@ -402,6 +402,9 @@ singleStock.setSerie(
   0,
   0.7
 )
+
+singleStock.setRange(singleStockAxeY, singleStockSerie, true)
+singleStock.setRange(singleStockAxeY, singleStockSerie, false)
 
 singleStock.chart.cursor.xAxis = singleStockAxeX
 
