@@ -24,4 +24,5 @@ jobs:
       working-directory: ./api
     - run: npm run coverage
       working-directory: ./api
-
+    - name: Coveralls
+      uses: coverallsapp/github-action@v2
