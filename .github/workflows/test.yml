@@ -19,5 +19,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm install
+      working-directory: ./api
     - run: npm run test-ci
+      working-directory: ./api
     - run: npm run coveralls
+      working-directory: ./api
