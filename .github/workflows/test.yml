@@ -48,7 +48,7 @@ jobs:
           ARGS: "-r --delete-after"
           SOURCE: "api/"
           REMOTE_HOST: "kraag22.com"
-          TARGET: "/srv/net_worth"
+          TARGET: "/srv/net_worth/api"
           REMOTE_USER: "root"
           SCRIPT_AFTER: |
             service net-worth restart
