@@ -7,7 +7,8 @@
     "start": "node index.js",
     "test": "jest --watchAll",
     "test-ci": "jest",
-    "coverage": "jest --watchAll --config jest.config.json",
+    "coverage-watch": "jest --watchAll --config jest.config.json",
+    "coverage": "jest --coverage --config jest.config.json",
     "coveralls": "jest --coverage --config jest.config.json && cat ./coverage/lcov.info | coveralls",
     "format": "prettier --write \"{src,tests}/**/*.js\""
   },
