@@ -1,4 +1,4 @@
-name: test
+name: Run tests and coverage
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 21.x]
+        node-version: [14.x, 18.x]
 
     steps:
     - uses: actions/checkout@v2
@@ -22,7 +22,7 @@ jobs:
       working-directory: ./api
     - run: npm run test-ci
       working-directory: ./api
-    - run: npm run coveralls
+    - run: npm run coverage
       working-directory: ./api
-      env:
-        repo_token: ${{ secrets.COVERALLS_TOKEN }}
+    - name: Coveralls
+      uses: coverallsapp/github-action@v2
