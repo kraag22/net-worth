@@ -95,18 +95,21 @@ storage.connectDb('../data/stocks.db').then((db) => {
       const status = await reality.storeAveragePrice(
         db,
         makeRequest,
+        'buy',
         'jihlava2kk',
         c.jihlava_2_rooms_url
       )
       const status2 = await reality.storeAveragePrice(
         db,
         makeRequest,
+        'buy',
         'holesovice3_4kk',
         c.praha_3_4_rooms_url
       )
       const status3 = await reality.storeAveragePrice(
         db,
         makeRequest,
+        'buy',
         'holesovice1kk',
         c.praha_1_rooms_url
       )

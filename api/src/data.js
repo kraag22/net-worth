@@ -301,7 +301,7 @@ exports.getData = async (db, action, params = {}) => {
       break
 
     case 'reality':
-      data = await realityData.getRealityData(db)
+      data = await realityData.getRealityData(db, 'buy')
       break
 
     case 'balance_by_stocks':

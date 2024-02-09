@@ -81,18 +81,19 @@ exports.createTable = (db) => {
     'date TEXT' +
     ')'
 
-  const realityTabel =
+  const realityTable =
     `CREATE TABLE IF NOT EXISTS ${REALITY_TABLE} (` +
     'name TEXT, ' +
     'price real, ' +
-    'created_at TEXT' +
+    'created_at TEXT, ' +
+    'type varchar(20)' +
     ')'
 
   return Promise.all([
     exports.run(db, stocksTable),
     exports.run(db, stocksDailyTable),
     exports.run(db, eventsTable),
-    exports.run(db, realityTabel),
+    exports.run(db, realityTable),
     exports.run(db, exports.getViewSql('hourly', false)),
     exports.run(db, exports.getViewSql('daily', false)),
     exports.run(
@@ -116,10 +117,10 @@ exports.insert = (db, sql, params) => {
   })
 }
 
-exports.insertReality = (db, name, averagePrice) => {
-  const values = [name, averagePrice]
+exports.insertReality = (db, name, type, averagePrice) => {
+  const values = [name, averagePrice, type]
   let sql = `INSERT INTO ${REALITY_TABLE} `
-  sql += '(name, price, created_at) VALUES '
+  sql += '(name, price, type, created_at) VALUES '
   sql += getInsertQuestionmarks(values)
 
   return exports.insert(db, sql, values)
