@@ -304,6 +304,10 @@ exports.getData = async (db, action, params = {}) => {
       data = await realityData.getRealityData(db, 'buy')
       break
 
+    case 'reality_rent':
+      data = await realityData.getRealityData(db, 'rent')
+      break
+
     case 'balance_by_stocks':
       let ordersData = await order.getOrdersData(db)
       const { orders } = order.getOrders(ordersData)

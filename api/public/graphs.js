@@ -334,13 +334,13 @@ stocksByCurrency.setSerie(
 
 stocksByCurrency.chart.cursor.xAxis = stocksByCurrencyAxeX
 
-/////////////////////////////
-//  REALITY PRICE PER m^2  //
-/////////////////////////////
+/////////////////////////////////
+//  REALITY BUY PRICE PER m^2  //
+/////////////////////////////////
 let realityPricePerMeter = new Chart('reality_price_per_meter')
 realityPricePerMeter.chart.dataSource.url = '/json/reality'
 
-realityPricePerMeter.setTitle('Price per m^2')
+realityPricePerMeter.setTitle('Buy price per m^2')
 realityPricePerMeter.setScrollBarX()
 
 let realityPricePerMeterAxeX = realityPricePerMeter.setAxeX(am4charts.DateAxis)
@@ -380,6 +380,67 @@ realityPricePerMeter.setSerie(
 )
 
 realityPricePerMeter.chart.cursor.xAxis = realityPricePerMeterAxeX
+
+//////////////////////////////////
+//  REALITY RENT PRICE PER m^2  //
+//////////////////////////////////
+let realityRentPricePerMeter = new Chart('reality_rent_price_per_meter')
+realityRentPricePerMeter.chart.dataSource.url = '/json/reality_rent'
+
+realityRentPricePerMeter.setTitle('Price per m^2')
+realityRentPricePerMeter.setScrollBarX()
+
+let realityRentPricePerMeterAxeX = realityRentPricePerMeter.setAxeX(
+  am4charts.DateAxis
+)
+let realityRentPricePerMeterAxeY = realityRentPricePerMeter.setAxeY(
+  am4charts.ValueAxis
+)
+
+realityRentPricePerMeter.setSerie(
+  am4charts.LineSeries,
+  'dateX',
+  'date',
+  'jihlava2kk',
+  2,
+  'jihlava2kk {valueY.value} CZK',
+  0,
+  0.7
+)
+
+realityRentPricePerMeter.setSerie(
+  am4charts.LineSeries,
+  'dateX',
+  'date',
+  'holesovice3_4kk',
+  2,
+  'holesovice3_4kk {valueY.value} CZK',
+  0,
+  0.7
+)
+
+realityRentPricePerMeter.setSerie(
+  am4charts.LineSeries,
+  'dateX',
+  'date',
+  'holesovice2kk',
+  2,
+  'holesovice2kk {valueY.value} CZK',
+  0,
+  0.7
+)
+
+realityRentPricePerMeter.setSerie(
+  am4charts.LineSeries,
+  'dateX',
+  'date',
+  'holesovice1kk',
+  2,
+  'holesovice1kk {valueY.value} CZK',
+  0,
+  0.7
+)
+realityRentPricePerMeter.chart.cursor.xAxis = realityRentPricePerMeterAxeX
 
 /////////////////////////////
 //  SINGLE STOCK           //
