@@ -113,10 +113,47 @@ storage.connectDb('../data/stocks.db').then((db) => {
         'holesovice1kk',
         c.praha_1_rooms_url
       )
+
+      const rent1 = await reality.storeAveragePrice(
+        db,
+        makeRequest,
+        'rent',
+        'holesovice3_4kk',
+        c.praha_rent_3_4_rooms_url
+      )
+
+      const rent2 = await reality.storeAveragePrice(
+        db,
+        makeRequest,
+        'rent',
+        'holesovice2kk',
+        c.praha_rent_2_rooms_url
+      )
+
+      const rent3 = await reality.storeAveragePrice(
+        db,
+        makeRequest,
+        'rent',
+        'holesovice1kk',
+        c.praha_rent_1_rooms_url
+      )
+
+      const rent4 = await reality.storeAveragePrice(
+        db,
+        makeRequest,
+        'rent',
+        'jihlava2kk',
+        c.jihlava_rent_2_rooms_url
+      )
+
       res.json({
         statusJihlava: status,
         statusPraha: status2,
         statusPraha1kk: status3,
+        rentPraha34kk: rent1,
+        rentPraha2kk: rent2,
+        rentPraha1kk: rent3,
+        rentJihlava2kk: rent4,
       })
     } catch (e) {
       logger.error('API /reality/import failed', e)

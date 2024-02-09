@@ -10,8 +10,6 @@ const {
 } = require('./mockScrapper.js')
 
 beforeAll(async () => {
-  const html = fs.readFileSync(path.join('tests', 'reality.txt'), 'utf8')
-  parsedLines = reality.parseHtml(html)
   db = await storage.connectDb(':memory:')
 })
 
@@ -22,7 +20,12 @@ afterAll((done) => {
   })
 })
 
-describe('reality', () => {
+describe('reality - buy', () => {
+  beforeAll(async () => {
+    const html = fs.readFileSync(path.join('tests', 'reality.txt'), 'utf8')
+    parsedLines = reality.parseHtml(html)
+  })
+
   it('parseHtml() should work', () => {
     expect(parsedLines).toHaveLength(9)
     expect(parsedLines[3].title).toBe('Prodej bytu 2+1&nbsp;43&nbsp;m²')
@@ -77,6 +80,43 @@ describe('reality', () => {
   })
 })
 
+describe('reality - rent', () => {
+  beforeAll(async () => {
+    const html = fs.readFileSync(path.join('tests', 'reality.rent.txt'), 'utf8')
+    parsedLines = reality.parseHtml(html)
+  })
+
+  it('parseHtml() should work', () => {
+    expect(parsedLines).toHaveLength(26)
+    expect(parsedLines[3].title).toBe('Pronájem bytu 3+1&nbsp;80&nbsp;m²')
+    expect(parsedLines[3].price).toBe('35&nbsp;000&nbsp;Kč za měsíc')
+  })
+
+  it('parseFloorSize() should work', () => {
+    expect(reality.parseFloorSize(parsedLines[3].title)).toBe(80)
+  })
+
+  it('parsePrice() should work', () => {
+    expect(reality.parsePrice(parsedLines[3].price)).toBe(35_000)
+  })
+
+  it('computeAveragePricePerSquareMeter() should work', () => {
+    const randomFlat = {
+      title: 'Pronájem bytu 3+1&nbsp;80&nbsp;m²',
+      price: '35&nbsp;000&nbsp;Kč za měsíc',
+    }
+    expect(reality.computeAveragePricePerSquareMeter(parsedLines)).toBe(362)
+
+    expect(
+      reality.computeAveragePricePerSquareMeter([
+        randomFlat,
+        randomFlat,
+        randomFlat,
+      ])
+    ).toBe(438)
+  })
+})
+
 describe('storeAveragePrice', () => {
   it('should work', async () => {
     const result = await reality.storeAveragePrice(
@@ -123,6 +163,7 @@ describe('reality data', () => {
     await storage.insert(db, sql, ['jezdovice3kk', 23_445, 'buy', '2021-12-15'])
     await storage.insert(db, sql, ['jezdovice2kk', 3_445, 'buy', '2021-12-15'])
     await storage.insert(db, sql, ['jihlava2kk', 60_000, 'buy', '2021-12-15'])
+    await storage.insert(db, sql, ['jihlava2kk', 600, 'rent', '2021-12-15'])
     await storage.insert(db, sql, [
       'jihlava2kk',
       61_001,
@@ -137,5 +178,8 @@ describe('reality data', () => {
     expect(result[0].date).toBe('2021-12-15')
     expect(result[1].date).toBe('2021-12-25')
     expect(result[1].jihlava2kk).toBe(61_001)
+
+    const resultRent = await data.getRealityData(db, 'rent')
+    expect(resultRent[0].jihlava2kk).toBe(600)
   })
 })

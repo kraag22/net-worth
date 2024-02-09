@@ -240,6 +240,14 @@ describe('getData() function', () => {
     expect(graphData[0].jezdovice3kk).toBe(23445)
   })
 
+  it('should work for rent reality', async () => {
+    await storage.insertReality(db, 'jezdovice2kk', 'rent', 445)
+    const graphData = await data.getData(db, 'reality_rent')
+
+    expect(graphData.length).toBe(1)
+    expect(graphData[0].jezdovice2kk).toBe(445)
+  })
+
   it('should work for single stock', async () => {
     const graphData = await data.getData(db, 'single_stock', {
       ids: '10306755',
