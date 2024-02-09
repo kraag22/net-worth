@@ -50,15 +50,16 @@ describe('insert()', () => {
 
 describe('insertReality()', () => {
   it('works', async () => {
-    const sql = 'select name, price from reality'
+    const sql = 'select name, price, type from reality'
 
-    await storage.insertReality(db, 'xxx', 15)
+    await storage.insertReality(db, 'xxx', 'buy', 15)
 
     const rows = await storage.call(db, sql)
     expect(rows.length).toBe(1)
     expect(rows[0]).toEqual({
       name: 'xxx',
       price: 15,
+      type: 'buy',
     })
   })
 })

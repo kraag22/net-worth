@@ -233,7 +233,7 @@ describe('data function', () => {
 
 describe('getData() function', () => {
   it('should work for reality', async () => {
-    await storage.insertReality(db, 'jezdovice3kk', 23_445)
+    await storage.insertReality(db, 'jezdovice3kk', 'buy', 23_445)
     const graphData = await data.getData(db, 'reality')
 
     expect(graphData.length).toBe(1)

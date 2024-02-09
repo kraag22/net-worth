@@ -1,8 +1,8 @@
 const storage = require('../storage.js')
 
-exports.getRealityData = async (db) => {
-  const sql = `select * from ${storage.REALITY_TABLE} order by created_at asc`
-  const data = await storage.call(db, sql)
+exports.getRealityData = async (db, type) => {
+  const sql = `select * from ${storage.REALITY_TABLE} where type=? order by created_at asc`
+  const data = await storage.call(db, sql, [type])
   const parsed = []
   let lastItem = {}
   data.forEach((row) => {
