@@ -20,6 +20,7 @@ app.engine('html', mustacheExpress())
 app.set('view engine', 'html')
 app.set('views', __dirname + '/views')
 
+app.use(express.urlencoded({ extended: true }))
 app.use('/static', express.static('public'))
 
 console.log(`Using user: ${process.env.username}`)
@@ -33,6 +34,18 @@ const fixer = new Fixer(process.env.fixerkey)
 
 storage.connectDb('../data/stocks.db').then((db) => {
   console.log('Connected to the database.')
+
+  app.post('/login', async (req, res, next) => {
+    logger.info('API /login called')
+    try {
+      await degiro.login(req.body.smscode)
+
+      res.json({ status: 'ok' })
+    } catch (e) {
+      logger.error('API /login failed', e)
+      next(e)
+    }
+  })
 
   app.post('/import', async (req, res, next) => {
     logger.info('API /import called')

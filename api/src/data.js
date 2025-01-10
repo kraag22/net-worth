@@ -9,7 +9,6 @@ const c = require('./constants')
 const { ExceptionHandler } = require('winston')
 
 exports.getPortfolio = async (degiro, fixer) => {
-  await degiro.login()
   const data = await degiro.getPortfolio()
   const portfolio = parse.getPortfolio(data)
   const ids = parse.getIds(portfolio)
