@@ -47,6 +47,17 @@ storage.connectDb('../data/stocks.db').then((db) => {
     }
   })
 
+  app.get('/refresh', async (req, res, next) => {
+    logger.info('API /refresh called')
+    try {
+      await degiro.getPortfolio()
+      res.json({ status: 'ok' })
+    } catch (e) {
+      logger.error('API /refresh failed', e)
+      next(e)
+    }
+  })
+
   app.post('/import', async (req, res, next) => {
     logger.info('API /import called')
     try {
