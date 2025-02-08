@@ -27,16 +27,17 @@ describe('reality - buy', () => {
   })
 
   it('parseHtml() should work', () => {
-    expect(parsedLines).toHaveLength(9)
-    expect(parsedLines[3].title).toBe('Prodej bytu 2+1&nbsp;43&nbsp;m²')
-    expect(parsedLines[3].price).toBe('2&nbsp;850&nbsp;000&nbsp;Kč')
+    expect(parsedLines).toHaveLength(12)
+    expect(parsedLines[3].title).toBe('Prodej bytu 1+kk 34 m²')
+    expect(parsedLines[3].price).toBe('6 499 000 Kč')
   })
 
   it('parseFloorSize() should work', () => {
-    expect(reality.parseFloorSize(parsedLines[3].title)).toBe(43)
+    expect(reality.parseFloorSize(parsedLines[3].title)).toBe(34)
 
-    expect(reality.parseFloorSize(parsedLines[5].title)).toBe(68)
+    expect(reality.parseFloorSize(parsedLines[5].title)).toBe(26)
 
+    expect(reality.parseFloorSize('Prodej bytu 1+kk 34 m²')).toBe(34)
     expect(reality.parseFloorSize('Prodej bytu 2+1 43&nbsp;m²')).toBe(43)
     expect(reality.parseFloorSize('Prodej bytu 2+1&nbsp;43&nbsp;')).toBe(null)
     expect(reality.parseFloorSize('Prodej bytu 2+1')).toBe(null)
@@ -47,9 +48,9 @@ describe('reality - buy', () => {
   })
 
   it('parsePrice() should work', () => {
-    expect(reality.parsePrice(parsedLines[3].price)).toBe(2_850_000)
+    expect(reality.parsePrice(parsedLines[3].price)).toBe(6_499_000)
 
-    expect(reality.parsePrice(parsedLines[5].price)).toBe(3_490_000)
+    expect(reality.parsePrice(parsedLines[5].price)).toBe(4_690_000)
 
     expect(reality.parsePrice('2&nbsp;850&nbsp;000&nbsp;K')).toBe(null)
     expect(reality.parsePrice('&nbsp;&nbsp;&nbsp;Kč')).toBe(null)
@@ -62,7 +63,7 @@ describe('reality - buy', () => {
       title: '&nbsp;43&nbsp;m²',
       price: '850&nbsp;000&nbsp;Kč',
     }
-    expect(reality.computeAveragePricePerSquareMeter(parsedLines)).toBe(60_689)
+    expect(reality.computeAveragePricePerSquareMeter(parsedLines)).toBe(183398)
     expect(reality.computeAveragePricePerSquareMeter([])).toBeNull()
     expect(
       reality.computeAveragePricePerSquareMeter([{ title: 'x', price: 'y' }])
@@ -87,17 +88,17 @@ describe('reality - rent', () => {
   })
 
   it('parseHtml() should work', () => {
-    expect(parsedLines).toHaveLength(26)
-    expect(parsedLines[3].title).toBe('Pronájem bytu 3+1&nbsp;80&nbsp;m²')
-    expect(parsedLines[3].price).toBe('35&nbsp;000&nbsp;Kč za měsíc')
+    expect(parsedLines).toHaveLength(12)
+    expect(parsedLines[3].title).toBe('Pronájem bytu 2+kk 60&nbsp;m²')
+    expect(parsedLines[3].price).toBe('11&nbsp;000&nbsp;Kč/měsíc')
   })
 
   it('parseFloorSize() should work', () => {
-    expect(reality.parseFloorSize(parsedLines[3].title)).toBe(80)
+    expect(reality.parseFloorSize(parsedLines[3].title)).toBe(60)
   })
 
   it('parsePrice() should work', () => {
-    expect(reality.parsePrice(parsedLines[3].price)).toBe(35_000)
+    expect(reality.parsePrice(parsedLines[3].price)).toBe(11_000)
   })
 
   it('computeAveragePricePerSquareMeter() should work', () => {
@@ -105,7 +106,7 @@ describe('reality - rent', () => {
       title: 'Pronájem bytu 3+1&nbsp;80&nbsp;m²',
       price: '35&nbsp;000&nbsp;Kč za měsíc',
     }
-    expect(reality.computeAveragePricePerSquareMeter(parsedLines)).toBe(362)
+    expect(reality.computeAveragePricePerSquareMeter(parsedLines)).toBe(244)
 
     expect(
       reality.computeAveragePricePerSquareMeter([

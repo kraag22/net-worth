@@ -1,4 +1,5 @@
-const { JSDOM } = require('jsdom')
+const jsdom = require('jsdom')
+const { JSDOM } = jsdom
 const fs = require('fs')
 const { logger } = require('../../logs.js')
 const storage = require('../storage.js')
@@ -43,23 +44,33 @@ exports.computeAveragePricePerSquareMeter = (flats) => {
 }
 
 exports.parseHtml = (html) => {
-  const dom = new JSDOM(html)
+  const dom = new JSDOM(html, {
+    virtualConsole: new jsdom.VirtualConsole(),
+  })
   const list = dom.window.document.querySelectorAll(
-    'div.dir-property-list div.property span.basic'
+    'ul[data-e2e="estates-list"] > li'
   )
   const properties = []
 
   list.forEach((node) => {
-    properties.push({
-      title: node.querySelector('a.title span')?.innerHTML,
-      price: node.querySelector('span.price span.norm-price')?.innerHTML,
-    })
+    divs = node.querySelectorAll('a div')
+    data_div = divs[divs.length - 1]
+    if (data_div == undefined) {
+      return
+    }
+    paragraphs = data_div.querySelectorAll('p')
+    if (paragraphs.length && paragraphs.length == 3) {
+      properties.push({
+        title: paragraphs[0].innerHTML,
+        price: paragraphs[2].innerHTML,
+      })
+    }
   })
   return properties
 }
 
 exports.parseFloorSize = (title) => {
-  const regex = /(\d+)&nbsp;m²/
+  const regex = /(\d+)(\s|&nbsp;)m²/
   const found = title?.match(regex)
   if (found?.length > 1) {
     return parseInt(found[1])
