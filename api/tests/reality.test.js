@@ -119,34 +119,49 @@ describe('reality - rent', () => {
 })
 
 describe('storeAveragePrice', () => {
+  const serverAPIcalled = {}
+  const serverAPICaller = (name, type, price) => {
+    serverAPIcalled[`${name}-${type}`] = price
+    return JSON.stringify({ status: 'ok' })
+  }
+
   it('should work', async () => {
     const result = await reality.storeAveragePrice(
       db,
       makeRequest,
+      serverAPICaller,
+      'buy',
       'jihlava2kk',
       'https://xxx.cz'
     )
     expect(result).toBe('ok')
+    expect(serverAPIcalled['jihlava2kk-buy']).toBe(183_398)
   })
 
   it('should handle error well', async () => {
     const result = await reality.storeAveragePrice(
       db,
       makeRejectRequest,
-      'jihlava2kk',
+      serverAPICaller,
+      'buy',
+      'jihlava3kk',
       'https://xxx.cz'
     )
     expect(result).toBe('error')
+    expect(serverAPIcalled['jihlava3kk-buy']).toBeUndefined()
   })
 
   it('should handle empty input', async () => {
     const result = await reality.storeAveragePrice(
       db,
       makeEmptyRequest,
-      'jihlava2kk',
+      serverAPICaller,
+      'buy',
+      'jihlava4kk',
       'https://xxx.cz'
     )
     expect(result).toBe('nothing_inserted')
+    expect(serverAPIcalled['jihlava4kk-buy']).toBeUndefined()
   })
 })
 
