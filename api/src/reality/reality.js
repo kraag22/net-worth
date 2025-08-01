@@ -4,7 +4,14 @@ const fs = require('fs')
 const { logger } = require('../../logs.js')
 const storage = require('../storage.js')
 
-exports.storeAveragePrice = async (db, makeRequest, type, name, url) => {
+exports.storeAveragePrice = async (
+  db,
+  makeRequest,
+  postAveragePriceToServer,
+  type,
+  name,
+  url
+) => {
   let html = ''
   try {
     html = await makeRequest(url)
@@ -15,9 +22,11 @@ exports.storeAveragePrice = async (db, makeRequest, type, name, url) => {
 
   const flats = exports.parseHtml(html)
   const averagePrice = exports.computeAveragePricePerSquareMeter(flats)
+
   if (averagePrice != null) {
     await storage.insertReality(db, name, type, averagePrice)
-    return 'ok'
+    let exported = await postAveragePriceToServer(name, type, averagePrice)
+    return exported ? 'ok' : 'not_exported'
   }
 
   return 'nothing_inserted'
