@@ -1,5 +1,6 @@
 const DeGiro = require('degiro')
 const express = require('express')
+const schedule = require('node-schedule')
 const { Fixer } = require('./src/fixer.js')
 const { ServerAPICaller } = require('./src/api_caller.js')
 const data = require('./src/data.js')
@@ -44,6 +45,14 @@ storage
   .connectDb('../data/stocks.db')
   .then((db) => {
     console.log('Connected to the database.')
+
+    if (process.env.schedule_reality_import) {
+      const job = schedule.scheduleJob('10 1 * * *', async function() {
+        logger.info('Reality scrapping started');
+        await reality.runScrapping(db, makeRequest, serverAPICaller)
+      });
+      logger.info("Reality import job scheduled")
+    }
 
     app.post('/login', async (req, res, next) => {
       logger.info('API /login called')
@@ -146,76 +155,8 @@ storage
     app.get('/reality/import', async (req, res, next) => {
       logger.info('API /reality/import called')
       try {
-        const status = await reality.storeAveragePrice(
-          db,
-          makeRequest,
-          serverAPICaller.postAveragePriceToServer,
-          'buy',
-          'jihlava2kk',
-          c.jihlava_2_rooms_url
-        )
-        const status2 = await reality.storeAveragePrice(
-          db,
-          makeRequest,
-          serverAPICaller.postAveragePriceToServer,
-          'buy',
-          'holesovice3_4kk',
-          c.praha_3_4_rooms_url
-        )
-        const status3 = await reality.storeAveragePrice(
-          db,
-          makeRequest,
-          serverAPICaller.postAveragePriceToServer,
-          'buy',
-          'holesovice1kk',
-          c.praha_1_rooms_url
-        )
-
-        const rent1 = await reality.storeAveragePrice(
-          db,
-          makeRequest,
-          serverAPICaller.postAveragePriceToServer,
-          'rent',
-          'holesovice3_4kk',
-          c.praha_rent_3_4_rooms_url
-        )
-
-        const rent2 = await reality.storeAveragePrice(
-          db,
-          makeRequest,
-          serverAPICaller.postAveragePriceToServer,
-          'rent',
-          'holesovice2kk',
-          c.praha_rent_2_rooms_url
-        )
-
-        const rent3 = await reality.storeAveragePrice(
-          db,
-          makeRequest,
-          serverAPICaller.postAveragePriceToServer,
-          'rent',
-          'holesovice1kk',
-          c.praha_rent_1_rooms_url
-        )
-
-        const rent4 = await reality.storeAveragePrice(
-          db,
-          makeRequest,
-          serverAPICaller.postAveragePriceToServer,
-          'rent',
-          'jihlava2kk',
-          c.jihlava_rent_2_rooms_url
-        )
-
-        res.json({
-          statusJihlava: status,
-          statusPraha: status2,
-          statusPraha1kk: status3,
-          rentPraha34kk: rent1,
-          rentPraha2kk: rent2,
-          rentPraha1kk: rent3,
-          rentJihlava2kk: rent4,
-        })
+        let jsonResponse = await reality.runScrapping(db, makeRequest, serverAPICaller)
+        res.json(jsonResponse)
       } catch (e) {
         logger.error('API /reality/import failed', e)
         next(e)
