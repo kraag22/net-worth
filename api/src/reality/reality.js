@@ -3,6 +3,82 @@ const { JSDOM } = jsdom
 const fs = require('fs')
 const { logger } = require('../../logs.js')
 const storage = require('../storage.js')
+const c = require('../constants.js')
+
+exports.runScrapping = async (db, makeRequest, serverAPICaller) => {
+  const status = await exports.storeAveragePrice(
+    db,
+    makeRequest,
+    serverAPICaller.postAveragePriceToServer,
+    'buy',
+    'jihlava2kk',
+    c.jihlava_2_rooms_url
+  )
+  const status2 = await exports.storeAveragePrice(
+    db,
+    makeRequest,
+    serverAPICaller.postAveragePriceToServer,
+    'buy',
+    'holesovice3_4kk',
+    c.praha_3_4_rooms_url
+  )
+  const status3 = await exports.storeAveragePrice(
+    db,
+    makeRequest,
+    serverAPICaller.postAveragePriceToServer,
+    'buy',
+    'holesovice1kk',
+    c.praha_1_rooms_url
+  )
+
+  const rent1 = await exports.storeAveragePrice(
+    db,
+    makeRequest,
+    serverAPICaller.postAveragePriceToServer,
+    'rent',
+    'holesovice3_4kk',
+    c.praha_rent_3_4_rooms_url
+  )
+
+  const rent2 = await exports.storeAveragePrice(
+    db,
+    makeRequest,
+    serverAPICaller.postAveragePriceToServer,
+    'rent',
+    'holesovice2kk',
+    c.praha_rent_2_rooms_url
+  )
+
+  const rent3 = await exports.storeAveragePrice(
+    db,
+    makeRequest,
+    serverAPICaller.postAveragePriceToServer,
+    'rent',
+    'holesovice1kk',
+    c.praha_rent_1_rooms_url
+  )
+
+  const rent4 = await exports.storeAveragePrice(
+    db,
+    makeRequest,
+    serverAPICaller.postAveragePriceToServer,
+    'rent',
+    'jihlava2kk',
+    c.jihlava_rent_2_rooms_url
+  )
+
+  result = {
+    statusJihlava: status,
+    statusPraha: status2,
+    statusPraha1kk: status3,
+    rentPraha34kk: rent1,
+    rentPraha2kk: rent2,
+    rentPraha1kk: rent3,
+    rentJihlava2kk: rent4,
+  }
+  logger.info(result)
+  return result
+}
 
 exports.storeAveragePrice = async (
   db,
