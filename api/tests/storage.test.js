@@ -17,6 +17,44 @@ afterAll((done) => {
   })
 })
 
+describe('database initialization', () => {
+  it('propagates errors from every view creation', async () => {
+    const callbacks = new Map()
+    const fakeDb = {
+      run: (sql, params, callback) => callbacks.set(sql, callback),
+    }
+    const initialized = storage.createTable(fakeDb)
+    const failedSql = storage.getViewSql('monthly', true)
+    const failure = new Error('Cannot create view')
+    const rejected = expect(initialized).rejects.toThrow('Cannot create view')
+
+    for (const [sql, callback] of callbacks) {
+      if (sql !== failedSql) callback(null)
+    }
+    callbacks.get(failedSql)(failure)
+    await rejected
+  })
+
+  it('does not initialize tables after a database open failure', async () => {
+    const failure = new Error('Cannot open database')
+    const databaseSpy = jest
+      .spyOn(sqlite3, 'Database')
+      .mockImplementation((file, callback) => {
+        queueMicrotask(() => callback(failure))
+        return {}
+      })
+    const createSpy = jest.spyOn(storage, 'createTable')
+
+    try {
+      await expect(storage.connectDb('invalid')).rejects.toBe(failure)
+      expect(createSpy).not.toHaveBeenCalled()
+    } finally {
+      createSpy.mockRestore()
+      databaseSpy.mockRestore()
+    }
+  })
+})
+
 describe('insert()', () => {
   it('works', async () => {
     const expected = {

@@ -1,6 +1,24 @@
 # net-worth
 [![Coverage Status](https://coveralls.io/repos/github/kraag22/net-worth/badge.svg?branch=master)](https://coveralls.io/github/kraag22/net-worth?branch=master)
 
+### Development
+
+Use Node.js 26.12.1 (also pinned in `.nvmrc`):
+
+```sh
+nvm install
+nvm use
+cd api
+npm ci
+npm run test-ci -- --runInBand
+npm start
+```
+
+The deployment server must also run Node.js 26.12.1 before deploying; the
+workflow selects Node for the build runner, not the remote systemd service.
+Puppeteer's browser is installed inside `api/node_modules/.cache/puppeteer`
+so it is included when the workflow copies the API to the server.
+
 ### Settings
 To see errors in console, set ```NODE_ENV=develop``` to ```.env``` file.
 To turn on debuging for Degiro module, set ```DEGIRO_DEBUG=true``` to ```.env``` file.
