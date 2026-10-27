@@ -27,7 +27,8 @@ exports.connectDb = (file) => {
   return new Promise((resolve, reject) => {
     let db = new sqlite3.Database(file, (err) => {
       if (err) {
-        reject(err.message)
+        reject(err)
+        return
       }
       exports
         .createTable(db)
@@ -96,12 +97,9 @@ exports.createTable = (db) => {
     exports.run(db, realityTable),
     exports.run(db, exports.getViewSql('hourly', false)),
     exports.run(db, exports.getViewSql('daily', false)),
-    exports.run(
-      db,
-      exports.getViewSql('monthly', false),
-      exports.run(db, exports.getViewSql('daily', true)),
-      exports.run(db, exports.getViewSql('monthly', true))
-    ),
+    exports.run(db, exports.getViewSql('monthly', false)),
+    exports.run(db, exports.getViewSql('daily', true)),
+    exports.run(db, exports.getViewSql('monthly', true)),
   ])
 }
 

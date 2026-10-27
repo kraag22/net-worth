@@ -1,5 +1,3 @@
-const fetch = require('node-fetch')
-
 class ServerAPICaller {
   constructor(apiUrl, password) {
     this.apiUrl = apiUrl
