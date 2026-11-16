@@ -1,6 +1,6 @@
 const data = require('../src/data.js')
 const order = require('../src/order.js')
-const { mockDegiro } = require('./mockDegiro.js')
+const { mockPrices, insertPositions } = require('./mockPrices.js')
 const { MockFixer } = require('./mockFixer.js')
 const storage = require('../src/storage.js')
 const sqlite3 = require('sqlite3')
@@ -12,6 +12,7 @@ const mockFixer = new MockFixer('x')
 
 beforeAll(async () => {
   db = await storage.connectDb(':memory:')
+  await insertPositions(db)
 })
 
 afterAll((done) => {
@@ -23,7 +24,7 @@ afterAll((done) => {
 
 describe('data function', () => {
   it('importPortfolio() should work', async () => {
-    await data.importPortfolio(mockDegiro, db, mockFixer)
+    await data.importPortfolio(mockPrices, db, mockFixer)
 
     const sql = 'select * from stocks'
     const portfolio = await storage.call(db, sql)
@@ -32,7 +33,8 @@ describe('data function', () => {
     portfolio.forEach((item) => {
       sum += item.value
     })
-    expect(Math.round(sum)).toBe(59156)
+    // CZK value of price * size * ratio from the mocked fixer rates
+    expect(Math.round(sum)).toBe(59027)
   })
 
   it('getAvgCurrencyRatio() should work for buying', () => {
@@ -64,9 +66,11 @@ describe('data function', () => {
     expect(stocks.length).toBe(0)
 
     const all = await storage.call(db, 'select * from stocks')
-    expect(all[0].ratio).toBe(1)
-    expect(Math.round(all[1].ratio * 100) / 100).toBe(22.48)
-    expect(Math.round(all[12].ratio * 100) / 100).toBe(25.79)
+    const ratioOf = (currency) =>
+      Math.round(all.find((i) => i.currency === currency).ratio * 100) / 100
+    expect(ratioOf('CZK')).toBe(1)
+    expect(ratioOf('USD')).toBe(22.48)
+    expect(ratioOf('EUR')).toBe(25.79)
   })
 
   it('groupPortfolio() should work', async () => {
@@ -207,17 +211,14 @@ describe('data function', () => {
     expect(retFail.import_status).toBe('FAILED')
   })
 
-  it('getImportStatus() should work after midnight', async () => {
-    const afterMidnight = new Date()
-    afterMidnight.setDate(afterMidnight.getDate() + 10)
-    afterMidnight.setHours(0)
-    afterMidnight.setMinutes(10)
-    const ret = await data.getImportStatus(db, afterMidnight)
-
+  it('getImportStatus() tolerates weekends', async () => {
+    const afterWeekend = new Date()
+    afterWeekend.setDate(afterWeekend.getDate() + data.IMPORT_MAX_AGE_DAYS)
+    const ret = await data.getImportStatus(db, afterWeekend)
     expect(ret.import_status).toBe('OK')
 
-    afterMidnight.setHours(1)
-    const retFail = await data.getImportStatus(db, afterMidnight)
+    afterWeekend.setDate(afterWeekend.getDate() + 1)
+    const retFail = await data.getImportStatus(db, afterWeekend)
     expect(retFail.import_status).toBe('FAILED')
   })
 

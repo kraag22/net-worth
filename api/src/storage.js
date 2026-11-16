@@ -6,11 +6,13 @@ const STOCKS_TABLE = 'stocks'
 const STOCKS_DAILY_TABLE = 'stocks_by_daily'
 const EVENTS_TABLE = 'events'
 const REALITY_TABLE = 'reality'
+const POSITIONS_TABLE = 'positions'
 
 exports.STOCKS_TABLE = STOCKS_TABLE
 exports.STOCKS_DAILY_TABLE = STOCKS_DAILY_TABLE
 exports.EVENTS_TABLE = EVENTS_TABLE
 exports.REALITY_TABLE = REALITY_TABLE
+exports.POSITIONS_TABLE = POSITIONS_TABLE
 
 const flattenItem = (value) => {
   const ret = []
@@ -90,8 +92,21 @@ exports.createTable = (db) => {
     'type varchar(20)' +
     ')'
 
+  // what we hold; id is the original DEGIRO product id so history stays linked
+  const positionsTable =
+    `CREATE TABLE IF NOT EXISTS ${POSITIONS_TABLE} (` +
+    'id TEXT PRIMARY KEY, ' +
+    'symbol TEXT NOT NULL, ' +
+    'name TEXT, ' +
+    'currency TEXT NOT NULL, ' +
+    'size real NOT NULL, ' +
+    'isin TEXT, ' +
+    'updated_at TEXT' +
+    ')'
+
   return Promise.all([
     exports.run(db, stocksTable),
+    exports.run(db, positionsTable),
     exports.run(db, stocksDailyTable),
     exports.run(db, eventsTable),
     exports.run(db, realityTable),
@@ -122,6 +137,52 @@ exports.insertReality = (db, name, type, averagePrice) => {
   sql += getInsertQuestionmarks(values)
 
   return exports.insert(db, sql, values)
+}
+
+exports.upsertPosition = (db, position) => {
+  const { id, symbol, name, currency, size, isin } = position
+  const sql =
+    `INSERT INTO ${POSITIONS_TABLE} ` +
+    '(id, symbol, name, currency, size, isin, updated_at) ' +
+    "VALUES (?, ?, ?, ?, ?, ?, DATETIME('now')) " +
+    'ON CONFLICT(id) DO UPDATE SET symbol=excluded.symbol, ' +
+    'name=excluded.name, currency=excluded.currency, size=excluded.size, ' +
+    'isin=excluded.isin, updated_at=excluded.updated_at'
+  return exports.run(db, sql, [
+    String(id),
+    symbol,
+    name ?? null,
+    currency,
+    size,
+    isin ?? null,
+  ])
+}
+
+// Latest non-null ratio per currency stored today (UTC, like created_at).
+exports.getTodaysRates = async (db) => {
+  const sql =
+    `select currency, ratio from ${STOCKS_TABLE} where rowid in ` +
+    `(select max(rowid) from ${STOCKS_TABLE} where ratio is not null ` +
+    "and date(created_at) = date('now') group by currency)"
+  const rows = await exports.call(db, sql)
+  const rates = {}
+  rows.forEach((row) => (rates[row.currency] = row.ratio))
+  return rates
+}
+
+// Open positions, plus closed ones (size 0) whose sale isn't recorded in
+// stocks yet - the size 0 row is what turns into a sell event.
+exports.getPositionsToImport = async (db) => {
+  const sql =
+    `select p.*, (select s.size from ${STOCKS_TABLE} as s where s.id=p.id ` +
+    'order by s.created_at desc, s.rowid desc limit 1) as last_size ' +
+    `from ${POSITIONS_TABLE} as p order by p.id`
+  const rows = await exports.call(db, sql)
+  return rows
+    .filter(
+      (row) => row.size > 0 || row.last_size === null || row.last_size > 0
+    )
+    .map(({ last_size, ...position }) => position)
 }
 
 exports.insertStocks = (db, values) => {

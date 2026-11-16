@@ -8,21 +8,81 @@ const { logger } = require('../logs.js')
 const c = require('./constants')
 const { ExceptionHandler } = require('winston')
 
-exports.getPortfolio = async (degiro, fixer) => {
-  const data = await degiro.getPortfolio()
-  const portfolio = parse.getPortfolio(data)
-  const ids = parse.getIds(portfolio)
-  const products = await degiro.getProductsByIds(ids)
-  parse.addMetaToPortfolio(portfolio, products)
+exports.getPortfolio = async (priceProvider, db, fixer) => {
+  const positions = await storage.getPositionsToImport(db)
+  if (positions.length === 0) {
+    throw new Error('No positions to import, fill the positions table first')
+  }
+  const portfolio = []
+
+  for (const position of positions) {
+    try {
+      const quote = await priceProvider.getPrice(position.symbol)
+      if (quote.currency !== position.currency) {
+        throw new Error(
+          `currency mismatch: got ${quote.currency}, expected ${position.currency}`
+        )
+      }
+      portfolio.push({
+        id: position.id,
+        name: position.name,
+        currency: position.currency,
+        size: position.size,
+        price: quote.price,
+      })
+    } catch (e) {
+      logger.error(
+        `Price import for ${position.symbol} (${position.id}) failed: ${e.message}`
+      )
+    }
+  }
+
+  if (portfolio.length === 0) {
+    return portfolio
+  }
 
   const currencies = parse.getCurrencies(portfolio)
-  const rates = await fixer.getRates(axios, logger, currencies)
+  const rates = await exports.getRates(db, fixer, currencies)
   parse.addCurrencyRateToPortfolio(portfolio, rates)
+  portfolio.forEach((item) => {
+    item.value =
+      item.ratio === null ? null : item.price * item.size * item.ratio
+  })
   return portfolio
 }
 
-exports.importPortfolio = async (degiro, db, fixer) => {
-  const portfolio = await exports.getPortfolio(degiro, fixer)
+exports.validatePosition = (position) => {
+  if (!position || typeof position !== 'object') return 'body must be an object'
+  for (const field of ['id', 'symbol', 'currency']) {
+    const value = position[field]
+    if (typeof value !== 'string' && typeof value !== 'number') {
+      return `${field} is required`
+    }
+    if (String(value).trim() === '') return `${field} is required`
+  }
+  if (typeof position.size !== 'number' || !Number.isFinite(position.size)) {
+    return 'size must be a number'
+  }
+  if (position.size < 0) return 'size must not be negative'
+  return null
+}
+
+// Reuse rates already stored today; ask fixer only for the missing currencies.
+exports.getRates = async (db, fixer, currencies) => {
+  const cached = await storage.getTodaysRates(db)
+  const missing = currencies.filter((currency) => cached[currency] == null)
+  if (missing.length === 0) {
+    return cached
+  }
+  const fresh = await fixer.getRates(axios, logger, missing)
+  return { ...cached, ...(fresh || {}) }
+}
+
+exports.importPortfolio = async (priceProvider, db, fixer) => {
+  const portfolio = await exports.getPortfolio(priceProvider, db, fixer)
+  if (portfolio.length === 0) {
+    throw new Error('No stock prices imported, see price errors in the log')
+  }
   await storage.insertStocks(db, portfolio)
   await exports.computeAndStoreOrdersData(db)
 }
@@ -323,21 +383,21 @@ exports.getData = async (db, action, params = {}) => {
   return data
 }
 
+// Import runs once per working day, so allow for weekends and holidays.
+exports.IMPORT_MAX_AGE_DAYS = 4
+
 exports.getImportStatus = async (db, now) => {
-  const today = exports.getDateString(now)
+  const since = new Date(now)
+  since.setDate(since.getDate() - exports.IMPORT_MAX_AGE_DAYS)
   const sql =
-    `select * from stocks where created_at like '${today}%' ` +
-    'order by created_at desc limit 100'
-  const data = await storage.call(db, sql)
+    `select count(*) as count from ${storage.STOCKS_TABLE} ` +
+    'where created_at >= ? and created_at <= ?'
+  const data = await storage.call(db, sql, [
+    exports.getDateString(since),
+    `${exports.getDateString(now)} 23:59:59`,
+  ])
 
-  const ret = {}
-  ret.import_status = data?.length > 0 ? 'OK' : 'FAILED'
-
-  if (now.getHours() < 1) {
-    // after midnight is everything OK :)
-    ret.import_status = 'OK'
-  }
-  return ret
+  return { import_status: data[0].count > 0 ? 'OK' : 'FAILED' }
 }
 
 exports.getStockIds = async (db) => {

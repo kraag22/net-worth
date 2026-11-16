@@ -1,7 +1,8 @@
-const DeGiro = require('degiro')
 const express = require('express')
 const schedule = require('node-schedule')
+const axios = require('axios')
 const { Fixer } = require('./src/fixer.js')
+const { Yahoo } = require('./src/yahoo.js')
 const { ServerAPICaller } = require('./src/api_caller.js')
 const data = require('./src/data.js')
 const reality = require('./src/reality/reality.js')
@@ -27,12 +28,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use('/static', express.static('public'))
 
-console.log(`Using user: ${process.env.username}`)
-
-const degiro = DeGiro.create({
-  username: process.env.username,
-  password: process.env.password,
-})
+const yahoo = new Yahoo(axios)
 
 const serverAPICaller = new ServerAPICaller(
   process.env.api_server_url,
@@ -47,43 +43,42 @@ storage
     console.log('Connected to the database.')
 
     if (process.env.schedule_reality_import) {
-      const job = schedule.scheduleJob('10 1 * * *', async function() {
-        logger.info('Reality scrapping started');
+      const job = schedule.scheduleJob('10 1 * * *', async function () {
+        logger.info('Reality scrapping started')
         await reality.runScrapping(db, makeRequest, serverAPICaller)
-      });
-      logger.info("Reality import job scheduled")
+      })
+      logger.info('Reality import job scheduled')
     }
-
-    app.post('/login', async (req, res, next) => {
-      logger.info('API /login called')
-      try {
-        await degiro.login(req.body.smscode)
-
-        res.json({ status: 'ok' })
-      } catch (e) {
-        logger.error('API /login failed', e)
-        next(e)
-      }
-    })
-
-    app.get('/refresh', async (req, res, next) => {
-      logger.info('API /refresh called')
-      try {
-        await degiro.getPortfolio()
-        res.json({ status: 'ok' })
-      } catch (e) {
-        logger.error('API /refresh failed', e)
-        next(e)
-      }
-    })
 
     app.post('/import', async (req, res, next) => {
       logger.info('API /import called')
       try {
-        await data.importPortfolio(degiro, db, fixer)
+        await data.importPortfolio(yahoo, db, fixer)
         res.json({ status: 'ok' })
       } catch (e) {
         logger.error('API /import failed', e)
+        next(e)
+      }
+    })
+
+    app.post('/positions', async (req, res, next) => {
+      try {
+        if (!is_request_authenticated(req)) {
+          return res.status(401).json({ error: 'Unauthorized' })
+        }
+
+        const error = data.validatePosition(req.body)
+        if (error) {
+          return res.status(400).json({ error })
+        }
+
+        logger.info(
+          `API /positions called with ${req.body.id} ${req.body.symbol} ${req.body.size}`
+        )
+        await storage.upsertPosition(db, req.body)
+        res.json({ status: 'ok' })
+      } catch (e) {
+        logger.error('API /positions failed', e)
         next(e)
       }
     })
@@ -155,7 +150,11 @@ storage
     app.get('/reality/import', async (req, res, next) => {
       logger.info('API /reality/import called')
       try {
-        let jsonResponse = await reality.runScrapping(db, makeRequest, serverAPICaller)
+        let jsonResponse = await reality.runScrapping(
+          db,
+          makeRequest,
+          serverAPICaller
+        )
         res.json(jsonResponse)
       } catch (e) {
         logger.error('API /reality/import failed', e)
