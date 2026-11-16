@@ -1,7 +1,7 @@
 const sd = require('../src/stocks_daily.js')
 const data = require('../src/data.js')
 const order = require('../src/order.js')
-const { mockDegiro } = require('./mockDegiro.js')
+const { mockPrices, insertPositions } = require('./mockPrices.js')
 const { MockFixer } = require('./mockFixer.js')
 const storage = require('../src/storage.js')
 const sqlite3 = require('sqlite3')
@@ -11,15 +11,16 @@ const mockFixer = new MockFixer('x')
 
 beforeAll(async () => {
   db = await storage.connectDb(':memory:')
+  await insertPositions(db)
 
-  await data.importPortfolio(mockDegiro, db, mockFixer)
+  await data.importPortfolio(mockPrices, db, mockFixer)
   await storage.call(db, 'update stocks set created_at="2018-12-24"')
-  await data.importPortfolio(mockDegiro, db, mockFixer)
+  await data.importPortfolio(mockPrices, db, mockFixer)
   await storage.call(
     db,
     'update stocks set created_at="2018-12-25" where created_at > "2018-12-24"'
   )
-  await data.importPortfolio(mockDegiro, db, mockFixer)
+  await data.importPortfolio(mockPrices, db, mockFixer)
   await storage.call(
     db,
     'update stocks set created_at="2018-12-26" where created_at > "2018-12-25"'
