@@ -1,0 +1,24 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Net worth – login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="/static/icon-64.png">
+  <link rel="icon" type="image/png" href="/static/icon-64.png" />
+  <link rel="stylesheet" href="/static/styles.css?v=1.1">
+</head>
+
+<body class="login-page">
+  <form method="post" action="/login" class="login-form">
+    <h1>Net worth</h1>
+    {{#error}}<p class="login-error">{{error}}</p>{{/error}}
+    <input type="password" name="password" placeholder="Password"
+           autocomplete="current-password" autofocus required>
+    <button type="submit">Log in</button>
+  </form>
+</body>
+</html>
