@@ -12,7 +12,14 @@ const mustacheExpress = require('mustache-express')
 const { logger } = require('./logs.js')
 const c = require('./src/constants.js')
 const { makeRequest } = require('./src/reality/scrapper.js')
-const { is_request_authenticated } = require('./src/authentication.js')
+const {
+  is_request_authenticated,
+  is_session_valid,
+  check_password,
+  set_session_cookie,
+  require_login,
+  SESSION_COOKIE,
+} = require('./src/authentication.js')
 
 console.log('Env variables loaded from .env file.')
 require('dotenv').config({ path: __dirname + '/../.env' })
@@ -27,6 +34,31 @@ app.set('views', __dirname + '/views')
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use('/static', express.static('public'))
+// Behind a local reverse proxy, so req.secure reflects the original HTTPS.
+app.set('trust proxy', 'loopback')
+
+app.get('/login', (req, res) => {
+  if (is_session_valid(req)) return res.redirect('/')
+  res.render('login', {})
+})
+
+app.post('/login', (req, res) => {
+  if (!check_password(req.body.password)) {
+    logger.info('Failed login attempt')
+    return res.status(401).render('login', { error: 'Wrong password' })
+  }
+  set_session_cookie(req, res)
+  res.redirect('/')
+})
+
+app.post('/logout', (req, res) => {
+  res.clearCookie(SESSION_COOKIE)
+  res.redirect('/login')
+})
+
+// Pages and the data they load require a logged-in browser session.
+app.use(['/json', '/portfolio', '/status'], require_login)
+app.get('/', require_login)
 
 const yahoo = new Yahoo(axios)
 

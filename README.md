@@ -21,6 +21,11 @@ so it is included when the workflow copies the API to the server.
 
 ### Settings
 To see errors in console, set ```NODE_ENV=develop``` to ```.env``` file.
+
+The web UI (`/`, `/status`, `/json/*`, `/portfolio/*`) asks for a password set
+as ```login_password=...``` in the ```.env``` file. Without it nobody can log in.
+After login a cookie keeps the browser logged in (it is refreshed on every
+visit); changing the password logs everyone out.
 Stock prices are imported by calling ```POST /import``` from cron, e.g. once
 per working day after the US close:
 ```0 23 * * 1-5 curl -s -X POST localhost:4000/import```.

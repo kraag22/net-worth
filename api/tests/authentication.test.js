@@ -30,3 +30,51 @@ describe('request authentication', () => {
     ).toBe(true)
   })
 })
+
+describe('login session', () => {
+  const auth = require('../src/authentication.js')
+  const originalPassword = process.env.login_password
+
+  const reqWithCookie = (cookie) => ({
+    header: (name) => (name === 'Cookie' ? cookie : undefined),
+  })
+
+  afterEach(() => {
+    if (originalPassword === undefined) {
+      delete process.env.login_password
+    } else {
+      process.env.login_password = originalPassword
+    }
+  })
+
+  it('rejects every password when none is configured', () => {
+    delete process.env.login_password
+    expect(auth.check_password('')).toBe(false)
+    expect(auth.check_password('anything')).toBe(false)
+    expect(auth.is_session_valid(reqWithCookie('nw_session=x'))).toBe(false)
+  })
+
+  it('checks the password', () => {
+    process.env.login_password = 'secret'
+    expect(auth.check_password('secret')).toBe(true)
+    expect(auth.check_password('wrong')).toBe(false)
+    expect(auth.check_password(undefined)).toBe(false)
+  })
+
+  it('accepts only the cookie issued for the current password', () => {
+    process.env.login_password = 'secret'
+    const token = auth.create_session_token()
+    expect(
+      auth.is_session_valid(reqWithCookie(`a=1; nw_session=${token}`))
+    ).toBe(true)
+    expect(auth.is_session_valid(reqWithCookie('nw_session=forged'))).toBe(
+      false
+    )
+    expect(auth.is_session_valid(reqWithCookie(undefined))).toBe(false)
+
+    process.env.login_password = 'changed'
+    expect(auth.is_session_valid(reqWithCookie(`nw_session=${token}`))).toBe(
+      false
+    )
+  })
+})
