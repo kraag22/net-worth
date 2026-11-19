@@ -22,6 +22,10 @@ so it is included when the workflow copies the API to the server.
 ### Settings
 To see errors in console, set ```NODE_ENV=develop``` to ```.env``` file.
 
+The daily Sreality scraper runs at 01:10 in the server's timezone only when
+`schedule_reality_import=true`. Set it to `false` or leave it unset to disable
+the scheduled scraper. Restart the API after changing this setting.
+
 The web UI (`/`, `/status`, `/json/*`, `/portfolio/*`) asks for a password set
 as ```login_password=...``` in the ```.env``` file. Without it nobody can log in.
 After login a cookie keeps the browser logged in (it is refreshed on every
