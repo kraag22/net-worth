@@ -74,7 +74,7 @@ storage
   .then((db) => {
     console.log('Connected to the database.')
 
-    if (process.env.schedule_reality_import) {
+    if (process.env.schedule_reality_import === 'true') {
       const job = schedule.scheduleJob('10 1 * * *', async function () {
         logger.info('Reality scrapping started')
         await reality.runScrapping(db, makeRequest, serverAPICaller)
