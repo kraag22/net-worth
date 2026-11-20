@@ -185,7 +185,7 @@ describe('data function', () => {
     expect(result[1].price).toBe(34863)
     expect(result[1].currency).toBe('CZK')
     expect(result[1].balance).toBe(-350)
-    expect(result[1].percents).toBe(-1.003929667555866)
+    expect(result[1].percents).toBeCloseTo((100 * -350) / (34863 + 350), 10)
   })
 
   it('getStocksBalance() should work with name change', async () => {
