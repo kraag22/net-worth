@@ -9,6 +9,7 @@ const reality = require('./src/reality/reality.js')
 const sd = require('./src/stocks_daily.js')
 const storage = require('./src/storage.js')
 const ingest = require('./src/ingest.js')
+const backfill = require('./src/backfill.js')
 const mustacheExpress = require('mustache-express')
 const { logger } = require('./logs.js')
 const c = require('./src/constants.js')
@@ -141,9 +142,17 @@ storage
 
     app.put('/fill-daily', async (req, res, next) => {
       logger.info('API /fill-daily called')
+      const { from } = req.query
+      if (from !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(from)) {
+        return res.status(400).json({ error: 'from must be YYYY-MM-DD' })
+      }
       try {
-        await sd.updateMissing(db)
-        res.json({ finished: 'ok' })
+        const result = await backfill.fillDaily(db, yahoo, { from })
+        logger.info(
+          `Backfilled ${result.inserted} stocks rows, corrected ` +
+            `${result.corrected}, daily from ${result.dailyFrom}`
+        )
+        res.json({ finished: 'ok', ...result })
       } catch (e) {
         logger.error('API /fill-daily failed', e)
         next(e)

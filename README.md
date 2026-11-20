@@ -71,6 +71,19 @@ ISINs are matched to a position once (or create a new one with a Yahoo symbol,
 or are ignored); the ISIN is then stored on the position. Unchecked rows are
 recorded in the `transactions` table but don't change sizes.
 
+Then bring the history in line with the transactions with
+`curl -X PUT localhost:4000/fill-daily` (optionally `?from=YYYY-MM-DD`):
+every day since the first transaction without any price import gets one
+`stocks` row per held position (Yahoo daily close, FX from Yahoo's
+`USDCZK=X`/`EURCZK=X`), rows imported after the history-derived transactions
+get their sizes corrected and held positions missing on such a day are added.
+Then `events` are rebuilt and `stocks_by_daily` is recomputed for the changed
+days. Positions without usable Yahoo history (no symbol, sold and gone from
+`positions`, WBD after its restructuring, or Yahoo closes more than 30 % off
+the stored price) are estimated between their stored prices and listed in
+the response under `estimated`. Nothing is written when a day can't be
+priced. Running it again is cheap: only new gaps or changes are filled.
+
 ### Maintenance
 
 #### How to fix missing currency ratios
@@ -82,3 +95,4 @@ recorded in the `transactions` table but don't change sizes.
   + Remove incomplete data with ($DATE - 1 before of oldes date in previous command)
       `delete from stocks_by_daily where date > '$DATE';`
   + Compute missing data with `curl -X PUT localhost:4000/fill-daily`
+    (it also fills days missing in `stocks`, see Ingesting DEGIRO transactions)

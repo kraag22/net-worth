@@ -90,8 +90,9 @@ exports.fillCurrencyBalance = async (db, orders, from, to) => {
   return Promise.all(promises)
 }
 
-exports.updateMissing = async (db) => {
-  const dates = await exports.getMissingDates(db)
+// dates: { fromDate, toDate } to recompute, missing days by default
+exports.updateMissing = async (db, range) => {
+  const dates = range ?? (await exports.getMissingDates(db))
   await exports.fillStocksDaily(db, dates.fromDate, dates.toDate)
   const ordersData = await getOrdersData(db)
   const { orders } = await getOrders(ordersData)
