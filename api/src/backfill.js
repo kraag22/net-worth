@@ -102,6 +102,26 @@ exports.plan = async (db, { from, to } = {}) => {
   })
 
   const timelines = sizeTimelines(transactions)
+  // Positions whose size was changed without transactions (POST /positions):
+  // their imported rows follow the positions table, so they are not
+  // corrected nor completed until a CSV ingest brings the two together.
+  const positions = await storage.call(
+    db,
+    `select id, name, size from ${storage.POSITIONS_TABLE}`
+  )
+  const inconsistent = positions
+    .map((p) => {
+      const timeline = timelines.get(p.id) ?? []
+      const transactions = timeline.length
+        ? timeline[timeline.length - 1].size
+        : 0
+      return { id: p.id, name: p.name, positions: p.size, transactions }
+    })
+    .filter(
+      (p) =>
+        timelines.has(p.id) && Math.abs(p.positions - p.transactions) > 1e-6
+    )
+  const untouched = new Set(inconsistent.map((p) => p.id))
   const inserts = [] // { id, size, date, createdAt, required }
   const updates = [] // { rowid, size, price, ratio, date }
   exports.dateRange(start, end).forEach((date) => {
@@ -135,7 +155,7 @@ exports.plan = async (db, { from, to } = {}) => {
 
     dayRows.forEach((row) => {
       const timeline = timelines.get(row.id)
-      if (!timeline) return
+      if (!timeline || untouched.has(row.id)) return
       const size = sizeAt(timeline, row.created_at.slice(0, 16))
       if (Math.abs(size - row.size) > 1e-6) {
         updates.push({
@@ -150,7 +170,7 @@ exports.plan = async (db, { from, to } = {}) => {
     const present = new Set(dayRows.map((row) => row.id))
     const lastCreated = dayRows[dayRows.length - 1].created_at
     held
-      .filter((p) => !present.has(p.id))
+      .filter((p) => !present.has(p.id) && !untouched.has(p.id))
       .forEach((p) =>
         inserts.push({
           id: p.id,
@@ -162,7 +182,7 @@ exports.plan = async (db, { from, to } = {}) => {
       )
   })
 
-  return { start, end, inserts, updates }
+  return { start, end, inserts, updates, inconsistent }
 }
 
 // Consecutive days merged into [{ from, to }]
@@ -404,8 +424,16 @@ exports.summarize = (problems) => {
 // day without any import can't be priced completely.
 exports.backfillStocks = async (db, prices, options = {}) => {
   const plan = await exports.plan(db, options)
+  const inconsistent = plan?.inconsistent ?? []
+  inconsistent.forEach((p) =>
+    logger.error(
+      `${p.name} (${p.id}) has size ${p.positions} in positions but ` +
+        `${p.transactions} by transactions, its imported rows are not corrected`
+    )
+  )
   if (!plan || (plan.inserts.length === 0 && plan.updates.length === 0)) {
     return {
+      inconsistent,
       inserted: 0,
       corrected: 0,
       skipped: [],
@@ -471,6 +499,7 @@ exports.backfillStocks = async (db, prices, options = {}) => {
     inserted: rows.length,
     corrected: plan.updates.length,
     skipped: skippedSummary,
+    inconsistent,
     estimated,
     changed: exports.dayRanges([
       ...rows.map((row) => row.created_at.slice(0, 10)),
