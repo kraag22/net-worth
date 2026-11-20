@@ -43,8 +43,11 @@ product id, so the existing history stays linked. `symbol` is the Yahoo ticker:
 `AAPL` (US). Its quoted currency must match `currency`, otherwise the position
 is skipped and logged.
 
-After a trade, update the position (size `0` when sold out; the sale is
-recorded on the next import):
+After a trade, ingest the DEGIRO CSV on `/ingest` (see below), it updates
+the positions and keeps the transactions complete. A position can also be
+updated directly (size `0` when sold out; the sale is recorded on the next
+import), but then its transactions no longer add up to its size and
+`/fill-daily` leaves its rows alone until a CSV ingest brings them together:
 
 ```sh
 curl -X POST localhost:4000/positions -H 'Content-Type: application/json' \
@@ -83,6 +86,9 @@ days. Positions without usable Yahoo history (no symbol, sold and gone from
 the stored price) are estimated between their stored prices and listed in
 the response under `estimated`. Nothing is written when a day can't be
 priced. Running it again is cheap: only new gaps or changes are filled.
+Positions whose size in `positions` differs from the sum of their
+transactions (changed with `POST /positions`) are listed under `inconsistent`
+and their imported rows are not corrected.
 
 ### Maintenance
 

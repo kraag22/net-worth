@@ -163,6 +163,26 @@ describe('backfillStocks', () => {
     ])
   })
 
+  it('leaves rows of positions changed without transactions', async () => {
+    // KO set to 17 with POST /positions and imported so; CEZ missing that day
+    await addPosition('ko', 'KO', 'Coca-Cola', 'USD', 17)
+    await addStock('ko', 17, 62, 26, '2025-01-06 09:00:00')
+    await addPosition('cez', 'CEZ.PR', 'CEZ', 'CZK', 5)
+    const result = await backfill.backfillStocks(
+      db,
+      new MockHistory(HISTORIES),
+      { from: '2025-01-06', to: '2025-01-06' }
+    )
+
+    expect(result).toMatchObject({ inserted: 0, corrected: 0 })
+    expect(result.inconsistent).toEqual([
+      { id: 'ko', name: 'Coca-Cola', positions: 17, transactions: 15 },
+      { id: 'cez', name: 'CEZ', positions: 5, transactions: 0 },
+    ])
+    const rows = await stocks("created_at >= '2025'")
+    expect(rows.map((r) => [r.id, r.size])).toEqual([['ko', 17]])
+  })
+
   it('does nothing the second time', async () => {
     const options = { from: '2025-01-02', to: '2025-01-05' }
     await backfill.backfillStocks(db, new MockHistory(HISTORIES), options)
