@@ -78,3 +78,52 @@ describe('login session', () => {
     )
   })
 })
+
+describe('require_api_key', () => {
+  const { require_api_key } = require('../src/authentication.js')
+  const originalKey = process.env.api_server_auth_key
+
+  afterEach(() => {
+    if (originalKey === undefined) {
+      delete process.env.api_server_auth_key
+    } else {
+      process.env.api_server_auth_key = originalKey
+    }
+  })
+
+  const call = (headerValue) => {
+    const result = { next: false, status: null, body: null }
+    const req = {
+      header: (name) => (name === 'Great-Auth' ? headerValue : undefined),
+    }
+    const res = {
+      status(code) {
+        result.status = code
+        return this
+      },
+      json(body) {
+        result.body = body
+      },
+    }
+    require_api_key(req, res, () => (result.next = true))
+    return result
+  }
+
+  it('lets requests with the key through', () => {
+    process.env.api_server_auth_key = 'test-key'
+    expect(call('test-key')).toEqual({ next: true, status: null, body: null })
+  })
+
+  it('rejects requests without the right key', () => {
+    process.env.api_server_auth_key = 'test-key'
+    const unauthorized = {
+      next: false,
+      status: 401,
+      body: { error: 'Unauthorized' },
+    }
+    expect(call(undefined)).toEqual(unauthorized)
+    expect(call('wrong')).toEqual(unauthorized)
+    delete process.env.api_server_auth_key
+    expect(call(undefined)).toEqual(unauthorized)
+  })
+})

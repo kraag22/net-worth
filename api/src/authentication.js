@@ -16,6 +16,13 @@ exports.is_request_authenticated = (req) => {
   )
 }
 
+// Endpoints called by cron or other servers: the Great-Auth header must hold
+// api_server_auth_key (see scripts/call.js).
+exports.require_api_key = (req, res, next) => {
+  if (exports.is_request_authenticated(req)) return next()
+  return res.status(401).json({ error: 'Unauthorized' })
+}
+
 const getPassword = () => {
   const password = process.env.login_password
   return typeof password === 'string' && password.length > 0 ? password : null

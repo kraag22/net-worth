@@ -15,11 +15,11 @@ const { logger } = require('./logs.js')
 const c = require('./src/constants.js')
 const { makeRequest } = require('./src/reality/scrapper.js')
 const {
-  is_request_authenticated,
   is_session_valid,
   check_password,
   set_session_cookie,
   require_login,
+  require_api_key,
   SESSION_COOKIE,
 } = require('./src/authentication.js')
 
@@ -63,6 +63,16 @@ app.post('/logout', (req, res) => {
 app.use(['/json', '/portfolio', '/status', '/ingest'], require_login)
 app.get('/', require_login)
 
+// Endpoints for cron and other servers need the Great-Auth header with
+// api_server_auth_key, e.g. `node scripts/call.js POST /import`.
+app.post('/import', require_api_key)
+app.post('/positions', require_api_key)
+app.put('/fill-ratios', require_api_key)
+app.put('/fill-balance/:to', require_api_key)
+app.put('/fill-daily', require_api_key)
+app.post('/reality/store_data', require_api_key)
+app.get('/reality/import', require_api_key)
+
 const yahoo = new Yahoo(axios)
 
 const serverAPICaller = new ServerAPICaller(
@@ -98,10 +108,6 @@ storage
 
     app.post('/positions', async (req, res, next) => {
       try {
-        if (!is_request_authenticated(req)) {
-          return res.status(401).json({ error: 'Unauthorized' })
-        }
-
         const error = data.validatePosition(req.body)
         if (error) {
           return res.status(400).json({ error })
@@ -172,10 +178,6 @@ storage
 
     app.post('/reality/store_data', async (req, res, next) => {
       try {
-        if (!is_request_authenticated(req)) {
-          return res.status(401).json({ error: 'Unauthorized' })
-        }
-
         const { name, type, averagePrice } = req.body
         logger.info(
           `API /reality/store_data called with ${name}-${type} ${averagePrice}`
