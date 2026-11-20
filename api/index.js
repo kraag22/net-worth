@@ -8,6 +8,7 @@ const data = require('./src/data.js')
 const reality = require('./src/reality/reality.js')
 const sd = require('./src/stocks_daily.js')
 const storage = require('./src/storage.js')
+const ingest = require('./src/ingest.js')
 const mustacheExpress = require('mustache-express')
 const { logger } = require('./logs.js')
 const c = require('./src/constants.js')
@@ -31,7 +32,8 @@ app.engine('html', mustacheExpress())
 app.set('view engine', 'html')
 app.set('views', __dirname + '/views')
 
-app.use(express.urlencoded({ extended: true }))
+// The ingest form posts a whole DEGIRO CSV export.
+app.use(express.urlencoded({ extended: true, limit: '5mb' }))
 app.use(express.json())
 app.use('/static', express.static('public'))
 // Behind a local reverse proxy, so req.secure reflects the original HTTPS.
@@ -57,7 +59,7 @@ app.post('/logout', (req, res) => {
 })
 
 // Pages and the data they load require a logged-in browser session.
-app.use(['/json', '/portfolio', '/status'], require_login)
+app.use(['/json', '/portfolio', '/status', '/ingest'], require_login)
 app.get('/', require_login)
 
 const yahoo = new Yahoo(axios)
@@ -224,6 +226,93 @@ storage
       } catch (e) {
         logger.error('API /status.html failed', e)
         next(e)
+      }
+    })
+
+    const renderIngest = async (res, data, status = 200) => {
+      const state = await ingest.pageState(db).catch(() => ({}))
+      res.status(status).render('ingest', { ...state, ...data })
+    }
+
+    app.get('/ingest', async (req, res, next) => {
+      try {
+        await renderIngest(res, {})
+      } catch (e) {
+        logger.error('path /ingest failed', e)
+        next(e)
+      }
+    })
+
+    app.post('/ingest/preview', async (req, res, next) => {
+      const csv = req.body.csv
+      try {
+        const preview = await ingest.preview(db, csv)
+        await renderIngest(res, ingest.previewView(preview, csv))
+      } catch (e) {
+        logger.info(`Ingest preview failed: ${e.message}`)
+        await renderIngest(res, { csv, error: e.message }, 400)
+      }
+    })
+
+    // Initial population of transactions and positions from history.
+    app.post('/ingest/from-daily', async (req, res, next) => {
+      try {
+        const result = await ingest.populateFromDaily(db)
+        logger.info(
+          `Populated ${result.inserted} transactions from stocks_by_daily`
+        )
+        await renderIngest(res, {
+          result: {
+            ...result,
+            hasChanges: result.changes.length > 0,
+            hasCreated: result.created.length > 0,
+            filledCount: result.filled.length,
+          },
+        })
+      } catch (e) {
+        logger.info(`Populating from stocks_by_daily failed: ${e.message}`)
+        await renderIngest(res, { error: e.message }, 400)
+      }
+    })
+
+    app.post('/ingest/symbols', async (req, res, next) => {
+      try {
+        const updated = await ingest.setSymbols(
+          db,
+          ingest.parseSymbolsForm(req.body)
+        )
+        logger.info(`Set Yahoo symbol of ${updated} positions`)
+        await renderIngest(res, { symbolsUpdated: updated })
+      } catch (e) {
+        logger.error('path /ingest/symbols failed', e)
+        next(e)
+      }
+    })
+
+    app.post('/ingest', async (req, res, next) => {
+      const csv = req.body.csv
+      try {
+        const result = await ingest.ingest(
+          db,
+          csv,
+          ingest.parseIngestForm(req.body)
+        )
+        logger.info(`Ingested ${result.inserted} transactions`)
+        await renderIngest(res, {
+          result: { ...result, hasChanges: result.changes.length > 0 },
+        })
+      } catch (e) {
+        logger.info(`Ingest failed: ${e.message}`)
+        try {
+          const preview = await ingest.preview(db, csv)
+          await renderIngest(
+            res,
+            { ...ingest.previewView(preview, csv), error: e.message },
+            400
+          )
+        } catch (e2) {
+          await renderIngest(res, { csv, error: e.message }, 400)
+        }
       }
     })
 

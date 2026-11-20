@@ -55,6 +55,22 @@ curl -X POST localhost:4000/positions -H 'Content-Type: application/json' \
 A new holding without a DEGIRO id can use any unique id. Find a Yahoo ticker
 from an ISIN with
 `https://query1.finance.yahoo.com/v1/finance/search?q=<ISIN>`.
+### Ingesting DEGIRO transactions
+
+Open `/ingest`. The first time, while the `transactions` table is empty, press
+"Populate from history" (`POST /ingest/from-daily`): every size change in
+`stocks_by_daily` becomes a transaction dated at the end of that day and
+positions get the latest recorded sizes. Held stocks missing in `positions`
+are created without a Yahoo symbol; fill the symbols in on the same page (the
+price import skips positions without one). It can be re-run until the first
+CSV ingest; it replaces the transactions it derived before.
+
+Then choose the DEGIRO export (Activity → Transactions → Export CSV) and
+preview. Only transactions newer than the last ingested one are shown. Unknown
+ISINs are matched to a position once (or create a new one with a Yahoo symbol,
+or are ignored); the ISIN is then stored on the position. Unchecked rows are
+recorded in the `transactions` table but don't change sizes.
+
 ### Maintenance
 
 #### How to fix missing currency ratios

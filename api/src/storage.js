@@ -7,12 +7,14 @@ const STOCKS_DAILY_TABLE = 'stocks_by_daily'
 const EVENTS_TABLE = 'events'
 const REALITY_TABLE = 'reality'
 const POSITIONS_TABLE = 'positions'
+const TRANSACTIONS_TABLE = 'transactions'
 
 exports.STOCKS_TABLE = STOCKS_TABLE
 exports.STOCKS_DAILY_TABLE = STOCKS_DAILY_TABLE
 exports.EVENTS_TABLE = EVENTS_TABLE
 exports.REALITY_TABLE = REALITY_TABLE
 exports.POSITIONS_TABLE = POSITIONS_TABLE
+exports.TRANSACTIONS_TABLE = TRANSACTIONS_TABLE
 
 const flattenItem = (value) => {
   const ret = []
@@ -104,9 +106,33 @@ exports.createTable = (db) => {
     'updated_at TEXT' +
     ')'
 
+  // DEGIRO transactions, from the CSV export (source 'degiro_csv') or derived
+  // from size changes in stocks_by_daily (source 'stocks_by_daily')
+  const transactionsTable =
+    `CREATE TABLE IF NOT EXISTS ${TRANSACTIONS_TABLE} (` +
+    'key TEXT PRIMARY KEY, ' +
+    'datetime TEXT NOT NULL, ' +
+    'product TEXT, ' +
+    'isin TEXT, ' +
+    'venue TEXT, ' +
+    'size real NOT NULL, ' +
+    'price real, ' +
+    'currency TEXT, ' +
+    'value_eur real, ' +
+    'fx_rate real, ' +
+    'fee_eur real, ' +
+    'total_eur real, ' +
+    'order_id TEXT, ' +
+    'position_id TEXT, ' +
+    'applied INTEGER NOT NULL, ' +
+    'source TEXT NOT NULL, ' +
+    'ingested_at TEXT' +
+    ')'
+
   return Promise.all([
     exports.run(db, stocksTable),
     exports.run(db, positionsTable),
+    exports.run(db, transactionsTable),
     exports.run(db, stocksDailyTable),
     exports.run(db, eventsTable),
     exports.run(db, realityTable),

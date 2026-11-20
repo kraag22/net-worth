@@ -1,0 +1,40 @@
+// Yahoo symbol and ISIN of the DEGIRO products held when DEGIRO's API closed,
+// keyed by DEGIRO product id. Used when populating positions from history.
+exports.KNOWN_POSITIONS = {
+  // Nokia ADR in EUR (NOAA in Frankfurt), not the ordinary share NOA3
+  19751750: { symbol: 'NOAA.F', isin: 'US6549022043' },
+  332126: { symbol: 'T', isin: 'US00206R1023' },
+  331868: { symbol: 'AAPL', isin: 'US0378331005' },
+  331965: { symbol: 'BRK-B', isin: 'US0846707026' },
+  331794: { symbol: 'BA', isin: 'US0970231058' },
+  4798004: { symbol: 'CEZ.PR', isin: 'CZ0005112300' },
+  331974: { symbol: 'CAT', isin: 'US1491231015' },
+  331829: { symbol: 'KO', isin: 'US1912161007' },
+  18476945: { symbol: 'COLT.PR', isin: 'CZ0009008942' },
+  4783: { symbol: 'LHA.DE', isin: 'DE0008232125' },
+  4798015: { symbol: 'ERBAG.PR', isin: 'AT0000652011' },
+  24274198: { symbol: 'GEN.PR', isin: 'US6687711084' },
+  17815349: { symbol: 'GRPN', isin: 'US3994732069' },
+  8565591: { symbol: 'KOFOL.PR', isin: 'CZ0009000121' },
+  4798008: { symbol: 'KOMB.PR', isin: 'CZ0008019106' },
+  332060: { symbol: 'MRK', isin: 'US58933Y1055' },
+  1533610: { symbol: 'META', isin: 'US30303M1027' },
+  332111: { symbol: 'MSFT', isin: 'US5949181045' },
+  1793900: { symbol: 'MDLZ', isin: 'US6092071058' },
+  10306755: { symbol: 'MONET.PR', isin: 'CZ0008040318' },
+  332062: { symbol: 'PFE', isin: 'US7170811035' },
+  17478812: { symbol: 'RTX', isin: 'US75513E1010' },
+  883182: { symbol: 'RHM.DE', isin: 'DE0007030033' },
+  4622757: { symbol: 'SPY5.DE', isin: 'IE00B6YX5C33' },
+  // SPDR S&P Global Dividend Aristocrats ESG UCITS ETF (ZPRG.DE is the
+  // non-ESG fund)
+  19531366: { symbol: 'ZPD3.DE', isin: 'IE00BYTH5S21' },
+  13200994: { symbol: 'SNAP', isin: 'US83304A1060' },
+  255931: { symbol: 'VIE.PA', isin: 'FR0000124141' },
+  4671: { symbol: 'VOW3.DE', isin: 'DE0007664039' },
+  19747604: { symbol: 'VNA.DE', isin: 'DE000A1ML7J1' },
+  // the line before the 2026 restructuring
+  22187048: { symbol: 'WBD', isin: 'US9344231041' },
+  883053: { symbol: 'EXI2.DE', isin: 'DE0006289382' },
+  19747492: { symbol: 'ISPA.DE', isin: 'DE000A0F5UH1' },
+}

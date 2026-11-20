@@ -1,0 +1,202 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Net worth – ingest transactions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/static/icon-64.png" />
+  <link rel="stylesheet" href="/static/styles.css?v=1.2">
+</head>
+
+<body class="ingest-page">
+  <h1>Ingest transactions</h1>
+  <p><a href="/">&larr; Charts</a></p>
+
+  <p>
+    Last ingested:
+    {{#last}}<strong>{{datetime}}</strong> {{product}} ({{size}}){{/last}}
+    {{^last}}<strong>nothing yet</strong>{{/last}}
+  </p>
+
+  {{#error}}<p class="ingest-error">{{error}}</p>{{/error}}
+
+  {{#result}}
+  <div class="ingest-result">
+    <p>Ingested <strong>{{inserted}}</strong> transactions.</p>
+    {{#hasChanges}}
+    <table>
+      <tr><th>Position</th><th>Size before</th><th>Size now</th></tr>
+      {{#changes}}
+      <tr><td>{{name}}</td><td>{{from}}</td><td>{{to}}</td></tr>
+      {{/changes}}
+    </table>
+    <p>New sizes are priced on the next <code>POST /import</code>.</p>
+    {{/hasChanges}}
+    {{#filledCount}}<p>Yahoo symbol or ISIN filled in for {{filledCount}}
+      existing positions.</p>{{/filledCount}}
+    {{#hasCreated}}
+    <p>Created positions (latest size from history):</p>
+    <ul>
+      {{#created}}<li>{{name}} ({{currency}}) – {{size}}
+        {{#symbol}}{{symbol}}{{/symbol}}{{^symbol}}<em>no Yahoo symbol</em>{{/symbol}}
+        {{#isin}}{{isin}}{{/isin}}</li>{{/created}}
+    </ul>
+    {{/hasCreated}}
+  </div>
+  {{/result}}
+
+  {{#symbolsUpdated}}<p>Yahoo symbol set for {{symbolsUpdated}} positions.</p>{{/symbolsUpdated}}
+
+  {{^preview}}
+  {{#hasWithoutSymbol}}
+  <form method="post" action="/ingest/symbols" class="ingest-form">
+    <h2>Positions without a Yahoo symbol</h2>
+    <p class="ingest-hint">They are skipped by the price import. Find a symbol
+      on finance.yahoo.com (e.g. <code>CEZ.PR</code>, <code>RHM.DE</code>,
+      <code>AAPL</code>); its currency must match.</p>
+    <table>
+      <tr><th>Position</th><th>Size</th><th>Yahoo symbol</th></tr>
+      {{#withoutSymbol}}
+      <tr>
+        <td>{{name}} ({{currency}})</td>
+        <td>{{size}}</td>
+        <td><input name="position_symbol[p{{id}}]" class="symbol-input"></td>
+      </tr>
+      {{/withoutSymbol}}
+    </table>
+    <button type="submit">Save symbols</button>
+  </form>
+  {{/hasWithoutSymbol}}
+
+  {{#canPopulate}}
+  <form method="post" action="/ingest/from-daily" class="ingest-form">
+    <p>Populate transactions from the price history
+      (<code>stocks_by_daily</code>): every size change becomes a transaction
+      and positions get the latest recorded sizes; missing held positions are
+      created. Then ingest the CSV.
+      {{#populated}}Running it again replaces the transactions derived from
+      history.{{/populated}}</p>
+    <button type="submit">Populate from history</button>
+  </form>
+  {{/canPopulate}}
+  {{/preview}}
+
+  {{^preview}}
+  <form method="post" action="/ingest/preview" class="ingest-form">
+    <p>DEGIRO &rarr; Activity &rarr; Transactions &rarr; Export CSV. Choose the
+      file or paste its content.</p>
+    <input type="file" accept=".csv,text/csv" id="csv-file">
+    <textarea name="csv" id="csv" rows="12" required
+              placeholder="Datum,Čas,Produkt,ISIN,...">{{csv}}</textarea>
+    <button type="submit">Preview new transactions</button>
+  </form>
+  {{/preview}}
+
+  {{#preview}}
+  <form method="post" action="/ingest" class="ingest-form" id="ingest-form">
+    <textarea name="csv" hidden>{{csv}}</textarea>
+    <input type="hidden" name="apply_keys" id="apply-keys">
+
+    <p>
+      {{total}} transactions in the file, {{older}} already ingested or older,
+      <strong>{{freshCount}} new</strong>.
+    </p>
+
+    {{#hasFresh}}
+    {{#hasIsins}}
+    <h2>Products</h2>
+    <table>
+      <tr><th>Product</th><th>ISIN</th><th>Position</th></tr>
+      {{#isins}}
+      <tr>
+        <td>{{product}} ({{currency}})</td>
+        <td>{{isin}}</td>
+        <td>
+          {{#matchedName}}{{matchedName}}{{/matchedName}}
+          {{^matchedName}}
+          <select name="map[{{isin}}]" class="position-select" required>
+            <option value="">– choose –</option>
+            {{#options}}
+            <option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>
+            {{/options}}
+          </select>
+          <input name="symbol[{{isin}}]" placeholder="Yahoo symbol, e.g. KO"
+                 class="symbol-input" hidden>
+          {{/matchedName}}
+        </td>
+      </tr>
+      {{/isins}}
+    </table>
+    {{/hasIsins}}
+
+    <h2>New transactions</h2>
+    <p class="ingest-hint">
+      Unchecked rows are recorded as ingested but do not change position sizes.
+      <label>Uncheck everything before
+        <input type="date" id="apply-from"></label>
+    </p>
+    <table class="transactions">
+      <tr>
+        <th>Update size</th><th>Date</th><th>Product</th><th>Qty</th>
+        <th>Price</th><th>Total EUR</th>
+      </tr>
+      {{#fresh}}
+      <tr>
+        <td><input type="checkbox" class="apply" value="{{key}}"
+                   data-date="{{date}}" checked></td>
+        <td>{{datetime}}</td>
+        <td>{{product}}{{^orderId}} <em>(corporate action)</em>{{/orderId}}</td>
+        <td class="num">{{size}}</td>
+        <td class="num">{{price}} {{currency}}</td>
+        <td class="num">{{totalEur}}</td>
+      </tr>
+      {{/fresh}}
+    </table>
+
+    <button type="submit">Ingest {{freshCount}} transactions</button>
+    {{/hasFresh}}
+    <a href="/ingest">Start over</a>
+  </form>
+  {{/preview}}
+
+  <script>
+    const fileInput = document.getElementById('csv-file')
+    if (fileInput) {
+      fileInput.addEventListener('change', async () => {
+        const file = fileInput.files[0]
+        if (file) document.getElementById('csv').value = await file.text()
+      })
+    }
+
+    document.querySelectorAll('.position-select').forEach((select) => {
+      const symbol = select.nextElementSibling
+      const toggle = () => {
+        symbol.hidden = select.value !== '{{newPosition}}'
+        symbol.required = !symbol.hidden
+      }
+      select.addEventListener('change', toggle)
+      toggle()
+    })
+
+    const applyFrom = document.getElementById('apply-from')
+    if (applyFrom) {
+      applyFrom.addEventListener('change', () => {
+        document.querySelectorAll('.apply').forEach((box) => {
+          box.checked = !applyFrom.value || box.dataset.date >= applyFrom.value
+        })
+      })
+    }
+
+    const form = document.getElementById('ingest-form')
+    if (form) {
+      form.addEventListener('submit', () => {
+        const keys = [...document.querySelectorAll('.apply:checked')]
+        document.getElementById('apply-keys').value =
+          keys.map((box) => box.value).join(',')
+      })
+    }
+  </script>
+</body>
+</html>
