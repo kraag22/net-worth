@@ -221,7 +221,9 @@ exports.sumStocksBalanceByCurrency = (stocksBalance) => {
   })
   const list = Object.entries(result).map((item) => item[1])
   return list.map((item) => {
-    item.percents = (100 * (item.balance + item.price)) / item.price - 100
+    // return on invested amount: price is current value, balance is the gain
+    const invested = item.price - item.balance
+    item.percents = invested > 0 ? (100 * item.balance) / invested : 0
     return item
   })
 }
