@@ -30,9 +30,32 @@ The web UI (`/`, `/status`, `/json/*`, `/portfolio/*`) asks for a password set
 as ```login_password=...``` in the ```.env``` file. Without it nobody can log in.
 After login a cookie keeps the browser logged in (it is refreshed on every
 visit); changing the password logs everyone out.
-Stock prices are imported by calling ```POST /import``` from cron, e.g. once
-per working day after the US close:
-```0 23 * * 1-5 curl -s -X POST localhost:4000/import```.
+### API endpoints for cron
+
+`POST /import`, `PUT /fill-daily`, `PUT /fill-ratios`, `PUT /fill-balance/:to`,
+`GET /reality/import`, `POST /positions` and `POST /reality/store_data` need
+the header `Great-Auth: <api_server_auth_key>` (set in `.env`), otherwise they
+answer 401. `api/scripts/call.js` sends it with the key read from `.env`, so
+the key stays out of the crontab; it prints the response and exits with 1 on
+failure:
+
+```sh
+node api/scripts/call.js POST /import
+node api/scripts/call.js PUT '/fill-daily?from=2024-09-01'
+```
+
+It calls `http://localhost:$PORT` (default 4000), or `API_URL` when set.
+
+Stock prices are imported once per working day after the US close, then the
+daily table for the charts is updated (on the server, `crontab -e`):
+
+```
+0 23 * * 1-5 node /srv/net_worth/api/scripts/call.js POST /import >> /srv/net_worth/cron.log 2>&1
+30 23 * * * node /srv/net_worth/api/scripts/call.js PUT /fill-daily >> /srv/net_worth/cron.log 2>&1
+```
+
+Cron's `PATH` may not include the Node.js used by the service; use its full
+path (`which node`) if `node` is not found.
 
 ### Positions
 
@@ -75,7 +98,7 @@ or are ignored); the ISIN is then stored on the position. Unchecked rows are
 recorded in the `transactions` table but don't change sizes.
 
 Then bring the history in line with the transactions with
-`curl -X PUT localhost:4000/fill-daily` (optionally `?from=YYYY-MM-DD`):
+`node api/scripts/call.js PUT /fill-daily` (optionally `'/fill-daily?from=YYYY-MM-DD'`):
 every day since the first transaction without any price import gets one
 `stocks` row per held position (Yahoo daily close, FX from Yahoo's
 `USDCZK=X`/`EURCZK=X`), rows imported after the history-derived transactions
@@ -95,10 +118,10 @@ and their imported rows are not corrected.
 #### How to fix missing currency ratios
 
   + Check quota limit in fixer.io
-  + Fill missing ratios with `curl -X PUT localhost:4000/fill-ratios`
+  + Fill missing ratios with `node api/scripts/call.js PUT /fill-ratios`
   + Check the gap in `stocks_by_daily` table with
       `select distinct date from stocks_by_daily where ratio is null;`
   + Remove incomplete data with ($DATE - 1 before of oldes date in previous command)
       `delete from stocks_by_daily where date > '$DATE';`
-  + Compute missing data with `curl -X PUT localhost:4000/fill-daily`
+  + Compute missing data with `node api/scripts/call.js PUT /fill-daily`
     (it also fills days missing in `stocks`, see Ingesting DEGIRO transactions)
