@@ -111,6 +111,21 @@ describe('importPortfolio()', () => {
     expect(Math.round(rows[1].value)).toBe(Math.round(400 * rows[1].ratio))
   })
 
+  it('skips positions without a Yahoo symbol', async () => {
+    await storage.upsertPosition(db, position())
+    await storage.upsertPosition(db, position({ id: '2', symbol: '' }))
+    const asked = []
+    const prices = new MockPrices([position()])
+    const getPrice = prices.getPrice.bind(prices)
+    prices.getPrice = (symbol) => asked.push(symbol) && getPrice(symbol)
+
+    await data.importPortfolio(prices, db, mockFixer)
+
+    expect(asked).toEqual(['CEZ.PR'])
+    const rows = await storage.call(db, 'select id from stocks')
+    expect(rows.map((r) => r.id)).toEqual(['1'])
+  })
+
   it('stores null ratio and value when currency rates fail', async () => {
     await storage.upsertPosition(db, position())
     const failingFixer = { getRates: async () => undefined }

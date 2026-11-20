@@ -77,3 +77,63 @@
   color: #c0392b;
   text-align: center;
 }
+
+.ingest-page {
+  margin: 0 auto;
+  max-width: 960px;
+  padding: 16px;
+  font-family: system-ui, sans-serif;
+}
+
+.ingest-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ingest-form textarea {
+  font-family: monospace;
+  font-size: 0.85em;
+}
+
+.ingest-form button {
+  align-self: flex-start;
+  font-size: 1em;
+  padding: 10px 16px;
+  border-radius: 4px;
+  border: 1px solid #2f6fde;
+  background: #2f6fde;
+  color: #fff;
+  cursor: pointer;
+}
+
+.ingest-page table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.ingest-page th,
+.ingest-page td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.ingest-page td.num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.ingest-page select,
+.ingest-page .symbol-input {
+  max-width: 100%;
+}
+
+.ingest-error {
+  color: #c0392b;
+  font-weight: bold;
+}
+
+.ingest-hint {
+  color: #555;
+}

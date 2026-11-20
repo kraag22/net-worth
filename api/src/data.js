@@ -16,6 +16,12 @@ exports.getPortfolio = async (priceProvider, db, fixer) => {
   const portfolio = []
 
   for (const position of positions) {
+    if (!position.symbol || position.symbol.trim() === '') {
+      logger.error(
+        `Position ${position.name} (${position.id}) has no Yahoo symbol, skipped`
+      )
+      continue
+    }
     try {
       const quote = await priceProvider.getPrice(position.symbol)
       if (quote.currency !== position.currency) {
