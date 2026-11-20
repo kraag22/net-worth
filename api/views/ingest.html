@@ -32,7 +32,8 @@
       <tr><td>{{name}}</td><td>{{from}}</td><td>{{to}}</td></tr>
       {{/changes}}
     </table>
-    <p>New sizes are priced on the next <code>POST /import</code>.</p>
+    <p>New sizes are priced on the next <code>POST /import</code>; past
+      days are corrected by <code>PUT /fill-daily</code>.</p>
     {{/hasChanges}}
     {{#filledCount}}<p>Yahoo symbol or ISIN filled in for {{filledCount}}
       existing positions.</p>{{/filledCount}}
